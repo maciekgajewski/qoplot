@@ -1,0 +1,5 @@
+this file sits in the qoplot distribution directory
+(i.e. octplot-x,y,z/src). toggle_qoplot looks for it, and if present
+sets the qoplot path & font path to the disribution paths instead of
+the install paths. This enables runnign the distribution octplot from
+within the distribution directory, mainly for debugging purposes.
