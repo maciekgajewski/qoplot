@@ -1,0 +1,2 @@
+// TODO stub
+#define OPATH "."
