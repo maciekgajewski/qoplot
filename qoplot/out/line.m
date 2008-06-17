@@ -35,7 +35,7 @@
 
 function handle = line (xdata,ydata,varargin)
   if((isvector(xdata)||isempty(xdata)) && isvector(ydata))
-    handle = octplot_command('line',xdata,ydata){1};
+    handle = qoplot_command('line',xdata,ydata){1};
   else
     error('xdata and ydata vectors should be provided');
   endif

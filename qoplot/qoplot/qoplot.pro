@@ -4,22 +4,27 @@
 
 TEMPLATE = app
 TARGET = qoplot
-DESTDIR=../out
+DESTDIR =../out
 
 DEPENDPATH += .
-INCLUDEPATH += .
 
 # Input
 HEADERS += \
  plotapp.h \
  op_com.h \
- mainwindow.h \
- command.h
+ command.h \
+ interpreter.h
 SOURCES += \
 	main.cpp \
  plotapp.cpp \
  op_com.cpp \
- mainwindow.cpp \
- command.cpp
-FORMS += mainwindow.ui
+ command.cpp \
+ interpreter.cpp
+
+LIBS += ../qographics/libqographics.a
+
+TARGETDEPS += ../qographics/libqographics.a
+
+INCLUDEPATH += ../qographics \
+  .
 

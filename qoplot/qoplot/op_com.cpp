@@ -88,12 +88,12 @@ void arg_sendrec::parm(int np,ocpl::type_id id,long nr, long nc, char* data, boo
 
 void arg_sendrec::write(int fd)
 {
-  _DEBUG_PRINT("arg_sendrec::write: id=%d, np=%d\n",_id,_np);
+ // _DEBUG_PRINT("arg_sendrec::write: id=%d, np=%d\n",_id,_np);
   sure_write(fd,&_id,sizeof(int));
   sure_write(fd,&_np,sizeof(int));
   for(int i=0; i<_np; i++) {
-    _DEBUG_PRINT("arg_sendrec::write: parm %d: id=%d, (%d,%d)=%d bytes\n",
-	   i,_parm[i].id,_parm[i].nr,_parm[i].nc,_parm[i].size());
+    //_DEBUG_PRINT("arg_sendrec::write: parm %d: id=%d, (%d,%d)=%d bytes\n",
+	//   i,_parm[i].id,_parm[i].nr,_parm[i].nc,_parm[i].size());
     sure_write(fd,&(_parm[i].id),sizeof(int));
     sure_write(fd,&(_parm[i].nr),sizeof(long));
     sure_write(fd,&(_parm[i].nc),sizeof(long));

@@ -43,21 +43,26 @@ public:
 	QVariant argin( int i ) const;
 	
 	// state query
+	
+	/// If command was parsed
 	bool parsed() const { return _command.parsed(); }
 	
 	// return values
 	
-	/// Accept command without parameters
-	void accept() { _command.init_argout(0); }
+	/// Allocates output arguments
+	void setArgoutNum( int nargout ) { _command.init_argout( nargout ); }
 	
 	/// Add double output param, accept command
-	void addDoubleArgout( int index, long row, long col, double value );
+	void addDoubleArgout( int index, double value );
 
 	/// Add string output param, accept command
-	void addStringArgout( int index, long row, long col, const QString& value );
+	void addStringArgout( int index, const QString& value );
+	
+	/// Add variant output param, accept command
+	void addArgout( int index, const QVariant& value );
 	
 	/// Returns result to Octave
-	void ret( int fd ) { _command.ret( fd ); }
+	void ret() { _command.ret( _fd ); }
 
 	/// Returns error
 	void retError( const QString& msg );
@@ -67,7 +72,8 @@ public:
 
 private:
 
-	ocpl::command _command;
+	ocpl::command _command;	///< Underlying octplot command
+	int _fd;				///< Associated file descriptior
 };
 
 #endif // COMMAND_H
