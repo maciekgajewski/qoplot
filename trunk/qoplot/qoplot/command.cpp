@@ -15,12 +15,13 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "command.h"
+#include "matrixcodec.h"
 
 // ===========================================================================
 /// Constructor
 Command::Command( int fd ) : _command( fd )
 {
-	// nope
+	_fd = fd;
 }
 
 // ===========================================================================
@@ -57,34 +58,90 @@ QVariant Command::argin( int i ) const
 }
 
 // ===========================================================================
-void Command::addDoubleArgout( int index, long row, long col, double value )
+/// Adds scalar doble argoment to output
+void Command::addDoubleArgout( int index, double value )
 {
 	// TODO i don't like this allocation
 	double* pData = new double( value );
-	_command.argout( index, ocpl::real, row, col, reinterpret_cast<char*>(pData), true );
+	_command.argout( index, ocpl::real, 1, 1, reinterpret_cast<char*>(pData), true );
 }
 
 // ===========================================================================
-void Command::addStringArgout( int index, long row, long col, const QString& value )
+/// Adds scalar string value to output
+void Command::addStringArgout( int index, const QString& value )
 {
 	// TODO i don't like this allocation
 	QByteArray array = value.toUtf8();
-	char* pData = new char[ array.size() ];
+	char* pData = new char[ array.size() + 1 ];
 	qstrcpy( pData, array.data() );
 	
-	_command.argout( index, ocpl::str, row, col, pData, true );
+	_command.argout( index, ocpl::str, array.size()+1, 1, pData, true );
 }
 
+
 // ===========================================================================
+/// Returns command with error
 void Command::retError( const QString& msg )
 {
 	ocpl::ret_error( _command, msg.toUtf8().data() );
 }
 
 // ===========================================================================
+/// Returns command with warning
 void Command::retWarning( const QString& msg )
 {
 	ocpl::ret_warning( _command, msg.toUtf8().data() );
+}
+
+// ============================================================================
+// Adds output arg of any type.
+void Command::addArgout( int index, const QVariant& value )
+{
+	// string
+	if ( value.type() == QVariant::String )
+	{
+		addStringArgout( index, value.toString() );
+	}
+	// number
+	else if ( value.canConvert( QVariant::Double ) )
+	{
+		addDoubleArgout( index, value.toDouble() );
+	}
+	// null
+	if ( value.type() == QVariant::Invalid )
+	{
+		// return explicit null
+		_command.argout( index, ocpl::real, 0, 0, NULL, true );
+	}
+	// matrix
+	else if ( value.type() == QVariant::List )
+	{
+		// TODO for now assume that all matrixes are filled with doubles
+		MatrixCodec codec( value.toList() );
+		
+		double* pData = new double[ codec.rows() * codec.cols() ];
+		// lay out data columnwise
+		// TODO mayb integrate this in MatrixCodec
+		for ( int r = 0; r < codec.rows(); r++ )
+		{
+			for ( int c = 0; c < codec.cols(); c++ )
+			{
+				pData[ r + c * codec.rows() ] = codec.value( r+1, c+1 ).toDouble();
+			}
+		}
+		
+		_command.argout
+			( index, ocpl::real, codec.rows(), codec.cols()
+			, reinterpret_cast<char*>(pData), true );
+		
+	}
+	else
+	{
+		// TODO add matrix here
+		qDebug("Command::addArgout: unknown value type: %s", QVariant::typeToName( value.type() ) );
+		// add null argument
+		_command.argout( index, ocpl::real, 0, 0, NULL, true );
+	}
 }
 
 // EOF

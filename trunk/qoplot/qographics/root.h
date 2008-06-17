@@ -1,0 +1,86 @@
+// root.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+#ifndef ROOT_H
+#define ROOT_H
+
+#include <object.h>
+
+/**
+The Root object. It is created at startup, always exists, maintains handle<->object
+associations.
+
+@author Maciek Gajewski <maciej.gajewski0@gmail.com>
+*/
+class Root : public Object
+{
+	Q_OBJECT
+	
+	// Exposed properties
+	Q_PROPERTY( QVariantList CallbackObject READ getCallbackObject )
+	Q_PROPERTY( QVariantList CurrentFigure READ getCurrentFigure )
+	Q_PROPERTY( QVariantList PointerLocation READ getPointerLocation )
+	Q_PROPERTY( Handle PointerWindow READ getPointerWindow )
+	Q_PROPERTY( double ScreenDepth READ getScreenDepth )
+	Q_PROPERTY( QVariantList ScreenSize READ getScreenSize )
+	Q_PROPERTY( double ScreenPixelsPerInch READ getScreenPixelsPerInch )
+	
+public:
+	
+	// Construction / destruction
+	
+	Root( QObject* parent = 0 );
+	virtual ~Root();
+	
+	// Objects
+	Object* objectByHandle( Handle h );
+	const Object* objectByHandle( Handle h ) const { return _objects.value( h, NULL ); }
+	
+	
+	// Properties getters/setters
+	
+	QVariantList getCallbackObject() const { return QVariantList(); }
+	QVariantList getCurrentFigure() const;
+	QVariantList getPointerLocation() const;
+	Handle getPointerWindow() const;
+	double getScreenDepth() const;
+	QVariantList getScreenSize() const;
+	double getScreenPixelsPerInch() const;
+	
+	QString getType() const { return "root"; }
+	
+public slots:
+	
+	// Child object management
+	
+	void objectDestroyed( Handle handle );		///< Hanldes child object destruction (removes from list)
+	Handle objectCreated( Object* object );		///< Handles new object creation	
+
+private:
+
+	// Data
+
+	QMap< Handle, Object* > _objects;			///< Main object<->handle database
+	
+	Handle _currentFigure;						//!< Current figure
+
+};
+
+#endif // ROOT_H
+
+// EOF
+
+

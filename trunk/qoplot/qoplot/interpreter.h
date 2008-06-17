@@ -1,4 +1,4 @@
-// mainwindow.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,27 +14,38 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef INTERPRETER_H
+#define INTERPRETER_H
 
-#include <QMainWindow>
-
-#include "ui_mainwindow.h"
+class Root;
+class Command;
 
 /**
-	@author Maciek Gajewski <maciej.gajewski0@gmail.com>
-	Main figure window.
+Command interpreter. Intepretes command and perrforms appropriate action on graphics
+objects.
+
+Use interpret() method.
+
+@author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class MainWindow : public QMainWindow, protected Ui::MainWindow
+class Interpreter
 {
-Q_OBJECT
 public:
-	MainWindow( QWidget *parent = 0 );
-	virtual ~MainWindow();
+	Interpreter();
+	~Interpreter();
+	
+	void interpret( Command& cmd, Root& root );
+	
+private:
+
+	// specific commands interpretation
+	
+	void get( Command& cmd, Root& root );
+	void set( Command& cmd, Root& root );
 
 };
 
-#endif // MAINWINDOW_H
+#endif // INTERPRETER_H
 
 // EOF
 

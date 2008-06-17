@@ -33,7 +33,7 @@
 
 function out = figure(n)
   if nargin==0,
-    out = octplot_command("figure"){1};
+    out = qoplot_command("figure"){1};
     return;
   elseif nargin == 1,
     if floor(n)==n ,
@@ -45,7 +45,7 @@ function out = figure(n)
           return;
 	endif
       endfor
-      out = octplot_command("figure",n){1};
+      out = qoplot_command("figure",n){1};
       return;
     elseif ishandle(n),
       if(strcmp(get(n,"type"),"figure"))

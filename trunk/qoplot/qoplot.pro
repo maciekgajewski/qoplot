@@ -1,3 +1,6 @@
-TEMPLATE=subdirs
+TEMPLATE =subdirs
 
-SUBDIRS=qoplot qoplot_command
+SUBDIRS =qoplot qoplot_command \
+qographics
+CONFIG += ordered
+

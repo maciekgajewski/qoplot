@@ -15,6 +15,7 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description></description>
     <defaultencoding></defaultencoding>
+    <versioncontrol></versioncontrol>
   </general>
   <kdevfileview>
     <groups>
@@ -22,13 +23,7 @@
       <group pattern="*.ui" name="User Interface" />
       <group pattern="*.png" name="Icons" />
       <group pattern="*" name="Others" />
-      <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidenonlocation>false</hidenonlocation>
     </groups>
-    <tree>
-      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
-      <hidenonprojectfiles>false</hidenonprojectfiles>
-    </tree>
   </kdevfileview>
   <kdevdoctreeview>
     <ignoretocs>
@@ -97,9 +92,6 @@
       <designer>/usr/bin/designer-qt4</designer>
       <designerpluginpaths/>
     </qt>
-    <references>
-      <pcs>Qt4</pcs>
-    </references>
     <codecompletion>
       <automaticCodeCompletion>false</automaticCodeCompletion>
       <automaticArgumentsHint>true</automaticArgumentsHint>
@@ -138,28 +130,32 @@
     </splitheadersource>
   </kdevcppsupport>
   <kdevfilecreate>
-    <filetypes>
-      <type icon="source_h" ext="h" create="template" name="C/C++ header" >
-        <descr>A new empty header file for C or C++.</descr>
-      </type>
-      <type icon="source_cpp" ext="cpp" create="template" name="C++ source" >
-        <descr>A new empty C++ file.</descr>
-      </type>
-    </filetypes>
     <useglobaltypes>
       <type ext="ui" />
+      <type ext="cpp" />
+      <type ext="h" />
+      <type ext="qrc" />
     </useglobaltypes>
   </kdevfilecreate>
   <kdevtrollproject>
     <general>
-      <activedir></activedir>
+      <activedir>qoplot</activedir>
     </general>
     <run>
       <directoryradio>executable</directoryradio>
-      <mainprogram>/home/gajewskim/src/qoplot/qoplot</mainprogram>
+      <runarguments>
+        <qoplot></qoplot>
+      </runarguments>
+      <cwd>
+        <qoplot>/home/gajewskim/src/qoplot/..</qoplot>
+      </cwd>
+      <debugarguments>
+        <qoplot></qoplot>
+      </debugarguments>
+      <mainprogram>/home/gajewskim/src/qoplot</mainprogram>
       <programargs></programargs>
       <globaldebugarguments></globaldebugarguments>
-      <globalcwd>/home/gajewskim/src/qoplot/qoplot</globalcwd>
+      <globalcwd>/home/gajewskim/src/qoplot</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>false</autocompile>
@@ -167,6 +163,7 @@
       <autokdesu>false</autokdesu>
       <envvars/>
     </run>
+    <subclassing/>
     <make>
       <abortonerror>true</abortonerror>
       <runmultiplejobs>false</runmultiplejobs>
@@ -191,4 +188,11 @@
       <implementationsuffix>.cpp</implementationsuffix>
     </filetemplates>
   </cppsupportpart>
+  <kdevdocumentation>
+    <projectdoc>
+      <docsystem></docsystem>
+      <docurl></docurl>
+      <usermanualurl></usermanualurl>
+    </projectdoc>
+  </kdevdocumentation>
 </kdevelop>
