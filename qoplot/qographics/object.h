@@ -21,6 +21,8 @@
 #include <QObject>
 #include <QVariant>
 
+#include "matrix.h"
+
 class Root;
 
 /**
@@ -36,14 +38,14 @@ class Object : public QObject
 	
 	// Exposded properties
 	
-	Q_PROPERTY( QVariantList Parent	READ getParent )
+	Q_PROPERTY( QVariant Parent	READ getParent )
 	Q_PROPERTY( QString Type	READ getType )
 	
-	Q_PROPERTY( QVariantList UserData	READ getUserData	WRITE setUserData )
+	Q_PROPERTY( Matrix UserData	READ getUserData	WRITE setUserData )
 	Q_PROPERTY( QString Visible	READ getVisible		WRITE setVisible )
 	Q_PROPERTY( QString Selected READ getSelected WRITE setSelected )
 	Q_PROPERTY( QString Tag READ getTag WRITE setTag )
-	Q_PROPERTY( QVariantList Children READ getChildren )
+	Q_PROPERTY( Matrix Children READ getChildren )
 	
 public:
 
@@ -74,11 +76,11 @@ public:
 	
 	// Properties getters / setters
 	
-	QVariantList getParent() const;				//!< Returns matrix with parent handle, or empty if none
+	QVariant getParent() const;				//!< Returns parent handle, or empty if none
 	virtual QString getType() const = 0;	//!< Returns type name
 	
-	QVariantList getUserData() const { return _userData; }
-	void setUserData( const QVariantList& data ) { _userData = data; }
+	Matrix getUserData() const { return _userData; }
+	void setUserData( const Matrix& data ) { _userData = data; }
 	
 	virtual QString getVisible() const { return "on"; }
 	virtual void setVisible( const QString& ) {}
@@ -89,7 +91,7 @@ public:
 	QString getTag() const { return _tag; }
 	void setTag( const QString& tag ) { _tag = tag; }
 	
-	QVariantList getChildren() const;
+	Matrix getChildren() const;
 	
 private:
 
@@ -98,7 +100,7 @@ private:
 	Root* 	_pRoot;					//!< Root object
 	Handle	_handle;				//!< Object handle
 	
-	QVariantList	_userData;		//!< Associated user data
+	Matrix		_userData;		//!< Associated user data
 	QString			_tag;			//!< Associated tag
 
 };

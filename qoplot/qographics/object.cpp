@@ -20,7 +20,6 @@
 
 #include "object.h"
 #include "root.h"
-#include "matrixcodec.h"
 
 // ============================================================================
 // Constructor
@@ -79,26 +78,26 @@ QVariant Object::getProperty( const QString& name )
 
 // ============================================================================
 // Returns matrix with parent handle, or empty matrix.
-QVariantList Object::getParent() const
+QVariant Object::getParent() const
 {
 	// TODO
-	return QVariantList();
+	return QVariant();
 }
 
 // ============================================================================
 // Returns vector of child object handles
-QVariantList Object::getChildren() const
+Matrix Object::getChildren() const
 {
 	QList<Object*> children = findChildren<Object*>();
 	
-	MatrixCodec codec( children.size(), 1 );
+	Matrix matrix( children.size(), 1 );
 	
 	for( int i = 0; i < children.size(); i++ )
 	{
-		codec.setValue( 1, i, children[ i ]->handle() );
+		matrix.setValue( 1, i, children[ i ]->handle() );
 	}
 	
-	return codec.matrix();
+	return matrix;
 }
 
 // EOF

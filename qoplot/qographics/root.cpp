@@ -15,16 +15,25 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 
-#include "matrixcodec.h"
-
 #include "root.h"
 
-
+bool Root::_graphicsInitialized = false;
 
 // ============================================================================
 // Constructor
 Root::Root( QObject* parent ): Object( NULL, parent )
 {
+	// init library
+	if ( ! _graphicsInitialized )
+	{
+		// Register matrix type
+		qRegisterMetaType< Matrix >( "Matrix" );
+		
+		_graphicsInitialized = true;
+	}
+	
+	// init instance
+	
 	_currentFigure = InvalidHandle;
 	// add self to database
 	_objects[ RootHandle ] = this;
@@ -74,25 +83,25 @@ Object* Root::objectByHandle( Handle h )
 
 // ============================================================================
 // Returns current figure handle, or empty matrix if none.
-QVariantList Root::getCurrentFigure() const
+QVariant Root::getCurrentFigure() const
 {
 	// TODO
-	return QVariantList();
+	return QVariant();
 }
 
 // ============================================================================
 /// Returns mouse pointer location, in screen coordinates
-QVariantList Root::getPointerLocation() const
+Matrix Root::getPointerLocation() const
 {
 	// TODO test
 	qDebug("Root::getPointerLocation()");
-	MatrixCodec c( 2, 2 );
+	Matrix c( 2, 2 );
 	c.setValue( 1, 1, 11 );
 	c.setValue( 1, 2, 12 );
 	c.setValue( 2, 1, 21 );
 	c.setValue( 2, 2, 22 );
 	
-	return c.matrix();
+	return c;
 }
 
 // ============================================================================
@@ -113,10 +122,10 @@ double Root::getScreenDepth() const
 
 // ============================================================================
 // Returns screen size
-QVariantList Root::getScreenSize() const
+Matrix Root::getScreenSize() const
 {
 	// TODO 
-	return QVariantList();
+	return Matrix();
 }
 
 // ============================================================================
