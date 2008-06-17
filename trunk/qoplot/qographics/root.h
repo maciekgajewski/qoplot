@@ -17,7 +17,8 @@
 #ifndef ROOT_H
 #define ROOT_H
 
-#include <object.h>
+#include "object.h"
+#include "matrix.h"
 
 /**
 The Root object. It is created at startup, always exists, maintains handle<->object
@@ -30,12 +31,12 @@ class Root : public Object
 	Q_OBJECT
 	
 	// Exposed properties
-	Q_PROPERTY( QVariantList CallbackObject READ getCallbackObject )
-	Q_PROPERTY( QVariantList CurrentFigure READ getCurrentFigure )
-	Q_PROPERTY( QVariantList PointerLocation READ getPointerLocation )
+	//Q_PROPERTY( QVariant CallbackObject READ getCallbackObject )
+	Q_PROPERTY( QVariant CurrentFigure READ getCurrentFigure )
+	Q_PROPERTY( Matrix PointerLocation READ getPointerLocation )
 	Q_PROPERTY( Handle PointerWindow READ getPointerWindow )
 	Q_PROPERTY( double ScreenDepth READ getScreenDepth )
-	Q_PROPERTY( QVariantList ScreenSize READ getScreenSize )
+	//Q_PROPERTY( Matrix ScreenSize READ getScreenSize )
 	Q_PROPERTY( double ScreenPixelsPerInch READ getScreenPixelsPerInch )
 	
 public:
@@ -52,12 +53,12 @@ public:
 	
 	// Properties getters/setters
 	
-	QVariantList getCallbackObject() const { return QVariantList(); }
-	QVariantList getCurrentFigure() const;
-	QVariantList getPointerLocation() const;
+	QVariant getCallbackObject() const { return QVariant(); }
+	QVariant getCurrentFigure() const;
+	Matrix getPointerLocation() const;
 	Handle getPointerWindow() const;
 	double getScreenDepth() const;
-	QVariantList getScreenSize() const;
+	Matrix getScreenSize() const;
 	double getScreenPixelsPerInch() const;
 	
 	QString getType() const { return "root"; }
@@ -75,7 +76,9 @@ private:
 
 	QMap< Handle, Object* > _objects;			///< Main object<->handle database
 	
-	Handle _currentFigure;						//!< Current figure
+	Handle _currentFigure;						///< Current figure
+	
+	static bool _graphicsInitialized;			///< Flag used to intilaize graphics
 
 };
 

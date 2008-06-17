@@ -10,7 +10,7 @@ TARGET = qographics
 
 HEADERS += object.h \
 root.h \
-matrixcodec.h
+matrix.h
 SOURCES += object.cpp \
 root.cpp \
-matrixcodec.cpp
+matrix.cpp

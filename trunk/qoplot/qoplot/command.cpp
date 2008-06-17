@@ -15,7 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "command.h"
-#include "matrixcodec.h"
+#include "matrix.h"
 
 // ===========================================================================
 /// Constructor
@@ -114,6 +114,8 @@ void Command::addArgout( int index, const QVariant& value )
 		_command.argout( index, ocpl::real, 0, 0, NULL, true );
 	}
 	// matrix
+	// TODO obsolete
+	/*
 	else if ( value.type() == QVariant::List )
 	{
 		// TODO for now assume that all matrixes are filled with doubles
@@ -132,6 +134,25 @@ void Command::addArgout( int index, const QVariant& value )
 		
 		_command.argout
 			( index, ocpl::real, codec.rows(), codec.cols()
+			, reinterpret_cast<char*>(pData), true );
+		
+	}
+	*/
+	else if ( value.userType() == qMetaTypeId<Matrix>() )
+	{
+		Matrix matrix = qvariant_cast< Matrix >( value );
+		
+		double* pData = new double[ matrix.rows() * matrix.cols() ];
+		for ( int r = 0; r < matrix.rows(); r++ )
+		{
+			for ( int c = 0; c < matrix.cols(); c++ )
+			{
+				pData[ r + c * matrix.rows() ] = matrix.value( r+1, c+1 ).toDouble();
+			}
+		}
+		
+		_command.argout
+			( index, ocpl::real, matrix.rows(), matrix.cols()
 			, reinterpret_cast<char*>(pData), true );
 		
 	}
