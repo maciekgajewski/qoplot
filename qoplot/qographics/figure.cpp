@@ -1,4 +1,4 @@
-// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// figure.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,40 +14,31 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#include "figure.h"
 
-class Root;
-class Command;
-
-/**
-Command interpreter. Intepretes command and perrforms appropriate action on graphics
-objects.
-
-Use interpret() method.
-
-@author Maciek Gajewski <maciej.gajewski0@gmail.com>
-*/
-class Interpreter
+// ============================================================================
+// Constructor
+Figure::Figure( Root* root, Handle handle, QObject* parent ) : Object( root, handle, parent )
 {
-public:
-	Interpreter();
-	~Interpreter();
+	_window.show();
 	
-	void interpret( Command& cmd, Root& root );
-	
-private:
+	connect( &_window, SIGNAL(closed()), SLOT(windowClosed()) );
+}
 
-	// specific commands interpretation
-	
-	void get( Command& cmd, Root& root );
-	void set( Command& cmd, Root& root );
-	void figure( Command& cmd, Root& root );
+// ============================================================================
+// Destructor
+Figure::~Figure()
+{
+	// nope
+}
 
-};
+// ============================================================================
+/// Handles window closing. Destroys object.
+void Figure::windowClosed()
+{
+	deleteLater();
+}
 
-#endif // INTERPRETER_H
 
 // EOF
-
 

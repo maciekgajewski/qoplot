@@ -1,4 +1,4 @@
-// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// figure.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,39 +14,52 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef FIGURE_H
+#define FIGURE_H
 
-class Root;
-class Command;
+#include <object.h>
+#include "figurewindow.h"
 
 /**
-Command interpreter. Intepretes command and perrforms appropriate action on graphics
-objects.
-
-Use interpret() method.
+Figure object represents UI window. It uses FigureWindow as actula UI element.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class Interpreter
+class Figure : public Object
 {
+	Q_OBJECT
+	
+	// Properties
+	// TODO
+	
 public:
-	Interpreter();
-	~Interpreter();
 	
-	void interpret( Command& cmd, Root& root );
+	// construction / destruction
 	
+	Figure( Root* root, Handle handle, QObject* parent );
+	virtual ~Figure();
+	
+	// window operations
+	
+	/// Raises window
+	void raise() { _window.raise(); }
+	
+	// properties
+	
+	virtual QString getType() const { return "figure"; }
+
+private slots:
+
+	void windowClosed();			//!< Handles window closing
+
 private:
 
-	// specific commands interpretation
+	// Data
 	
-	void get( Command& cmd, Root& root );
-	void set( Command& cmd, Root& root );
-	void figure( Command& cmd, Root& root );
-
+	FigureWindow _window;			///< Actual window
 };
 
-#endif // INTERPRETER_H
+#endif // FIGURE_H
 
 // EOF
 

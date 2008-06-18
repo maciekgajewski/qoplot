@@ -33,13 +33,21 @@ void debug_output( QtMsgType, const char * msg)
 // main
 int main(int argc, char* argv[])
 {
-	if(argc<2) exit(1);
+	if(argc<2)
+	{
+		return 1;
+	}
 	
 	qInstallMsgHandler( debug_output ); // put output string onto stdout
 	
 	PlotApp app( argc, argv );
+	app.setQuitOnLastWindowClosed( false );
 	
 	
 	
-	return app.exec();
+	int res = app.exec();
+	
+	qDebug("oplot exits");
+	
+	return res;
 }

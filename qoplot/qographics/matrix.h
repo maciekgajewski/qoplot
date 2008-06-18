@@ -50,13 +50,13 @@ public:
 	
 	// data access
 	
-	QVariant value( int r, int c ) const;
-	void setValue( int r, int c, const QVariant& v );
+	double value( int r, int c ) const;
+	void setValue( int r, int c, double v );
 
 	// utilities
 	
 	/// Creates 1x1 matrix with single value
-	static Matrix scalar( const QVariant& v );
+	static Matrix scalar( double v );
 
 private:
 
@@ -67,7 +67,7 @@ private:
 	int _cols;
 	
 	// TODO make use of imlicit sharing
-	QVariantList	_data;
+	QList<double>	_data;
 };
 
 // serialization

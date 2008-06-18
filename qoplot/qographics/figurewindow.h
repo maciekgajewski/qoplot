@@ -1,4 +1,4 @@
-// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// figurewindow.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,39 +14,38 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
+#ifndef FIGUREWINDOW_H
+#define FIGUREWINDOW_H
 
-class Root;
-class Command;
+#include <QMainWindow>
+#include "ui_figurewindow.h"
 
 /**
-Command interpreter. Intepretes command and perrforms appropriate action on graphics
-objects.
-
-Use interpret() method.
+FigureWindow is implementation of figure, using Qt's QMainWindow.
+Each window is associated with graphics Figure object.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class Interpreter
+class FigureWindow : public QMainWindow, protected Ui::FigureWindow
 {
+	Q_OBJECT
 public:
-	Interpreter();
-	~Interpreter();
-	
-	void interpret( Command& cmd, Root& root );
-	
-private:
 
-	// specific commands interpretation
-	
-	void get( Command& cmd, Root& root );
-	void set( Command& cmd, Root& root );
-	void figure( Command& cmd, Root& root );
+	FigureWindow( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	virtual ~FigureWindow();
 
+signals:
+
+	void closed();			///< Signals window closing
+	
+protected:
+
+	// event handlers
+	
+	virtual void closeEvent( QCloseEvent* event );
 };
 
-#endif // INTERPRETER_H
+#endif // FIGUREWINDOW_H
 
 // EOF
 

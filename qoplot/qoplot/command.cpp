@@ -97,8 +97,14 @@ void Command::retWarning( const QString& msg )
 // Adds output arg of any type.
 void Command::addArgout( int index, const QVariant& value )
 {
+	// null
+	if ( value.type() == QVariant::Invalid )
+	{
+		// return explicit null
+		_command.argout( index, ocpl::real, 0, 0, NULL, true );
+	}
 	// string
-	if ( value.type() == QVariant::String )
+	else if ( value.type() == QVariant::String )
 	{
 		addStringArgout( index, value.toString() );
 	}
@@ -107,37 +113,7 @@ void Command::addArgout( int index, const QVariant& value )
 	{
 		addDoubleArgout( index, value.toDouble() );
 	}
-	// null
-	if ( value.type() == QVariant::Invalid )
-	{
-		// return explicit null
-		_command.argout( index, ocpl::real, 0, 0, NULL, true );
-	}
 	// matrix
-	// TODO obsolete
-	/*
-	else if ( value.type() == QVariant::List )
-	{
-		// TODO for now assume that all matrixes are filled with doubles
-		MatrixCodec codec( value.toList() );
-		
-		double* pData = new double[ codec.rows() * codec.cols() ];
-		// lay out data columnwise
-		// TODO mayb integrate this in MatrixCodec
-		for ( int r = 0; r < codec.rows(); r++ )
-		{
-			for ( int c = 0; c < codec.cols(); c++ )
-			{
-				pData[ r + c * codec.rows() ] = codec.value( r+1, c+1 ).toDouble();
-			}
-		}
-		
-		_command.argout
-			( index, ocpl::real, codec.rows(), codec.cols()
-			, reinterpret_cast<char*>(pData), true );
-		
-	}
-	*/
 	else if ( value.userType() == qMetaTypeId<Matrix>() )
 	{
 		Matrix matrix = qvariant_cast< Matrix >( value );
@@ -147,7 +123,7 @@ void Command::addArgout( int index, const QVariant& value )
 		{
 			for ( int c = 0; c < matrix.cols(); c++ )
 			{
-				pData[ r + c * matrix.rows() ] = matrix.value( r+1, c+1 ).toDouble();
+				pData[ r + c * matrix.rows() ] = matrix.value( r+1, c+1 );
 			}
 		}
 		

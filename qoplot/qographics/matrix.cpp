@@ -66,16 +66,19 @@ void Matrix::resize( int r, int c )
 // ============================================================================
 /// Retuens data from specific cell.
 ///\note row nad column index are 1-based!
-QVariant Matrix::value( int r, int c ) const
+double Matrix::value( int r, int c ) const
 {
-	return _data.value( index( r, c ), QVariant() );
+	// TODO add full index checking
+	return _data.value( index( r, c ), 0.0 );
 }
 
 // ============================================================================
 /// Sets data in specific cell.
 ///\note row nad column index are 1-based!
-void Matrix::setValue( int r, int c, const QVariant& v )
+void Matrix::setValue( int r, int c, double v )
 {
+	// TODO add full index checking
+	//qDebug("Matrix::setValue: setting value at %d,%d, index=%d", r, c, index(r,c) );
 	_data[ index( r, c ) ] = v;
 }
 
@@ -85,9 +88,9 @@ void Matrix::init()
 {
 	_data.clear();
 	
-	for ( int i; i < _rows * _cols; i++ )
+	for ( int i = 0; i < _rows * _cols; i++ )
 	{
-		_data.append( QVariant() );
+		_data.append( 0.0 );
 	}
 }
 
@@ -101,7 +104,7 @@ int Matrix::index( int r, int c ) const
 
 // ============================================================================
 /// Creates calar - 1x1 matrix with single value.
-Matrix Matrix::scalar( const QVariant& v )
+Matrix Matrix::scalar( double v )
 {
 	Matrix m(1, 1);
 	m.setValue( 1, 1, v );

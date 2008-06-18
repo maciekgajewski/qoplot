@@ -50,6 +50,17 @@ public:
 	Object* objectByHandle( Handle h );
 	const Object* objectByHandle( Handle h ) const { return _objects.value( h, NULL ); }
 	
+	// figures
+	
+	/// Creates new figure
+	Handle addFigure( Handle desiredHandle = InvalidHandle );
+	
+	/// Sets current figure
+	void setCurrentFigure( Handle h );
+	
+	/// Returns handle to current figure
+	Handle currentFigure() const { return _currentFigure; }
+	
 	
 	// Properties getters/setters
 	
@@ -68,7 +79,8 @@ public slots:
 	// Child object management
 	
 	void objectDestroyed( Handle handle );		///< Hanldes child object destruction (removes from list)
-	Handle objectCreated( Object* object );		///< Handles new object creation	
+	// TODO ?
+	//Handle objectCreated( Object* object );		///< Handles new object creation	
 
 private:
 
@@ -76,7 +88,8 @@ private:
 
 	QMap< Handle, Object* > _objects;			///< Main object<->handle database
 	
-	Handle _currentFigure;						///< Current figure
+	Handle	_currentFigure;						///< Current figure
+	Handle	_firstFreeHandle;					///< First free handle, used to handle allocation
 	
 	static bool _graphicsInitialized;			///< Flag used to intilaize graphics
 
