@@ -21,6 +21,8 @@
 
 #include "root.h"
 
+using namespace QOGraphics;
+
 /**
 	@author Maciek Gajewski <maciej.gajewski0@gmail.com>
 

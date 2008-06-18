@@ -15,6 +15,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "matrix.h"
+#include "exceptions.h"
+
+namespace QOGraphics
+{
 
 // ============================================================================
 /// Default constructor, creates empty matrix;
@@ -127,6 +131,20 @@ QDataStream& operator>>( QDataStream& in, Matrix& /*matrix*/ )
 	// TODO
 	return in;
 }
+
+// ============================================================================
+/// Returns value of scalar. If matrix has other dimension than 1x1, throws exception
+double Matrix::toScalar() const
+{
+	if ( _cols != 1 && _rows != 1 )
+	{
+		throw Exception("Scalar value expected");
+	}
+	
+	return _data.first();
+}
+
+}; // namespace
 
 // EOF
 

@@ -19,7 +19,8 @@
 
 #include "figurewindow.h"
 
-
+namespace QOGraphics
+{
 
 // ============================================================================
 /// Constructor
@@ -46,6 +47,7 @@ void FigureWindow::closeEvent( QCloseEvent* pEvent )
 	}
 }
 
+}; // namespace
 // EOF
 
 

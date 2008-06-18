@@ -19,6 +19,9 @@
 #include "exceptions.h"
 #include "figure.h"
 
+namespace QOGraphics
+{
+
 bool Root::_graphicsInitialized = false;
 
 // ============================================================================
@@ -29,7 +32,9 @@ Root::Root( QObject* parent ): Object( NULL, RootHandle, parent )
 	if ( ! _graphicsInitialized )
 	{
 		// Register matrix type
-		qRegisterMetaType< Matrix >( "Matrix" );
+		int mid = qRegisterMetaType< Matrix >();
+		qDebug("matrix type id: %d", mid );
+		//qRegisterMetaType< Enum >( "Enum" ); TODO not needed?
 		
 		_graphicsInitialized = true;
 	}
@@ -120,7 +125,7 @@ Matrix Root::getPointerLocation() const
 
 // ============================================================================
 // Returns handle to window over whichj mouse poitner is now
-Object::Handle Root::getPointerWindow() const
+Handle Root::getPointerWindow() const
 {
 	// TODO
 	return RootHandle;
@@ -153,7 +158,7 @@ double Root::getScreenPixelsPerInch() const
 // ============================================================================
 // Creates new figure, makes it the current one. IF desired handle is specifed, tries to 
 // use it.
-Object::Handle Root::addFigure( Handle desiredHandle /*= InvalidHandle*/ )
+Handle Root::addFigure( Handle desiredHandle /*= InvalidHandle*/ )
 {
 	Handle h = InvalidHandle;
 	if ( desiredHandle != InvalidHandle )
@@ -202,6 +207,8 @@ void Root::setCurrentFigure( Handle h )
 	_currentFigure = h;
 	pFigure->raise();
 }
+
+}; // namespace
 
 // EOF
 

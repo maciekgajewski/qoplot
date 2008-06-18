@@ -21,6 +21,9 @@
 #include "object.h"
 #include "root.h"
 
+namespace QOGraphics
+{
+
 // ============================================================================
 // Constructor
 Object::Object( Root* pRoot, Handle handle, QObject* parent ): QObject( parent )
@@ -34,6 +37,11 @@ Object::Object( Root* pRoot, Handle handle, QObject* parent ): QObject( parent )
 	}*/
 	
 	_pRoot = pRoot;
+	
+	// init params
+	_visible.addValue( 0, "no" );
+	_visible.addValue( 1, "yes", true );
+	
 }
 
 // ============================================================================
@@ -70,6 +78,7 @@ void Object::setProperty( const QString& name, const QVariant& value )
 	prepareCaseMap();
 	QString propName = _caseMap[ name.toLower() ];
 	
+	qDebug("setting property %s, type: %d", qPrintable( propName ), value.userType() );
 	QObject::setProperty( propName.toUtf8().data(), value );
 }
 
@@ -123,6 +132,8 @@ void Object::prepareCaseMap()
 		}
 	}
 }
+
+}; // namespace
 
 // EOF
 

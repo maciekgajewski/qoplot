@@ -20,6 +20,9 @@
 
 #include <QString>
 
+namespace QOGraphics
+{
+
 /**
 Exception class used in graphics package.
 */
@@ -34,6 +37,8 @@ private:
 
 	QString _msg;
 };
+
+}; // namespace
 
 #endif // EXCEPTION_H
 

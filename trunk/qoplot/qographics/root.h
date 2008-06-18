@@ -20,6 +20,9 @@
 #include "object.h"
 #include "matrix.h"
 
+namespace QOGraphics
+{
+
 /**
 The Root object. It is created at startup, always exists, maintains handle<->object
 associations.
@@ -94,6 +97,9 @@ private:
 	static bool _graphicsInitialized;			///< Flag used to intilaize graphics
 
 };
+
+
+}; // namespace
 
 #endif // ROOT_H
 

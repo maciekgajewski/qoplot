@@ -19,6 +19,9 @@
 
 #include <QVariant>
 #include "op_com.h"
+#include "matrix.h"
+
+using namespace QOGraphics;
 
 /**
 	@author Maciek Gajewski <maciej.gajewski0@gmail.com>
@@ -39,8 +42,15 @@ public:
 	/// Number of output arguments
 	int nargout() const { return _command.nargout(); }
 	
-	/// Returns input argin identified by number
+	/// Returns input argument identified by number
 	QVariant argin( int i ) const;
+	
+	/// Returns input argument converted to matrix
+	Matrix arginAsMatrix( int i ) const { return argin(i).value<Matrix>(); }
+	
+	/// Returns input argument converted to string
+	QString arginAsString( int i ) const { return argin(i).toString(); }
+	
 	
 	// state query
 	

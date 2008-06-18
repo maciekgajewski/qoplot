@@ -22,6 +22,12 @@
 #include <QVariant>
 
 #include "matrix.h"
+#include "enum.h"
+
+namespace QOGraphics
+{
+
+typedef int Handle;				//!< Handle type
 
 class Root;
 
@@ -41,17 +47,15 @@ class Object : public QObject
 	Q_PROPERTY( QVariant Parent	READ getParent )
 	Q_PROPERTY( QString Type	READ getType )
 	
-	Q_PROPERTY( Matrix UserData	READ getUserData	WRITE setUserData )
+	Q_PROPERTY( QOGraphics::Matrix UserData	READ getUserData	WRITE setUserData )
 	Q_PROPERTY( QString Visible	READ getVisible		WRITE setVisible )
 	Q_PROPERTY( QString Selected READ getSelected WRITE setSelected )
 	Q_PROPERTY( QString Tag READ getTag WRITE setTag )
-	Q_PROPERTY( Matrix Children READ getChildren )
+	Q_PROPERTY( QOGraphics::Matrix Children READ getChildren )
 	
 public:
 
 	// Types
-	
-	typedef int Handle;				//!< Handle type
 	
 	enum PredefinedHandles			//! Predefined handle values
 	{
@@ -82,8 +86,9 @@ public:
 	Matrix getUserData() const { return _userData; }
 	void setUserData( const Matrix& data ) { _userData = data; }
 	
-	virtual QString getVisible() const { return "on"; }
-	virtual void setVisible( const QString& ) {}
+	virtual QString getVisible() const { return _visible; }
+	virtual void setVisible( const QString& str ) { _visible = str; }
+	Enum visible() const { return _visible; }
 	
 	virtual QString getSelected() const { return "off"; }
 	virtual void setSelected( const QString& ) {}
@@ -105,10 +110,14 @@ private:
 	Matrix		_userData;			//!< Associated user data
 	QString			_tag;			//!< Associated tag
 	
+	Enum 		_visible;
+	
 	/// Mapping between lowercase proeprty naems and actual names
 	QMap< QString, QString > _caseMap;
 
 };
+
+}; // namespace
 
 #endif // OBJECT_H
 

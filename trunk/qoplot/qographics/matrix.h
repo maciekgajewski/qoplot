@@ -20,6 +20,9 @@
 #include <QVariant>
 #include <QDataStream>
 
+namespace QOGraphics
+{
+
 /**
 This is a matrix class. It is used across the package to store matrix data.
 Each matrix consist of QVariant cells arranged in rows and columns.
@@ -52,8 +55,11 @@ public:
 	
 	double value( int r, int c ) const;
 	void setValue( int r, int c, double v );
-
+	
 	// utilities
+	
+	/// Returns scalar value
+	double toScalar() const;
 	
 	/// Creates 1x1 matrix with single value
 	static Matrix scalar( double v );
@@ -75,7 +81,9 @@ private:
 QDataStream& operator<<( QDataStream& out, const Matrix& matrix );
 QDataStream& operator>>( QDataStream& in, Matrix& matrix );
 
-Q_DECLARE_METATYPE( Matrix );
+}
+
+Q_DECLARE_METATYPE( QOGraphics::Matrix );
 
 #endif // MATRIX_H
 
