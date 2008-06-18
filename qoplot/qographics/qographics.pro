@@ -13,11 +13,13 @@ root.h \
 matrix.h \
  figurewindow.h \
  figure.h \
- exceptions.h
+ exceptions.h \
+ enum.h
 SOURCES += object.cpp \
 root.cpp \
 matrix.cpp \
  figurewindow.cpp \
- figure.cpp
+ figure.cpp \
+ enum.cpp
 FORMS += figurewindow.ui
 

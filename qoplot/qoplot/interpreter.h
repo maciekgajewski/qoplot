@@ -17,7 +17,9 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-class Root;
+
+using namespace QOGraphics;
+class QOGraphics::Root;
 class Command;
 
 /**

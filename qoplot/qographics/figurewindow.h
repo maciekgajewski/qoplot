@@ -20,6 +20,9 @@
 #include <QMainWindow>
 #include "ui_figurewindow.h"
 
+namespace QOGraphics
+{
+
 /**
 FigureWindow is implementation of figure, using Qt's QMainWindow.
 Each window is associated with graphics Figure object.
@@ -44,6 +47,8 @@ protected:
 	
 	virtual void closeEvent( QCloseEvent* event );
 };
+
+}; // namespace
 
 #endif // FIGUREWINDOW_H
 

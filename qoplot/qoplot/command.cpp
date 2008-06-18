@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "command.h"
-#include "matrix.h"
 
 // ===========================================================================
 /// Constructor
@@ -42,12 +41,23 @@ QVariant Command::argin( int i ) const
 		return QVariant();
 	}
 	
-	// determine type
+	// determine type, convert to QVariant
 	switch( pArg->id )
 	{
 		case ocpl::real:
-			return QVariant( double( * pArg->real_data() ) );
-		
+		{
+			Matrix m( pArg->nr, pArg->nc );
+			
+			for ( int r = 0; r < pArg->nr; r++ )
+			{
+				for ( int c = 0; c < pArg->nc; c++ )
+				{
+					m.setValue( r+1, c+1, pArg->real_data()[ r + c * pArg->nr ] );
+				}
+			}
+			
+			return QVariant::fromValue<Matrix>( m );
+		}
 		case ocpl::str:
 			return QVariant( QString( pArg->str_data() ) );
 		
@@ -135,7 +145,8 @@ void Command::addArgout( int index, const QVariant& value )
 	else
 	{
 		// TODO add matrix here
-		qDebug("Command::addArgout: unknown value type: %s", QVariant::typeToName( value.type() ) );
+		qDebug("Command::addArgout: unknown value type: %s (user type %d, mat: %d)"
+			, QVariant::typeToName( value.type() ), value.userType(), qMetaTypeId<Matrix>() );
 		// add null argument
 		_command.argout( index, ocpl::real, 0, 0, NULL, true );
 	}

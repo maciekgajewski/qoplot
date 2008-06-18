@@ -20,6 +20,9 @@
 #include <object.h>
 #include "figurewindow.h"
 
+namespace QOGraphics
+{
+
 /**
 Figure object represents UI window. It uses FigureWindow as actula UI element.
 
@@ -30,7 +33,8 @@ class Figure : public Object
 	Q_OBJECT
 	
 	// Properties
-	// TODO
+	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
+	Q_PROPERTY( QVariant Color READ getColor WRITE setColor )
 	
 public:
 	
@@ -47,6 +51,12 @@ public:
 	// properties
 	
 	virtual QString getType() const { return "figure"; }
+	
+	QVariant getColor() const { return "w"; } // TODO
+	void setColor( const QVariant& color ) {} // TODO
+	
+	Matrix getPosition() const;
+	void setPosition( const Matrix& pos );
 
 private slots:
 
@@ -58,6 +68,8 @@ private:
 	
 	FigureWindow _window;			///< Actual window
 };
+
+}; // namespace
 
 #endif // FIGURE_H
 

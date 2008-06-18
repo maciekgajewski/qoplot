@@ -22,6 +22,8 @@
 #include "interpreter.h"
 #include "exceptions.h"
 
+using namespace QOGraphics;
+
 // ============================================================================
 // Constructor
 Interpreter::Interpreter()
@@ -104,7 +106,7 @@ void Interpreter::get( Command& cmd, Root& root )
 		cmd.retError("Get: accepts 1 or 2 args");
 		return;
 	}
-	else if( cmd.argin(0).type() != QVariant::Double )
+	else if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() )
 	{
 		cmd.retError("Get: first arg should be handle");
 		return;
@@ -116,7 +118,7 @@ void Interpreter::get( Command& cmd, Root& root )
 	}
 	
 	// check if object exists
-	Object::Handle h = cmd.argin(0).toInt();
+	Handle h = cmd.arginAsMatrix(0).toScalar();
 	Object* pObject = root.objectByHandle( h );
 	
 	if ( ! pObject )
@@ -162,18 +164,18 @@ void Interpreter::set( Command& cmd, Root& root )
 	{
 		cmd.retError("Set: accepts 3 arguments");
 	}
-	else if( cmd.argin(0).type() != QVariant::Double )
+	else if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() )
 	{
 		cmd.retError("Set: first arg should be handle");
 	}
-	else if( cmd.argin(1).type() != QVariant::String )
+	else if( cmd.argin(1).userType() != QVariant::String )
 	{
 		cmd.retError("Set: second arg should be property name");
 	}
 	else
 	{
 		// check if object exists
-		Object::Handle h = cmd.argin(0).toInt();
+		Handle h = cmd.arginAsMatrix(0).toScalar();
 		Object* pObject = root.objectByHandle( h );
 		qDebug("set: handle = %d", h );
 		if ( ! pObject )
@@ -204,11 +206,11 @@ void Interpreter::figure( Command& cmd, Root& root )
 		return;
 	}
 	
-	Object::Handle h = Object::InvalidHandle;
+	Handle h = Object::InvalidHandle;
 	
 	if( cmd.nargin() == 1 )
 	{
-		Object::Handle fig = cmd.argin(0).toInt();
+		Handle fig = cmd.arginAsMatrix(0).toScalar();
 		
 		// get bject with this hanlde
 		Object* pObject = root.objectByHandle( fig );

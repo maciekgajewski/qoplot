@@ -148,7 +148,7 @@
   </kdevfilecreate>
   <kdevtrollproject>
     <general>
-      <activedir>qographics</activedir>
+      <activedir>qoplot</activedir>
     </general>
     <run>
       <directoryradio>executable</directoryradio>
@@ -172,7 +172,6 @@
       <autokdesu>false</autokdesu>
       <envvars/>
     </run>
-    <subclassing/>
     <make>
       <abortonerror>true</abortonerror>
       <runmultiplejobs>false</runmultiplejobs>
@@ -190,6 +189,7 @@
       <showVariablesInTree>true</showVariablesInTree>
       <showParseErrors>true</showParseErrors>
     </qmake>
+    <subclassing/>
   </kdevtrollproject>
   <cppsupportpart>
     <filetemplates>
