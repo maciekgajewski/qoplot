@@ -61,7 +61,7 @@ public:
 
 	// Createtion/destruction
 	
-	Object( Root* root, QObject* parent = 0 );
+	Object( Root* root, Handle handle, QObject* parent = 0 );
 	virtual ~Object();
 	
 	
@@ -95,13 +95,18 @@ public:
 	
 private:
 
+	void prepareCaseMap();			//!< Prepares case map
+
 	// Data
 	
 	Root* 	_pRoot;					//!< Root object
 	Handle	_handle;				//!< Object handle
 	
-	Matrix		_userData;		//!< Associated user data
+	Matrix		_userData;			//!< Associated user data
 	QString			_tag;			//!< Associated tag
+	
+	/// Mapping between lowercase proeprty naems and actual names
+	QMap< QString, QString > _caseMap;
 
 };
 

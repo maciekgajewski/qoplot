@@ -1,0 +1,413 @@
+>> h = plot([1 100], [1 100] );
+>> get(h)
+                 Color: [0 0 1]
+             EraseMode: 'normal'
+             LineStyle: '-'
+             LineWidth: 0.5000
+                Marker: 'none'
+            MarkerSize: 6
+       MarkerEdgeColor: 'auto'
+       MarkerFaceColor: 'none'
+                 XData: [1 100]
+                 YData: [1 100]
+                 ZData: [1x0 double]
+          BeingDeleted: 'off'
+         ButtonDownFcn: []
+              Children: [0x1 double]
+              Clipping: 'on'
+             CreateFcn: []
+             DeleteFcn: []
+            BusyAction: 'queue'
+      HandleVisibility: 'on'
+               HitTest: 'on'
+         Interruptible: 'on'
+              Selected: 'off'
+    SelectionHighlight: 'on'
+                   Tag: ''
+                  Type: 'line'
+         UIContextMenu: []
+              UserData: []
+               Visible: 'on'
+                Parent: 157.0016
+           DisplayName: ''
+             XDataMode: 'manual'
+           XDataSource: ''
+           YDataSource: ''
+           ZDataSource: ''
+>> i = imread('drzewo.jpg');
+>> hold on
+>> h2 = image(i)
+
+h2 =
+
+  159.0011
+
+>> h
+
+h =
+
+  158.0016
+
+>> get(gca)
+        ActivePositionProperty = outerposition
+        ALim = [0.1 10]
+        ALimMode = auto
+        AmbientLightColor = [1 1 1]
+        Box = on
+        CameraPosition = [700 600 17.3205]
+        CameraPositionMode = auto
+        CameraTarget = [700 600 0]
+        CameraTargetMode = auto
+        CameraUpVector = [0 1 0]
+        CameraUpVectorMode = auto
+        CameraViewAngle = [6.60861]
+        CameraViewAngleMode = auto
+        CLim = [0 255]
+        CLimMode = auto
+        Color = [1 1 1]
+        CurrentPoint = [ (2 by 3) double array]
+        ColorOrder = [ (7 by 3) double array]
+        DataAspectRatio = [700 600 1]
+        DataAspectRatioMode = auto
+        DrawMode = normal
+        FontAngle = normal
+        FontName = Helvetica
+        FontSize = [10]
+        FontUnits = points
+        FontWeight = normal
+        GridLineStyle = :
+        Layer = bottom
+        LineStyleOrder = -
+        LineWidth = [0.5]
+        MinorGridLineStyle = :
+        NextPlot = add
+        OuterPosition = [0 0 1 1]
+        PlotBoxAspectRatio = [1 1 1]
+        PlotBoxAspectRatioMode = auto
+        Projection = orthographic
+        Position = [0.13 0.11 0.775 0.815]
+        TickLength = [0.01 0.025]
+        TickDir = in
+        TickDirMode = auto
+        TightInset = [0.04947 0.0357995 0.0229682 0.0167064]
+        Title = [160.001]
+        Units = normalized
+        View = [0 90]
+        XColor = [0 0 0]
+        XDir = normal
+        XGrid = off
+        XLabel = [161.001]
+        XAxisLocation = bottom
+        XLim = [0 1400]
+        XLimMode = auto
+        XMinorGrid = off
+        XMinorTick = off
+        XScale = linear
+        XTick = [0 200 400 600 800 1000 1200 1400]
+        XTickLabel =
+                0
+                200
+                400
+                600
+                800
+                1000
+                1200
+                1400
+        XTickLabelMode = auto
+        XTickMode = auto
+        YColor = [0 0 0]
+        YDir = normal
+        YGrid = off
+        YLabel = [162.001]
+        YAxisLocation = left
+        YLim = [0 1200]
+        YLimMode = auto
+        YMinorGrid = off
+        YMinorTick = off
+        YScale = linear
+        YTick = [0 200 400 600 800 1000 1200]
+        YTickLabel =
+                0
+                200
+                400
+                600
+                800
+                1000
+                1200
+        YTickLabelMode = auto
+        YTickMode = auto
+        ZColor = [0 0 0]
+        ZDir = normal
+        ZGrid = off
+        ZLabel = [163.001]
+        ZLim = [-1 1]
+        ZLimMode = auto
+        ZMinorGrid = off
+        ZMinorTick = off
+        ZScale = linear
+        ZTick = [-1 0 1]
+        ZTickLabel =
+        ZTickLabelMode = auto
+        ZTickMode = auto
+
+        BeingDeleted = off
+        ButtonDownFcn =
+        Children = [ (2 by 1) double array]
+        Clipping = on
+        CreateFcn =
+        DeleteFcn =
+        BusyAction = queue
+        HandleVisibility = on
+        HitTest = on
+        Interruptible = on
+        Parent = [1]
+        Selected = off
+        SelectionHighlight = on
+        Tag =
+        Type = axes
+        UIContextMenu = []
+        UserData = []
+        Visible = on
+
+>> h3 = image(i)
+
+h3 =
+
+    0.0017
+
+>> get(gca)
+        ActivePositionProperty = outerposition
+        ALim = [0.1 10]
+        ALimMode = auto
+        AmbientLightColor = [1 1 1]
+        Box = on
+        CameraPosition = [640.5 512.5 9.16025]
+        CameraPositionMode = auto
+        CameraTarget = [640.5 512.5 0.5]
+        CameraTargetMode = auto
+        CameraUpVector = [0 -1 0]
+        CameraUpVectorMode = auto
+        CameraViewAngle = [6.60861]
+        CameraViewAngleMode = auto
+        CLim = [0 255]
+        CLimMode = auto
+        Color = [1 1 1]
+        CurrentPoint = [ (2 by 3) double array]
+        ColorOrder = [ (7 by 3) double array]
+        DataAspectRatio = [1280 1024 1]
+        DataAspectRatioMode = auto
+        DrawMode = normal
+        FontAngle = normal
+        FontName = Helvetica
+        FontSize = [10]
+        FontUnits = points
+        FontWeight = normal
+        GridLineStyle = :
+        Layer = top
+        LineStyleOrder = -
+        LineWidth = [0.5]
+        MinorGridLineStyle = :
+        NextPlot = replace
+        OuterPosition = [0 0 1 1]
+        PlotBoxAspectRatio = [1 1 1]
+        PlotBoxAspectRatioMode = auto
+        Projection = orthographic
+        Position = [0.13 0.11 0.775 0.815]
+        TickLength = [0.01 0.025]
+        TickDir = in
+        TickDirMode = auto
+        TightInset = [0.05 0.0357143 0.00357143 0]
+        Title = [159.002]
+        Units = normalized
+        View = [0 90]
+        XColor = [0 0 0]
+        XDir = normal
+        XGrid = off
+        XLabel = [160.002]
+        XAxisLocation = bottom
+        XLim = [0.5 1280.5]
+        XLimMode = manual
+        XMinorGrid = off
+        XMinorTick = off
+        XScale = linear
+        XTick = [200 400 600 800 1000 1200]
+        XTickLabel =
+                200
+                400
+                600
+                800
+                1000
+                1200
+        XTickLabelMode = auto
+        XTickMode = auto
+        YColor = [0 0 0]
+        YDir = reverse
+        YGrid = off
+        YLabel = [161.002]
+        YAxisLocation = left
+        YLim = [0.5 1024.5]
+        YLimMode = manual
+        YMinorGrid = off
+        YMinorTick = off
+        YScale = linear
+        YTick = [100 200 300 400 500 600 700 800 900 1000]
+        YTickLabel =
+                100
+                200
+                300
+                400
+                500
+                600
+                700
+                800
+                900
+                1000
+        YTickLabelMode = auto
+        YTickMode = auto
+        ZColor = [0 0 0]
+        ZDir = normal
+        ZGrid = off
+        ZLabel = [162.002]
+        ZLim = [0 1]
+        ZLimMode = auto
+        ZMinorGrid = off
+        ZMinorTick = off
+        ZScale = linear
+        ZTick = [0 0.5 1]
+        ZTickLabel =
+        ZTickLabelMode = auto
+        ZTickMode = auto
+
+        BeingDeleted = off
+        ButtonDownFcn =
+        Children = [0.00170898]
+        Clipping = on
+        CreateFcn =
+        DeleteFcn =
+        BusyAction = queue
+        HandleVisibility = on
+        HitTest = on
+        Interruptible = on
+        Parent = [1]
+        Selected = off
+        SelectionHighlight = on
+        Tag =
+        Type = axes
+        UIContextMenu = []
+        UserData = []
+        Visible = on
+
+>> h = figure
+
+h =
+
+     1
+
+>> get( h )
+        Alphamap = [ (1 by 64) double array]
+        BackingStore = on
+        CloseRequestFcn = closereq
+        Color = [0.8 0.8 0.8]
+        Colormap = [ (64 by 3) double array]
+        CurrentAxes = []
+        CurrentCharacter =
+        CurrentObject = []
+        CurrentPoint = [0 0]
+        DockControls = off
+        DoubleBuffer = on
+        FileName =
+        FixedColors = [ (3 by 3) double array]
+        IntegerHandle = on
+        InvertHardcopy = on
+        KeyPressFcn =
+        MenuBar = figure
+        MinColormap = [64]
+        Name =
+        NextPlot = add
+        NumberTitle = on
+        PaperUnits = centimeters
+        PaperOrientation = portrait
+        PaperPosition = [0.634517 6.34517 20.3046 15.2284]
+        PaperPositionMode = manual
+        PaperSize = [20.984 29.6774]
+        PaperType = A4
+        Pointer = arrow
+        PointerShapeCData = [ (16 by 16) double array]
+        PointerShapeHotSpot = [1 1]
+        Position = [360 487 566 419]
+        Renderer = None
+        RendererMode = auto
+        Resize = on
+        ResizeFcn =
+        SelectionType = normal
+        ShareColors = on
+        ToolBar = auto
+        Units = pixels
+        WindowButtonDownFcn =
+        WindowButtonMotionFcn =
+        WindowButtonUpFcn =
+        WindowStyle = normal
+        XDisplay = localhost:25.0
+        XVisual = 0x23 (TrueColor, depth 24, RGB mask 0xff0000 0xff00 0x00ff)
+        XVisualMode = auto
+
+        BeingDeleted = off
+        ButtonDownFcn =
+        Children = []
+        Clipping = on
+        CreateFcn =
+        DeleteFcn =
+        BusyAction = queue
+        HandleVisibility = on
+        HitTest = on
+        Interruptible = on
+        Parent = [0]
+        Selected = off
+        SelectionHighlight = on
+        Tag =
+        Type = figure
+        UIContextMenu = []
+        UserData = []
+        Visible = on
+>> get(0)
+        CallbackObject = []
+        CommandWindowSize = [140 39]
+        CurrentFigure = [2]
+        Diary = off
+        DiaryFile = diary
+        Echo = off
+        FixedWidthFontName = Courier New
+        Format = short
+        FormatSpacing = loose
+        Language = pl_pl.iso8859-2
+        MonitorPositions = [0 0 1280 1024]
+        More = off
+        PointerLocation = [455 811]
+        PointerWindow = [0]
+        RecursionLimit = [500]
+        ScreenDepth = [24]
+        ScreenPixelsPerInch = [85]
+        ScreenSize = [1 1 1280 1024]
+        ShowHiddenHandles = off
+        Units = pixels
+
+        BeingDeleted = off
+        ButtonDownFcn =
+        Children = [ (2 by 1) double array]
+        Clipping = on
+        CreateFcn =
+        DeleteFcn =
+        BusyAction = queue
+        HandleVisibility = on
+        HitTest = on
+        Interruptible = on
+        Parent = []
+        Selected = off
+        SelectionHighlight = on
+        Tag =
+        Type = root
+        UIContextMenu = []
+        UserData = []
+        Visible = on
+
+>>

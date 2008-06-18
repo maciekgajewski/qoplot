@@ -25,5 +25,5 @@
 ## Keywords: octplot graphics
 
 function clf()
-  octplot_command('clf');
+  qoplot_command('clf');
 endfunction

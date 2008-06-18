@@ -23,14 +23,15 @@
 
 // ============================================================================
 // Constructor
-Object::Object( Root* pRoot, QObject* parent ): QObject( parent )
+Object::Object( Root* pRoot, Handle handle, QObject* parent ): QObject( parent )
 {
-	_handle = InvalidHandle;
-	if ( pRoot )
+	_handle = handle;
+	// TODO I'm not sure about this... mybe this should be called explicitily in Root
+/*	if ( pRoot )
 	{
 		// introduce to root
 		_handle = pRoot->objectCreated( this );
-	}
+	}*/
 	
 	_pRoot = pRoot;
 }
@@ -66,14 +67,20 @@ QStringList Object::properties() const
 /// Sets property value
 void Object::setProperty( const QString& name, const QVariant& value )
 {
-	QObject::setProperty( name.toUtf8().data(), value );
+	prepareCaseMap();
+	QString propName = _caseMap[ name.toLower() ];
+	
+	QObject::setProperty( propName.toUtf8().data(), value );
 }
 
 // ============================================================================
 /// Gets property value
 QVariant Object::getProperty( const QString& name )
 {
-	return property( name.toUtf8().data() );
+	prepareCaseMap();
+	QString propName = _caseMap[ name.toLower() ];
+	
+	return property( propName.toUtf8().data() );
 }
 
 // ============================================================================
@@ -90,14 +97,31 @@ Matrix Object::getChildren() const
 {
 	QList<Object*> children = findChildren<Object*>();
 	
-	Matrix matrix( children.size(), 1 );
+	Matrix matrix( 1, children.size() ); // row vector
 	
 	for( int i = 0; i < children.size(); i++ )
 	{
-		matrix.setValue( 1, i, children[ i ]->handle() );
+		matrix.setValue( 1, i+1, children[ i ]->handle() );
 	}
 	
 	return matrix;
+}
+
+// ============================================================================
+/// This method prepares _CaseMap - a mapping between lower case property nmes and actual names.
+/// This is required, becouse octave assumes propery names are not case sensitive, and Qt id case sensitive.
+/// The map is prepared only once. Subsequent calls does nothing.
+void Object::prepareCaseMap()
+{
+	if ( _caseMap.isEmpty() )
+	{
+		QStringList names = properties();
+		
+		foreach( QString name, names )
+		{
+			_caseMap[ name.toLower() ] = name;
+		}
+	}
 }
 
 // EOF

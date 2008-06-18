@@ -13,8 +13,8 @@
     <ignoreparts/>
     <projectdirectory>.</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
-    <defaultencoding></defaultencoding>
+    <description/>
+    <defaultencoding/>
     <versioncontrol/>
   </general>
   <kdevfileview>
@@ -23,7 +23,13 @@
       <group pattern="*.ui" name="User Interface" />
       <group pattern="*.png" name="Icons" />
       <group pattern="*" name="Others" />
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
     </groups>
+    <tree>
+      <hidepatterns>*.o,*.lo,CVS</hidepatterns>
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+    </tree>
   </kdevfileview>
   <kdevdoctreeview>
     <ignoretocs>
@@ -65,11 +71,11 @@
   </kdevdoctreeview>
   <kdevdebugger>
     <general>
-      <dbgshell></dbgshell>
-      <gdbpath></gdbpath>
-      <configGdbScript></configGdbScript>
-      <runShellScript></runShellScript>
-      <runGdbScript></runGdbScript>
+      <dbgshell/>
+      <gdbpath/>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -89,7 +95,7 @@
       <designerintegration>ExternalDesigner</designerintegration>
       <root>/usr/lib/qt4</root>
       <qmake>/usr/bin/qmake-qt4</qmake>
-      <designer></designer>
+      <designer>/usr/bin/designer-qt4</designer>
       <designerpluginpaths/>
     </qt>
     <codecompletion>
@@ -116,7 +122,7 @@
       <includePaths>.;</includePaths>
     </codecompletion>
     <creategettersetter>
-      <prefixGet></prefixGet>
+      <prefixGet/>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -128,6 +134,9 @@
       <synchronize>true</synchronize>
       <orientation>Vertical</orientation>
     </splitheadersource>
+    <references>
+      <pcs>Qt4</pcs>
+    </references>
   </kdevcppsupport>
   <kdevfilecreate>
     <useglobaltypes>
@@ -152,10 +161,10 @@
       <debugarguments>
         <qoplot/>
       </debugarguments>
-      <mainprogram></mainprogram>
-      <programargs></programargs>
-      <globaldebugarguments></globaldebugarguments>
-      <globalcwd></globalcwd>
+      <mainprogram>/home/gajewskim/src/qoplot</mainprogram>
+      <programargs/>
+      <globaldebugarguments/>
+      <globalcwd>/home/gajewskim/src/qoplot</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>false</autocompile>
@@ -165,11 +174,11 @@
     </run>
     <subclassing/>
     <make>
-      <abortonerror>false</abortonerror>
+      <abortonerror>true</abortonerror>
       <runmultiplejobs>false</runmultiplejobs>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin></makebin>
+      <makebin/>
       <prio>0</prio>
       <envvars/>
     </make>

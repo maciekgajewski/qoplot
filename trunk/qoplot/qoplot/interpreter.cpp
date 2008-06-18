@@ -20,17 +20,20 @@
 #include "command.h"
 #include "root.h"
 #include "interpreter.h"
+#include "exceptions.h"
 
 // ============================================================================
 // Constructor
 Interpreter::Interpreter()
 {
+	// nope
 }
 
 // ============================================================================
 // Destructor
 Interpreter::~Interpreter()
 {
+	// nada
 }
 
 // ============================================================================
@@ -39,6 +42,9 @@ Interpreter::~Interpreter()
 void Interpreter::interpret( Command& cmd, Root& root )
 {
 	qDebug("interpeter command id: %d", cmd.id() );
+	
+	try
+	{
 	// interpret commands
 	switch( cmd.id() )
 	{
@@ -56,6 +62,12 @@ void Interpreter::interpret( Command& cmd, Root& root )
 			break;
 		}
 		
+		// Figure
+		case ocpl::figure:
+		{
+			figure( cmd, root );
+			break;
+		}
 		
 		// Axes
 		case ocpl::axes:
@@ -72,6 +84,11 @@ void Interpreter::interpret( Command& cmd, Root& root )
 	{
 		cmd.retError("Unknown command");
 		qDebug("Unknown command %d", cmd.id() );
+	}
+	}
+	catch( const Exception& e )
+	{
+		cmd.retError( e.msg() );
 	}
 	cmd.ret();
 }
@@ -169,6 +186,62 @@ void Interpreter::set( Command& cmd, Root& root )
 		pObject->setProperty( propName, cmd.argin(2) );
 		cmd.setArgoutNum( 0 );
 	}
+}
+
+// ============================================================================
+/// 'figure' command implementation.
+void Interpreter::figure( Command& cmd, Root& root )
+{
+	// This command has possible behaviors:
+	// 1 - passed w/o args - creates new figure, allocates hanlde, returns allocated hanlde
+	// 2 - passed with existing figure handle - makes the figure current
+	// 3 - passed with unused handle - creates new figure ans assings it specified handle
+	// 4 - passed with handle of existing object wich isn't figure - return error
+	
+	if( cmd.nargin()>1 )
+	{
+		cmd.retError("figure accepts 0 or 1 arguments");
+		return;
+	}
+	
+	Object::Handle h = Object::InvalidHandle;
+	
+	if( cmd.nargin() == 1 )
+	{
+		Object::Handle fig = cmd.argin(0).toInt();
+		
+		// get bject with this hanlde
+		Object* pObject = root.objectByHandle( fig );
+		if ( ! pObject )
+		{
+			// handle is free, may be used as new figure handle (case 3)
+			h = root.addFigure( fig );
+		}
+		else
+		{
+			// if objects is a figure
+			if ( pObject->getType() == "figure" )
+			{
+				// make figure current (case 2 )
+				root.setCurrentFigure( fig );
+				h = fig;
+			}
+			// objects is not a figure - error (case 4 )
+			else
+			{
+				cmd.retError( "Object is not a figure");
+				return;
+			}
+		}
+	}
+	else
+	{
+		// create new figure, allocate handle (case 1 )
+		h = root.addFigure();
+	}
+	
+	//return handle
+	cmd.addDoubleArgout( 0, h );
 }
 
 // EOF

@@ -1,4 +1,4 @@
-// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// figurewindow.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,39 +14,37 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
 
-class Root;
-class Command;
+#include <QCloseEvent>
 
-/**
-Command interpreter. Intepretes command and perrforms appropriate action on graphics
-objects.
+#include "figurewindow.h"
 
-Use interpret() method.
 
-@author Maciek Gajewski <maciej.gajewski0@gmail.com>
-*/
-class Interpreter
+
+// ============================================================================
+/// Constructor
+FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
+	: QMainWindow( parent, flags )
 {
-public:
-	Interpreter();
-	~Interpreter();
-	
-	void interpret( Command& cmd, Root& root );
-	
-private:
+	setupUi( this );
+}
 
-	// specific commands interpretation
-	
-	void get( Command& cmd, Root& root );
-	void set( Command& cmd, Root& root );
-	void figure( Command& cmd, Root& root );
+// ============================================================================
+/// Destructor
+FigureWindow::~FigureWindow()
+{
+	// nope
+}
 
-};
-
-#endif // INTERPRETER_H
+// ============================================================================
+/// Widow close handle. Emits closed() signal.
+void FigureWindow::closeEvent( QCloseEvent* pEvent )
+{
+	if ( pEvent->spontaneous() )
+	{
+		emit closed();
+	}
+}
 
 // EOF
 

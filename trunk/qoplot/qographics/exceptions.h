@@ -1,4 +1,4 @@
-// interpreter.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// exceptions.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,40 +14,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
 
-class Root;
-class Command;
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
+
+#include <QString>
 
 /**
-Command interpreter. Intepretes command and perrforms appropriate action on graphics
-objects.
-
-Use interpret() method.
-
-@author Maciek Gajewski <maciej.gajewski0@gmail.com>
+Exception class used in graphics package.
 */
-class Interpreter
+class Exception
 {
 public:
-	Interpreter();
-	~Interpreter();
+	Exception( const QString& msg ){ _msg = msg; }
 	
-	void interpret( Command& cmd, Root& root );
-	
+	QString msg() const { return _msg; }
+
 private:
 
-	// specific commands interpretation
-	
-	void get( Command& cmd, Root& root );
-	void set( Command& cmd, Root& root );
-	void figure( Command& cmd, Root& root );
-
+	QString _msg;
 };
 
-#endif // INTERPRETER_H
-
-// EOF
-
+#endif // EXCEPTION_H
 

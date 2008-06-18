@@ -16,12 +16,14 @@
 //
 
 #include "root.h"
+#include "exceptions.h"
+#include "figure.h"
 
 bool Root::_graphicsInitialized = false;
 
 // ============================================================================
 // Constructor
-Root::Root( QObject* parent ): Object( NULL, parent )
+Root::Root( QObject* parent ): Object( NULL, RootHandle, parent )
 {
 	// init library
 	if ( ! _graphicsInitialized )
@@ -37,6 +39,7 @@ Root::Root( QObject* parent ): Object( NULL, parent )
 	_currentFigure = InvalidHandle;
 	// add self to database
 	_objects[ RootHandle ] = this;
+	_firstFreeHandle = 1;
 }
 
 // ============================================================================
@@ -52,23 +55,27 @@ void Root::objectDestroyed( Handle handle )
 {
 	Q_ASSERT( _objects.contains( handle ) );
 
+	qDebug("Object with handle %d destroyed", handle );
+
 	_objects.remove( handle );
 }
 
 // ============================================================================
 // Object created
 /// Adds newly created object to database, allocating handle for it. Returns allocated handle.
+/*
 Object::Handle Root::objectCreated( Object* pObject )
 {
 	Q_ASSERT( pObject );
 	
 	// allocate handle, store object
-	Handle h = _objects.size();
+	Handle h = _firstFreeHandle;
+	_firstFreeHandle++;
 	_objects.insert( h, pObject );
 	
 	return h;
 }
-
+*/
 // ============================================================================
 /// Returns object identified by handle, or NULL if no such object.
 Object* Root::objectByHandle( Handle h )
@@ -85,8 +92,15 @@ Object* Root::objectByHandle( Handle h )
 // Returns current figure handle, or empty matrix if none.
 QVariant Root::getCurrentFigure() const
 {
-	// TODO
-	return QVariant();
+	QVariant v;
+	
+	if ( _currentFigure != InvalidHandle )
+	{
+		v = _currentFigure;
+	}
+	// otherwise - stay null
+	
+	return v;
 }
 
 // ============================================================================
@@ -136,6 +150,58 @@ double Root::getScreenPixelsPerInch() const
 	return 90;
 }
 
+// ============================================================================
+// Creates new figure, makes it the current one. IF desired handle is specifed, tries to 
+// use it.
+Object::Handle Root::addFigure( Handle desiredHandle /*= InvalidHandle*/ )
+{
+	Handle h = InvalidHandle;
+	if ( desiredHandle != InvalidHandle )
+	{
+		// check ih desired handle available
+		if ( _objects.contains( desiredHandle ) )
+		{
+			throw Exception( "Handle used" );
+		}
+		
+		h = desiredHandle;
+		
+	}
+	else
+	{
+		h = _firstFreeHandle;
+	}
+		
+	// increment handle pointer if needed
+	if ( h >= _firstFreeHandle )
+	{
+		_firstFreeHandle = h + 1;
+	}
+	
+	// create figure
+	Figure* pFigure = new Figure( this, h, this );
+	
+	_objects.insert( h, pFigure );
+	
+	// make the new figure current
+	_currentFigure = h;
+	
+	return h;
+}
+
+// ============================================================================
+// Sets current figure.
+void Root::setCurrentFigure( Handle h )
+{
+	Figure* pFigure = qobject_cast<Figure*>( objectByHandle( h ) );
+	
+	if ( ! pFigure )
+	{
+		throw Exception( "Not a figure" );
+	}
+	_currentFigure = h;
+	pFigure->raise();
+}
 
 // EOF
 

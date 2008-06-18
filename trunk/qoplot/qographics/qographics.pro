@@ -10,7 +10,14 @@ TARGET = qographics
 
 HEADERS += object.h \
 root.h \
-matrix.h
+matrix.h \
+ figurewindow.h \
+ figure.h \
+ exceptions.h
 SOURCES += object.cpp \
 root.cpp \
-matrix.cpp
+matrix.cpp \
+ figurewindow.cpp \
+ figure.cpp
+FORMS += figurewindow.ui
+
