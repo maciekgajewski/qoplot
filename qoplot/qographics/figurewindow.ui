@@ -10,12 +10,39 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Figure</string>
+   <string>Octave - Figure</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
    <layout class="QVBoxLayout" >
+    <property name="leftMargin" >
+     <number>0</number>
+    </property>
+    <property name="topMargin" >
+     <number>0</number>
+    </property>
+    <property name="rightMargin" >
+     <number>0</number>
+    </property>
+    <property name="bottomMargin" >
+     <number>0</number>
+    </property>
     <item>
-     <widget class="QGraphicsView" name="view" />
+     <widget class="QGraphicsView" name="view" >
+      <property name="font" >
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="frameShape" >
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="verticalScrollBarPolicy" >
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy" >
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

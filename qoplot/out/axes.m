@@ -29,6 +29,8 @@
 ## Author: Shai Ayal <shaiay@users.sourceforge.net>
 ## Keywords: octplot graphics
 function out = axes(varargin)
+  #TODO support other call version. This is only the simplest one
+  #suppot also axes(h) which sets current axes, and axes('propname',value,...)
   out = qoplot_command("axes"){1};
 
   if length(varargin),

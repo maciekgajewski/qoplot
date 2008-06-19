@@ -63,6 +63,11 @@ void Root::objectDestroyed( Handle handle )
 	qDebug("Object with handle %d destroyed", handle );
 
 	_objects.remove( handle );
+	
+	if ( _currentFigure == handle )
+	{
+		_currentFigure = InvalidHandle;
+	}
 }
 
 // ============================================================================
@@ -206,6 +211,36 @@ void Root::setCurrentFigure( Handle h )
 	}
 	_currentFigure = h;
 	pFigure->raise();
+}
+
+// ============================================================================
+/// Adds UI object to figure. If no figure handle spoecified - adds to current one.
+/// Returns handle to created object
+Handle Root::addUIObject( const QString& type, Handle figure /*= InvalidHandle*/ )
+{
+	Handle fig = figure == InvalidHandle ? _currentFigure : figure;
+	Figure* pFigure = qobject_cast<Figure*>( objectByHandle( fig ) );
+	
+	if ( ! pFigure )
+	{
+		throw Exception("No such figure");
+	}
+	
+	// allocate handle
+	Handle h = _firstFreeHandle++;
+	
+	// TODO move factory to figure
+	if ( type == "axes" )
+	{
+		Axes* pAxes = pFigure->createAxes( h );
+		_objects[ h ] = (Object*)pAxes;
+	}
+	else
+	{
+		throw Exception( QString("Unknown object type: %s").arg( type ) );
+	}
+	
+	return h;
 }
 
 }; // namespace

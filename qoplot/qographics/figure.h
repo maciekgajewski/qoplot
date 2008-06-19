@@ -19,9 +19,12 @@
 
 #include <object.h>
 #include "figurewindow.h"
+#include "color.h"
 
 namespace QOGraphics
 {
+
+class Axes;
 
 /**
 Figure object represents UI window. It uses FigureWindow as actula UI element.
@@ -35,6 +38,7 @@ class Figure : public Object
 	// Properties
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
 	Q_PROPERTY( QVariant Color READ getColor WRITE setColor )
+	Q_PROPERTY( Matrix CurrentAxes READ getCurrentAxes WRITE setCurrentAxes );
 	
 public:
 	
@@ -48,25 +52,40 @@ public:
 	/// Raises window
 	void raise() { _window.raise(); }
 	
+	/// Adds axes to figure
+	Axes* createAxes( Handle h );
+	
+	
 	// properties
 	
 	virtual QString getType() const { return "figure"; }
 	
-	QVariant getColor() const { return "w"; } // TODO
-	void setColor( const QVariant& color ) {} // TODO
+	QVariant getColor() const { return _backgroundColor.toVariant(); }
+	void setColor( const QVariant& color );
 	
 	Matrix getPosition() const;
 	void setPosition( const Matrix& pos );
+	
+	Matrix getCurrentAxes() const { return Matrix::scalar( _currentAxes ); }
+	Handle currentAxes() const { return _currentAxes; }
+	void setCurrentAxes( const Matrix&m );
 
 private slots:
 
 	void windowClosed();			//!< Handles window closing
+	void windowResized();			//!< Handle window resize
 
 private:
+	
+	void positionAxes();			//!< Positions axes on figure
 
 	// Data
 	
 	FigureWindow _window;			///< Actual window
+	Color		_backgroundColor;	///< Figure's background color
+	Handle		_currentAxes;		///< Current axes
+	
+	Axes* _pAxes; // temp - only axes
 };
 
 }; // namespace

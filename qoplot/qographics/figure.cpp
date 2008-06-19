@@ -19,6 +19,7 @@
 
 #include "exceptions.h"
 #include "figure.h"
+#include "axes.h"
 
 namespace QOGraphics
 {
@@ -30,6 +31,13 @@ Figure::Figure( Root* root, Handle handle, QObject* parent ) : Object( root, han
 	_window.show();
 	
 	connect( &_window, SIGNAL(closed()), SLOT(windowClosed()) );
+	connect( &_window, SIGNAL(resized()), SLOT(windowResized()) );
+	
+	_pAxes = NULL; // TODO temp, replace with subplot slots
+	
+	// default color
+	_backgroundColor = QApplication::palette().color( QPalette::Button );
+	_window.scene.setBackgroundBrush( _backgroundColor.color() );
 }
 
 // ============================================================================
@@ -77,16 +85,70 @@ void Figure::setPosition( const Matrix& pos )
 	
 	int screenHeight = QApplication::desktop()->height();
 	QRect g;
-	g.setY( screenHeight - pos.value( 1, 2 ) - pos.value( 1, 4 ) );
-	g.setX( pos.value( 1, 1 ) );
+	g.setY( int( screenHeight - pos.value( 1, 2 ) - pos.value( 1, 4 ) ) );
+	g.setX( int( pos.value( 1, 1 ) ) );
 	
-	g.setWidth( pos.value( 1, 3 ) );
-	g.setHeight( pos.value( 1, 4 ) );
+	g.setWidth( int( pos.value( 1, 3 ) ) );
+	g.setHeight( int( pos.value( 1, 4 ) ) );
 	
 	qDebug("setting geometry: %d,%d %dx%d", g.x(), g.y(), g.width(), g.height() );
 	
 	_window.setGeometry( g );
 }
+
+// ============================================================================
+/// Sets figure background color.
+void Figure::setColor( const QVariant& color )
+{
+	_backgroundColor.fromVariant( color );
+	_window.scene.setBackgroundBrush( _backgroundColor.color() );
+}
+
+// ============================================================================
+/// Sets current axes.
+void Figure::setCurrentAxes( const Matrix& m )
+{
+	_currentAxes = Handle( m.toScalar() );
+}
+
+// ============================================================================
+/// Creates axes with specifed handle. If axes already exists for specified sublot area, they are removed
+Axes* Figure::createAxes( Handle h )
+{
+	// TODO add subplot handling
+	if ( _pAxes )
+	{
+		delete _pAxes;
+	}
+	
+	_pAxes = new Axes( root(), h, this );
+	_pAxes->setScene( & _window.scene );
+	
+	_currentAxes = h;
+	
+	positionAxes();
+	
+	return _pAxes;
+}
+
+// ============================================================================
+/// Positons axes on figure, so they occupy appropriate places.
+void Figure::positionAxes()
+{
+	// TODO add subplot handling
+	if ( _pAxes )
+	{
+		_pAxes->setPosition( _window.view->rect() );
+	}
+}
+
+// ============================================================================
+/// Handles window resize event. Repositons axes on figure.
+void Figure::windowResized()
+{
+	positionAxes();
+}
+
 
 }; // namespace
 

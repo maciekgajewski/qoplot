@@ -1,4 +1,4 @@
-// figurewindow.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// uiobject.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,49 +14,25 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-
-#include <QCloseEvent>
-
-#include "figurewindow.h"
+#include "uiobject.h"
 
 namespace QOGraphics
 {
 
 // ============================================================================
-/// Constructor
-FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
-	: QMainWindow( parent, flags )
+// Constructor
+UIObject::UIObject ( Root* root, Handle handle, QObject* parent )
+		: Object ( root, handle, parent )
 {
-	setupUi( this );
-	
-	view->setScene( & scene );
+	// nothing
 }
 
 // ============================================================================
-/// Destructor
-FigureWindow::~FigureWindow()
+// Destructor
+UIObject::~UIObject()
 {
-	// nope
+	// nothing
 }
 
-// ============================================================================
-/// Widow close handle. Emits closed() signal.
-void FigureWindow::closeEvent( QCloseEvent* pEvent )
-{
-	if ( pEvent->spontaneous() )
-	{
-		emit closed();
-	}
+
 }
-
-// ============================================================================
-/// Emits 'resized()' ingla when window is resized.
-void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
-{
-	emit resized();
-}
-
-}; // namespace
-// EOF
-
-

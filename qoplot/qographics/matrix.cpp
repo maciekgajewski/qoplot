@@ -50,6 +50,16 @@ Matrix::Matrix( const Matrix& src )
 }
 
 // ============================================================================
+/// Creates 1x1 matrix
+Matrix::Matrix( double scalar )
+{
+	_rows = 1;
+	_cols = 1;
+	
+	_data.append( scalar );
+}
+
+// ============================================================================
 /// Destructor
 Matrix::~Matrix()
 {

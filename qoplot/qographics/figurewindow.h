@@ -18,6 +18,7 @@
 #define FIGUREWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsScene>
 #include "ui_figurewindow.h"
 
 namespace QOGraphics
@@ -29,23 +30,31 @@ Each window is associated with graphics Figure object.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class FigureWindow : public QMainWindow, protected Ui::FigureWindow
+class FigureWindow : public QMainWindow, public Ui::FigureWindow
 {
 	Q_OBJECT
 public:
 
 	FigureWindow( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	virtual ~FigureWindow();
+	
+	// public attributes
+	QGraphicsScene scene;	///< Scene on which child elemens are painted
 
 signals:
 
 	void closed();			///< Signals window closing
+	void resized();			///< Sigals window size change
 	
 protected:
 
 	// event handlers
 	
 	virtual void closeEvent( QCloseEvent* event );
+	virtual void resizeEvent( QResizeEvent* event );
+	
+private:
+
 };
 
 }; // namespace

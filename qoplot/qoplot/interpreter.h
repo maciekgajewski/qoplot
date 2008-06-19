@@ -45,6 +45,7 @@ private:
 	void get( Command& cmd, Root& root );
 	void set( Command& cmd, Root& root );
 	void figure( Command& cmd, Root& root );
+	void axes( Command& cmd, Root& root );
 
 };
 
