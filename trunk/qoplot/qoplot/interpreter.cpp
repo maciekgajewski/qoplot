@@ -74,8 +74,7 @@ void Interpreter::interpret( Command& cmd, Root& root )
 		// Axes
 		case ocpl::axes:
 		{
-			//return handle
-			cmd.addDoubleArgout( 0, 0.0 );
+			axes( cmd, root );
 			break;
 		}
 			
@@ -118,7 +117,7 @@ void Interpreter::get( Command& cmd, Root& root )
 	}
 	
 	// check if object exists
-	Handle h = cmd.arginAsMatrix(0).toScalar();
+	Handle h = Handle( cmd.arginAsMatrix(0).toScalar() );
 	Object* pObject = root.objectByHandle( h );
 	
 	if ( ! pObject )
@@ -175,7 +174,7 @@ void Interpreter::set( Command& cmd, Root& root )
 	else
 	{
 		// check if object exists
-		Handle h = cmd.arginAsMatrix(0).toScalar();
+		Handle h = Handle( cmd.arginAsMatrix(0).toScalar() );
 		Object* pObject = root.objectByHandle( h );
 		qDebug("set: handle = %d", h );
 		if ( ! pObject )
@@ -210,7 +209,7 @@ void Interpreter::figure( Command& cmd, Root& root )
 	
 	if( cmd.nargin() == 1 )
 	{
-		Handle fig = cmd.arginAsMatrix(0).toScalar();
+		Handle fig = Handle(cmd.arginAsMatrix(0).toScalar());
 		
 		// get bject with this hanlde
 		Object* pObject = root.objectByHandle( fig );
@@ -244,6 +243,24 @@ void Interpreter::figure( Command& cmd, Root& root )
 	
 	//return handle
 	cmd.addDoubleArgout( 0, h );
+}
+
+// ============================================================================
+/// Creates axes and current figure. If there si no figure - creates figure too.
+void Interpreter::axes( Command& cmd, Root& root )
+{
+	Handle fig = root.currentFigure();
+	
+	// create figure if doesn't exists
+	if ( fig == Object::InvalidHandle )
+	{
+		fig = root.addFigure();
+	}
+	
+	Handle axes = root.addUIObject( "axes", fig );
+	
+	cmd.setArgoutNum( 1 );
+	cmd.addDoubleArgout( 0, axes );
 }
 
 // EOF

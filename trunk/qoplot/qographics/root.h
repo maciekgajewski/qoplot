@@ -58,6 +58,9 @@ public:
 	/// Creates new figure
 	Handle addFigure( Handle desiredHandle = InvalidHandle );
 	
+	/// Adds UI object to figure
+	Handle addUIObject( const QString& type, Handle figure =  InvalidHandle );
+	
 	/// Sets current figure
 	void setCurrentFigure( Handle h );
 	

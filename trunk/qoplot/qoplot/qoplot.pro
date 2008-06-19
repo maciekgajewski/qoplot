@@ -28,5 +28,8 @@ TARGETDEPS += ../qographics/libqographics.a
 INCLUDEPATH += ../qographics \
   .
 
-CONFIG += exceptions
+CONFIG += exceptions \
+ debug
+
+CONFIG -= release
 

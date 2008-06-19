@@ -28,7 +28,9 @@ This is a matrix class. It is used across the package to store matrix data.
 Each matrix consist of QVariant cells arranged in rows and columns.
 
 Matrix is registered in Qt's meta-type system, and can be stored in QVariant,
-QdataStream etc.
+QDataStream etc.
+
+You may also assume that Matrix is vector, and use 1D access methods.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
@@ -41,6 +43,7 @@ public:
 	Matrix();						///< Creates null matrix
 	Matrix( int rows, int cols );	///< Creates matrix of specified size
 	Matrix( const Matrix& );		///< Copy
+	Matrix( double scalar );		///< Creates scalar
 	virtual ~Matrix();				///< Destructor
 	
 	// properties
@@ -51,10 +54,15 @@ public:
 	
 	void resize( int r, int v );		///< Resizes matrix
 	
-	// data access
+	// 2D data access
 	
 	double value( int r, int c ) const;
 	void setValue( int r, int c, double v );
+	
+	// 1D data access
+	int vectorSize() const { return _data.size(); }
+	double vectorValue( int index ) const { return _data[ index-1 ]; }
+	void setVectorValue( int index, double v ) { _data[ index-1 ] = v; }
 	
 	// utilities
 	

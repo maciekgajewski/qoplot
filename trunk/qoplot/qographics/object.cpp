@@ -78,6 +78,10 @@ void Object::setProperty( const QString& name, const QVariant& value )
 	prepareCaseMap();
 	QString propName = _caseMap[ name.toLower() ];
 	
+	if ( propName == "" )
+	{
+		qDebug("No usch property: %s", qPrintable( name ) );
+	}
 	qDebug("setting property %s, type: %d", qPrintable( propName ), value.userType() );
 	QObject::setProperty( propName.toUtf8().data(), value );
 }
@@ -88,6 +92,11 @@ QVariant Object::getProperty( const QString& name )
 {
 	prepareCaseMap();
 	QString propName = _caseMap[ name.toLower() ];
+	
+	if ( propName == "" )
+	{
+		qDebug("No usch property: %s", qPrintable( name ) );
+	}
 	
 	return property( propName.toUtf8().data() );
 }

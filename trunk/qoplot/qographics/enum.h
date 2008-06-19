@@ -25,8 +25,9 @@ namespace QOGraphics {
 
 /**
 Object used to store values of octave-style enumerations.
-Value is stored as integer, and backed may convenientyl use integer representation,
-but property is set and read as string.
+Value is stored as integer, and backed may convenientyl use integer representation.
+
+QString is used as transport type to communicate with octave.
 
 Exmaple: property 'Visible' has avialbel values "yes" and "no",
 with corresponding numerical values 1 and 0.
