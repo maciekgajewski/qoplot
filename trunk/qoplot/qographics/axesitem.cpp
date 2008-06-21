@@ -18,19 +18,28 @@
 #include <math.h>
 #include <QPainter>
 #include "axesitem.h"
+#include "plotitem.h"
 
 namespace QOGraphics
 {
 
 // constants
-static double TICK_TO_LABELS_MARGIN	= 3; ///< Margin between ticks and labels [px]
+static const double TICK_TO_LABELS_SPACING	= 3; ///< Margin between ticks and labels [px]
+static const double TICK_TO_AXIS_LABEL_SPACING = 20; ///< Spacing from ticks to axis label
+static const double X_LABELS_MARGIN		= 30;	///< Margin reserved for x axis labels
+static const double Y_LABELS_MARGIN		= 50;	///< Margin reserved for y axis labels
 
 
 // ============================================================================
 /// Constructor
-AxesItem::AxesItem( QGraphicsItem * parent /*= NULL*/ ) : QGraphicsItem(parent)
+AxesItem::AxesItem( QGraphicsItem * parent /*= NULL*/ ) : UIItem(parent)
 {
 	_size = QSize( 100, 100 );
+	
+	// intialize pointer proerties
+	pLabelX = NULL;
+	pLabelY = NULL;
+	pTitle = NULL;
 }
 
 // ============================================================================
@@ -67,12 +76,34 @@ void AxesItem::paint
 /// Finds position of the inner box, an which data are painted
 QRectF AxesItem::innerBox() const
 {
-	// simple impelemtation, just leaves 10% margins around box
+	double margin = 0.1; // default margin as size fraction
 	
-	double margin = 0.1;
+	// calculate minimal allowed margins
 	
-	return QRectF( _size.width() * margin, _size.height() * margin,
-		_size.width() * (1-2*margin), _size.height() * (1-2*margin) );
+	// Top - title and X labels when X axis on top
+	double topMargin = _size.height() * margin;
+	
+	topMargin = qMax( topMargin, pTitle->item()->boundingRect().height() );
+	
+	// Bottom - X labels
+	double bottomMargin =  _size.height() * margin;
+	
+	bottomMargin = qMax( bottomMargin, X_LABELS_MARGIN + pLabelX->item()->boundingRect().height() );
+	
+	
+	// Left - y labels
+	
+	double leftMargin = _size.width() * margin;
+	leftMargin = qMax( leftMargin, Y_LABELS_MARGIN + pLabelY->item()->boundingRect().width() );
+	
+	// Right - y labels
+	double rightMargin = _size.width() * margin;
+	
+	
+	// create rectangle
+	
+	return QRectF( leftMargin, topMargin, 
+		_size.width() - leftMargin - rightMargin, _size.height() - bottomMargin - topMargin );
 }
 
 // ============================================================================
@@ -197,7 +228,6 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 	pPainter->drawLine( QLineF( box.left(), box.bottom(), box.right(), box.bottom() ) );
 		
 	// draw ticks
-	double tickLength = 5.0; // [px] TODO calculate from property
 	
 	for ( int i = 0; i < xtick.vectorSize(); i++ )
 	{
@@ -207,7 +237,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 			, box.bottom() );
 		
 		// draw tick
-		pPainter->drawLine( pixelPos, pixelPos + QPointF( 0, tickLength ) );
+		pPainter->drawLine( pixelPos, pixelPos + QPointF( 0, tickLength() ) );
 		
 		// draw text
 		QString label;
@@ -216,11 +246,12 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 		double maxTextHeight = 50;
 		
 		QRectF textRect( pixelPos.x() - maxTextWidth / 2
-			, pixelPos.y() + tickLength + TICK_TO_LABELS_MARGIN, maxTextWidth, maxTextHeight );
+			, pixelPos.y() + tickLength() + TICK_TO_LABELS_SPACING, maxTextWidth, maxTextHeight );
 			
 		pPainter->drawText( textRect, Qt::AlignHCenter|Qt::AlignTop, label );
 		
 	}
+	
 }
 
 // ============================================================================
@@ -237,9 +268,6 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 	// line
 	pPainter->drawLine( QLineF( box.left(), box.bottom(), box.left(), box.top() ) );
 		
-	// draw ticks
-	double tickLength = 5.0; // [px] TODO calculate from property
-	
 	for ( int i = 0; i < ytick.vectorSize(); i++ )
 	{
 		double tickPos = ytick.vectorValue( i + 1 );
@@ -247,7 +275,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 		QPointF pixelPos(  box.left(), box.top() + plotToPixel( QPointF( 0, tickPos ) ).y() );;
 		
 		// draw tick
-		pPainter->drawLine( pixelPos, pixelPos + QPointF( -tickLength, 0 ) );
+		pPainter->drawLine( pixelPos, pixelPos + QPointF( -tickLength(), 0 ) );
 		
 		// draw text
 		QString label;
@@ -255,12 +283,13 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
-		QRectF textRect( pixelPos.x() - maxTextWidth - tickLength - TICK_TO_LABELS_MARGIN,
+		QRectF textRect( pixelPos.x() - maxTextWidth - tickLength() - TICK_TO_LABELS_SPACING,
 			pixelPos.y() - maxTextHeight/ 2, maxTextWidth, maxTextHeight );
 			
 		pPainter->drawText( textRect, Qt::AlignRight|Qt::AlignVCenter, label );
 		
 	}
+	
 }
 
 // ============================================================================
@@ -276,8 +305,17 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 	
 	double xPixelsPerUnit = box.width() / ( xmax - xmin );
 	double yPixelsPerUnit = box.height() / ( ymax - ymin );
+	
+	
+	double x = xdir == Normal 
+		? ( p.x() - xmin ) * xPixelsPerUnit
+		: box.width() - ( p.x() - xmin ) * xPixelsPerUnit;
+		
+	double y = ydir == Normal
+		? box.height() - ( p.y() - ymin ) * yPixelsPerUnit
+		: ( p.y() - ymin ) * yPixelsPerUnit;
 
-	return QPointF( ( p.x() - xmin ) * xPixelsPerUnit, box.height() - ( p.y() - ymin ) * yPixelsPerUnit ); // TODO use YDir, XDir properties
+	return QPointF( x, y );
 }
 
 // ============================================================================
@@ -287,5 +325,54 @@ QPointF AxesItem::pixelToPlot( const QPointF& ) const
 	// TODO
 	return QPointF();
 }
+
+// ============================================================================
+/// Updates child element position after own (or they) geometry change.
+void AxesItem::updateChildPositions()
+{
+	QRectF box = innerBox();
+	
+	// first - update position of constant elements
+	
+	setPixelPositon( (PlotItem*)pLabelX->item(), QPointF( box.left() + box.width()/2, box.bottom() + TICK_TO_AXIS_LABEL_SPACING ) );
+	setPixelPositon( (PlotItem*)pLabelY->item(), QPointF( box.left() - Y_LABELS_MARGIN, box.top() + box.height() / 2 ) );
+	setPixelPositon( (PlotItem*)pTitle->item(), QPointF( box.left() +  box.width()/2, box.top() ) );
+	// then - all others
+	
+	QList<QGraphicsItem *> items = children();
+	
+	foreach( QGraphicsItem* pItem, items )
+	{
+		PlotItem* pPlotItem = dynamic_cast<PlotItem*>( pItem );
+		if ( pPlotItem )
+		{
+			if ( pPlotItem->usePlotCoordinates == On )
+			{
+				double x = pPlotItem->position.vectorValue( 2 );
+				double y = pPlotItem->position.vectorValue( 1 );
+				
+				QPointF pixel = box.topLeft() + plotToPixel( QPointF(x, y) );
+				
+				pPlotItem->setPos( pixel );
+			}
+		}
+	}
+}
+
+// ============================================================================
+/// Sets plot item position expresed in pixels insted of plot coords.
+/// It also sets item's 'position' property to appropriate plot position coords.
+/// Does not change postion of items whcih 'usePlotCoordinates' was turned on.
+void AxesItem::setPixelPositon( PlotItem* pItem, QPointF pos )
+{
+	if ( pItem->usePlotCoordinates == Off )
+	{
+		pItem->setPos( pos );
+		
+		// TODO set plot coordinates here
+		
+	}
+}
+
 
 } // namespace

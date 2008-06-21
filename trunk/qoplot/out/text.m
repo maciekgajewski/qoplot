@@ -30,7 +30,7 @@
 ## Keywords: octplot graphics
 
 function handle = text (x,y,txt,varargin)
-  handle = octplot_command('text',[x(1),y(1)],txt){1};
+  handle = qoplot_command('text',[x(1),y(1)],txt){1};
 
   if length(varargin),
     set(handle,varargin{:});

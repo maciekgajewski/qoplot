@@ -17,20 +17,22 @@
 #ifndef QOGRAPHICSAXESITEM_H
 #define QOGRAPHICSAXESITEM_H
 
-#include <QGraphicsItem>
-
+#include "uiitem.h"
 #include "color.h"
 #include "enum.h"
 #include "matrix.h"
+#include "text.h"
 
 namespace QOGraphics
 {
 
 /**
+Gpahics item representingm and associated with Axes object.
+
  @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
 
-class AxesItem : public QGraphicsItem
+class AxesItem : public UIItem
 {
 
 public:
@@ -51,19 +53,24 @@ public:
 	virtual QRectF boundingRect() const{ return QRectF( QPointF(0, 0), _size ); }
 	
 	void recalculateTicks();				///< Recalculates ticks
+	void updateChildPositions();			///< Updates child positons
 	
-	// enums used in proeprties
-	enum AutoManual { Auto, Manual };
 	
 	// properties (stored here, set in Axes )
 	
-	Color color;
 	Enum box;
 	Matrix xlim, ylim;
 	Matrix xtick, ytick;
 	Enum xtickMode, ytickMode;
 	Color xcolor, ycolor;
 	Enum xlimMode, ylimMode;
+	Enum xdir, ydir;
+	
+	// constant child elements
+	
+	Text* pLabelX;
+	Text* pLabelY;
+	Text* pTitle;
 	
 		
 private:
@@ -76,6 +83,10 @@ private:
 	
 	QPointF plotToPixel( const QPointF& p ) const;	///< converts between plot and pixel space
 	QPointF pixelToPlot( const QPointF& p ) const;	///< converts between plot and pixel space
+	
+	double tickLength() { return 5.0; }				///< Tick length, in pixels TODO calculate from property
+	
+	void setPixelPositon( PlotItem* pItem, QPointF pos );	///< Sets constnt plot item position
 	
 	// drawing methods
 	

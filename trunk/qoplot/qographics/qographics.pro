@@ -18,7 +18,12 @@ matrix.h \
  color.h \
  axes.h \
  axesitem.h \
- uiobject.h
+ uiobject.h \
+ text.h \
+ uiitem.h \
+ textitem.h \
+ plotobject.h \
+ plotitem.h
 SOURCES += object.cpp \
 root.cpp \
 matrix.cpp \
@@ -28,6 +33,11 @@ matrix.cpp \
  color.cpp \
  axes.cpp \
  axesitem.cpp \
- uiobject.cpp
+ uiobject.cpp \
+ text.cpp \
+ uiitem.cpp \
+ textitem.cpp \
+ plotobject.cpp \
+ plotitem.cpp
 FORMS += figurewindow.ui
 

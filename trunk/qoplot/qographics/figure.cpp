@@ -122,7 +122,6 @@ Axes* Figure::createAxes( Handle h )
 	}
 	
 	_pAxes = new Axes( root(), h, this );
-	_pAxes->setScene( & _window.scene );
 	
 	_currentAxes = h;
 	

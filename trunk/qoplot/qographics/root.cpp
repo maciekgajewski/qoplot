@@ -18,6 +18,7 @@
 #include "root.h"
 #include "exceptions.h"
 #include "figure.h"
+#include "axes.h"
 
 namespace QOGraphics
 {
@@ -70,22 +71,6 @@ void Root::objectDestroyed( Handle handle )
 	}
 }
 
-// ============================================================================
-// Object created
-/// Adds newly created object to database, allocating handle for it. Returns allocated handle.
-/*
-Object::Handle Root::objectCreated( Object* pObject )
-{
-	Q_ASSERT( pObject );
-	
-	// allocate handle, store object
-	Handle h = _firstFreeHandle;
-	_firstFreeHandle++;
-	_objects.insert( h, pObject );
-	
-	return h;
-}
-*/
 // ============================================================================
 /// Returns object identified by handle, or NULL if no such object.
 Object* Root::objectByHandle( Handle h )
@@ -214,33 +199,73 @@ void Root::setCurrentFigure( Handle h )
 }
 
 // ============================================================================
-/// Adds UI object to figure. If no figure handle spoecified - adds to current one.
+/// Creates UI object  to figure. If no parent handle spoecified - adds to current figure/axes (depending on type)
 /// Returns handle to created object
-Handle Root::addUIObject( const QString& type, Handle figure /*= InvalidHandle*/ )
+Handle Root::createObject( const QString& type, Handle parent /*= InvalidHandle*/ )
 {
-	Handle fig = figure == InvalidHandle ? _currentFigure : figure;
-	Figure* pFigure = qobject_cast<Figure*>( objectByHandle( fig ) );
-	
-	if ( ! pFigure )
-	{
-		throw Exception("No such figure");
-	}
-	
 	// allocate handle
 	Handle h = _firstFreeHandle++;
 	
 	// TODO move factory to figure
 	if ( type == "axes" )
 	{
+		// get figure handle
+		Handle p = parent == InvalidHandle ? _currentFigure : parent;
+		Figure* pFigure = qobject_cast<Figure*>( objectByHandle( p ) );
+		
+		if ( ! pFigure )
+		{
+			throw Exception("No such figure");
+		}
 		Axes* pAxes = pFigure->createAxes( h );
 		_objects[ h ] = (Object*)pAxes;
 	}
 	else
 	{
-		throw Exception( QString("Unknown object type: %s").arg( type ) );
+		// get current axes
+		Handle a = parent == InvalidHandle ? currentAxes() : parent;
+		Axes* pAxes = qobject_cast<Axes*>( objectByHandle( a ) );
+		
+		if ( ! pAxes )
+		{
+			throw Exception( "No axes" );
+		}
+		
+		Object* pObject = pAxes->createPlotObject( type, h );
+		_objects[ h ]  = pObject;
 	}
 	
 	return h;
+}
+
+// ============================================================================
+/// Adds alredy created object to system
+Handle Root::addObject( Object* pObject )
+{
+	Q_ASSERT( pObject );
+	
+	// TODO check if object isn't alredy added to system.
+	
+	Handle h = _firstFreeHandle++;
+	pObject->setHandle( h );
+	
+	_objects[ h ] = pObject;
+	
+	return h;
+	
+}
+
+// ============================================================================
+/// Returns handle to current axes. If no axes exists-  InvalidHandle is returned
+Handle Root::currentAxes() const
+{
+	const Figure* pFigure = qobject_cast<const Figure*>( objectByHandle( _currentFigure ) );
+	if ( pFigure )
+	{
+		return pFigure->currentAxes();
+	}
+	
+	return InvalidHandle;
 }
 
 }; // namespace

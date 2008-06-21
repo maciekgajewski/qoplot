@@ -257,7 +257,7 @@ void Interpreter::axes( Command& cmd, Root& root )
 		fig = root.addFigure();
 	}
 	
-	Handle axes = root.addUIObject( "axes", fig );
+	Handle axes = root.createObject( "axes", fig );
 	
 	cmd.setArgoutNum( 1 );
 	cmd.addDoubleArgout( 0, axes );

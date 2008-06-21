@@ -119,9 +119,9 @@ Matrix Color::toMatrix() const
 {
 	Matrix m(1, 3 );
 	
-	m.setValue( 1, 1 , _color.red() );
-	m.setValue( 1, 1 , _color.green() );
-	m.setValue( 1, 1 , _color.blue() );
+	m.setVectorValue( 1 , _color.red() );
+	m.setVectorValue( 2 , _color.green() );
+	m.setVectorValue( 3 , _color.blue() );
 
 	return m;
 }
