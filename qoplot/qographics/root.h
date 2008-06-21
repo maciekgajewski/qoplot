@@ -58,8 +58,6 @@ public:
 	/// Creates new figure
 	Handle addFigure( Handle desiredHandle = InvalidHandle );
 	
-	/// Adds UI object to figure
-	Handle addUIObject( const QString& type, Handle figure =  InvalidHandle );
 	
 	/// Sets current figure
 	void setCurrentFigure( Handle h );
@@ -67,6 +65,16 @@ public:
 	/// Returns handle to current figure
 	Handle currentFigure() const { return _currentFigure; }
 	
+	/// Returns handle to current axes
+	Handle currentAxes() const;
+	
+	// Adding/creating object
+	
+	/// Creates object of givent type
+	Handle createObject( const QString& type, Handle parent =  InvalidHandle );
+	
+	/// Adds already created object to tree
+	Handle addObject( Object* pObject );
 	
 	// Properties getters/setters
 	
@@ -85,8 +93,6 @@ public slots:
 	// Child object management
 	
 	void objectDestroyed( Handle handle );		///< Hanldes child object destruction (removes from list)
-	// TODO ?
-	//Handle objectCreated( Object* object );		///< Handles new object creation	
 
 private:
 

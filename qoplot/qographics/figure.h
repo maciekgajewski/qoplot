@@ -38,7 +38,7 @@ class Figure : public Object
 	// Properties
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
 	Q_PROPERTY( QVariant Color READ getColor WRITE setColor )
-	Q_PROPERTY( Matrix CurrentAxes READ getCurrentAxes WRITE setCurrentAxes );
+	Q_PROPERTY( QOGraphics::Matrix CurrentAxes READ getCurrentAxes WRITE setCurrentAxes );
 	
 public:
 	
@@ -54,6 +54,8 @@ public:
 	
 	/// Adds axes to figure
 	Axes* createAxes( Handle h );
+	
+	QGraphicsScene* scene(){ return & _window.scene; }		///< Returns graphics scene to which items are added
 	
 	
 	// properties

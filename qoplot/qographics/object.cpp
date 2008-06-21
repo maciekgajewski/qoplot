@@ -29,13 +29,6 @@ namespace QOGraphics
 Object::Object( Root* pRoot, Handle handle, QObject* parent ): QObject( parent )
 {
 	_handle = handle;
-	// TODO I'm not sure about this... mybe this should be called explicitily in Root
-/*	if ( pRoot )
-	{
-		// introduce to root
-		_handle = pRoot->objectCreated( this );
-	}*/
-	
 	_pRoot = pRoot;
 	
 	// init params
@@ -50,11 +43,19 @@ Object::~Object()
 {
 	if ( _pRoot )
 	{
-		// NOTE weird issues may surface when calluing somethinf from destructor.
-		// Emitting signal could be better option.
+		// NOTE weird issues may surface when calling something from destructor.
+		// Emitting (queued?) signal could be better option.
 		_pRoot->objectDestroyed( _handle );
 	}
 }
+
+// ============================================================================
+/// Sets object handle. Don't use it unless you know what you do!
+void Object::setHandle( Handle h )
+{
+ 	_handle = h;
+}
+
 
 // ============================================================================
 /// Returns list of all object's property names

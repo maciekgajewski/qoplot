@@ -18,6 +18,8 @@
 #define QOGRAPHICSUIOBJECT_H
 
 #include "object.h"
+#include "matrix.h"
+#include "uiitem.h"
 
 class QGraphicsScene;
 
@@ -35,9 +37,17 @@ class UIObject : public Object
 Q_OBJECT
 	
 	Q_PROPERTY( QVariant Color READ getColor WRITE setColor );
-	//Q_PROPERTY( Matrix FontSize READ getFontSize WRITE setFontSize );
-	//Q_PROPERTY( QString GridLineStyle READ getGridLineStyle WRITE setGridLineStyle );
-	//Q_PROPERTY( Matrix LineWidth READ getLineWidth WRITE setLineWidth );
+	Q_PROPERTY( QOGraphics::Matrix LineWidth READ getLineWidth WRITE setLineWidth );
+	Q_PROPERTY( QString LineStyle READ getLineStyle WRITE setLineStyle );
+	
+	Q_PROPERTY( QOGraphics::Matrix FontSize READ getFontSize WRITE setFontSize );
+	Q_PROPERTY( QString FontWeight READ getFontWeight WRITE setFontWeight );
+	Q_PROPERTY( QString FontAngle READ getFontAngle WRITE setFontAngle );
+	Q_PROPERTY( QString FontName READ getFontName WRITE setFontName );
+	
+	
+	Q_PROPERTY( QString DisplayName READ getDisplayName WRITE setDisplayName ); // TODO plot objects only
+
 
 public:
 	UIObject ( Root* root, Handle handle, QObject* parent );
@@ -45,13 +55,41 @@ public:
 
 	// UI operations
 	
-	/// Sets scene on which UI item will be painted
-	virtual void setScene( QGraphicsScene*) {}
+	virtual UIItem* item() const = 0;			///< Returns pointer to graphics item
+	
+	/// Information: property has been changed.
+	virtual void propertyChanged() { item()->propertyChanged();  }
 	
 	// properties
 	
-	virtual QVariant getColor() const { return QVariant(); }
-	virtual void setColor( const QVariant& ){}
+	QVariant getColor() const { return item()->color.toVariant(); }
+	void setColor( const QVariant& c ){ item()->color.fromVariant( c ); propertyChanged(); }
+	
+	Matrix getLineWidth() const { return item()->lineWidth; }
+	void setLineWidth( const Matrix& w ){ item()->lineWidth = w.toScalar(); propertyChanged(); }
+	
+	QString getLineStyle() const { return item()->lineStyle; }
+	void setLineStyle( const QString& s ){ item()->lineStyle = s; propertyChanged(); }
+	
+	Matrix getFontSize() const { return item()->fontSize; }
+	void setFontSize( const Matrix& s ){ item()->fontSize = s.toScalar(); propertyChanged(); }
+	
+	QString getFontWeight() const { return item()->fontWeight; }
+	void setFontWeight( const QString& s ){ item()->fontWeight = s; propertyChanged(); }
+	
+	QString getFontAngle() const { return item()->fontAngle; }
+	void setFontAngle( const QString& s ){ item()->fontAngle = s; propertyChanged(); }
+
+	QString getFontName() const { return item()->fontName; }
+	void setFontName( const QString& s ){ item()->fontName = s; propertyChanged(); }
+
+	QString getDisplayName() const { return item()->displayName; }
+	void setDisplayName( const QString& s ){ item()->displayName = s; propertyChanged(); }
+
+protected:
+
+	void addToParent();							///< Adds graphics item to parent
+	virtual void initProperties();				///< Initializes properties	
 
 };
 

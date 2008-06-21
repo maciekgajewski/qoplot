@@ -19,6 +19,7 @@
 
 #include "uiobject.h"
 #include "axesitem.h"
+#include "text.h"
 
 namespace QOGraphics
 {
@@ -41,13 +42,14 @@ class Axes : public UIObject
 	//Q_PROPERTY( Matrix Legend READ getLegend WRITE setLegend );
 	//Q_PROPERTY( QString NextPlot READ getNextPlot WRITE setNextPlot );
 	//Q_PROPERTY( Matrix TickLength READ getTickLength WRITE setTickLength );
-	//Q_PROPERTY( QString Title READ getTitle WRITE setTitle );
 	//Q_PROPERTY( QString XAxisLocation READ getXAxisLocation WRITE setXAxisLocation );
 	//Q_PROPERTY( QString YAxisLocation READ getYAxisLocation WRITE setYAxisLocation );
+	//Q_PROPERTY( QString GridLineStyle READ getGridLineStyle WRITE setGridLineStyle );
 	Q_PROPERTY( QVariant XColor READ getXColor WRITE setXColor );
 	Q_PROPERTY( QVariant YColor READ getYColor WRITE setYColor );
-	//Q_PROPERTY( QString XLabel READ getXLabel WRITE setXLabel );
-	//Q_PROPERTY( QString YLabel READ getYLabel WRITE setYLabel );
+	Q_PROPERTY( QOGraphics::Matrix XLabel READ getXLabel );
+	Q_PROPERTY( QOGraphics::Matrix YLabel READ getYLabel );
+	Q_PROPERTY( QOGraphics::Matrix Title READ getTitle );
 	Q_PROPERTY( QOGraphics::Matrix XLim READ getXLim WRITE setXLim );
 	Q_PROPERTY( QOGraphics::Matrix YLim READ getYLim WRITE setYLim );
 	Q_PROPERTY( QString XLimMode READ getXLimMode WRITE setXLimMode );
@@ -58,6 +60,8 @@ class Axes : public UIObject
 	//Q_PROPERTY( QStringList YTickLabel READ getYTickLabel WRITE setYTickLabel );
 	Q_PROPERTY( QString XTickMode READ getXTickMode WRITE setXTickMode );
 	Q_PROPERTY( QString YTickMode READ getYTickMode WRITE setYTickMode );
+	Q_PROPERTY( QString XDir READ getXDir WRITE setXDir );
+	Q_PROPERTY( QString YDir READ getYDir WRITE setYDir );
 
 public:
 
@@ -66,53 +70,73 @@ public:
 	
 	// visual setup and properties
 	
-	virtual void setScene( QGraphicsScene* scene);
 	void setPosition( const QRectF& pos ); /// Sets axes postion in figure
+	virtual UIItem* item() const { return _pItem; }
+	
+	
+	/// Plot object factory
+	UIObject* createPlotObject( const QString& type, Handle h );
+	
+	// Message from child - size changed
+	void childSizeChanged();
+	
 	
 	// prioperties
 	
 	virtual QString getType() const { return "axes"; }
 
-	QString getBox() const { return _item.box; }
+	QString getBox() const { return _pItem->box; }
 	void setBox( const QString& box );
 	
-	virtual QVariant getColor() const { return _item.color.toVariant(); }
-	virtual void setColor( const QVariant& color );
-	
-	Matrix getXLim() const { return _item.xlim; }
-	Matrix getYLim() const { return _item.ylim; }
+	Matrix getXLim() const { return _pItem->xlim; }
+	Matrix getYLim() const { return _pItem->ylim; }
 	
 	void setXLim( const Matrix& xlim );
 	void setYLim( const Matrix& ylim );
 	
-	Matrix getXTick() const { return _item.xtick; }
-	Matrix getYTick() const { return _item.xtick; }
+	Matrix getXTick() const { return _pItem->xtick; }
+	Matrix getYTick() const { return _pItem->xtick; }
 	
 	void setXTick( const Matrix& xtick );
 	void setYTick( const Matrix& ytick );
 	
-	QString getXTickMode() const { return _item.xtickMode; }
-	QString getYTickMode() const { return _item.ytickMode; }
+	QString getXTickMode() const { return _pItem->xtickMode; }
+	QString getYTickMode() const { return _pItem->ytickMode; }
 	
 	void setXTickMode( const QString& mode );
 	void setYTickMode( const QString& mode );
 	
-	QVariant getXColor() const { return _item.xcolor.toVariant(); }
-	QVariant getYColor() const { return _item.xcolor.toVariant(); }
-	void setXColor( const QVariant& c ) { _item.xcolor.fromVariant( c ); _item.update(); }
-	void setYColor( const QVariant& c ) { _item.ycolor.fromVariant( c ); _item.update(); }
+	QVariant getXColor() const { return _pItem->xcolor.toVariant(); }
+	QVariant getYColor() const { return _pItem->xcolor.toVariant(); }
+	void setXColor( const QVariant& c ) { _pItem->xcolor.fromVariant( c ); _pItem->update(); }
+	void setYColor( const QVariant& c ) { _pItem->ycolor.fromVariant( c ); _pItem->update(); }
 	
-	QString getXLimMode() const { return _item.xlimMode; }
-	QString getYLimMode() const { return _item.ylimMode; }
+	QString getXLimMode() const { return _pItem->xlimMode; }
+	QString getYLimMode() const { return _pItem->ylimMode; }
 	
 	void setXLimMode( const QString& mode );
 	void setYLimMode( const QString& mode );
 
-private:
+	QString getXDir() const { return _pItem->xdir; }
+	QString getYDir() const { return _pItem->ydir; }
+	
+	void setXDir( const QString& dir ) { _pItem->xdir = dir; _pItem->update(); }
+	void setYDir( const QString& dir ) { _pItem->ydir = dir; _pItem->update(); }
+	
+	Matrix getXLabel() const { return Matrix( _pItem->pLabelX->handle() ); }
+	Matrix getYLabel() const { return Matrix( _pItem->pLabelY->handle() ); }
+	Matrix getTitle() const { return Matrix( _pItem->pTitle->handle() ); }
+	
+protected:
 
+	virtual void initProperties();			///< Itnialzies proerties
+
+private:
+	
 	// data
 	
-	AxesItem _item;
+	AxesItem* _pItem;
+	
 };
 
 }

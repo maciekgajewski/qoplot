@@ -71,6 +71,7 @@ public:
 	
 	// Basic info
 	Handle handle() const { return _handle; }
+	void setHandle( Handle h );
 	Root* root() const { return _pRoot; }
 	
 	// Property access / querying

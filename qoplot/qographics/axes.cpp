@@ -20,7 +20,9 @@
 #include <QPalette>
 
 #include "axes.h"
+#include "root.h"
 #include "exceptions.h"
+#include "text.h"
 
 namespace QOGraphics
 {
@@ -29,34 +31,81 @@ namespace QOGraphics
 /// Constructor
 Axes::Axes( Root* root, Handle handle, QObject* parent ): UIObject(root, handle, parent)
 {
-	// init properties
-	_item.color = Qt::white;
+	// Create item
+	_pItem = new AxesItem();
 	
-	_item.box.addValue( 1, "on" );
-	_item.box.addValue( 0, "off", true );
+	// create mandatory children
+	_pItem->pTitle = new Text( root, InvalidHandle, this );
+	_pItem->pLabelX = new Text( root, InvalidHandle, this );
+	_pItem->pLabelY = new Text( root, InvalidHandle, this );
 	
-	_item.xtickMode.addValue( AxesItem::Auto, "auto", true );
-	_item.xtickMode.addValue( AxesItem::Manual, "manual" );
+	root->addObject( _pItem->pTitle );
+	root->addObject( _pItem->pLabelX );
+	root->addObject( _pItem->pLabelY );
 	
-	_item.ytickMode.addValue( AxesItem::Auto, "auto", true );
-	_item.ytickMode.addValue( AxesItem::Manual, "manual" );
+	// go on with initializations
+	initProperties();
+	addToParent();
+}
+
+// ============================================================================
+/// Initializes object's properties
+void Axes::initProperties()
+{
+	UIObject::initProperties();
 	
-	_item.xlim = Matrix( 1, 2 );
-	_item.xlim.setVectorValue( 1, 0.0 );
-	_item.xlim.setVectorValue( 2, 1.0 );
+	_pItem->color = Qt::white;
 	
-	_item.ylim = Matrix( 1, 2 );
-	_item.ylim.setVectorValue( 1, 0.0 );
-	_item.ylim.setVectorValue( 2, 1.0 );
+	_pItem->box.addValue( 1, "on" );
+	_pItem->box.addValue( 0, "off", true );
 	
-	_item.xcolor = QApplication::palette().color( QPalette::ButtonText );
-	_item.ycolor = QApplication::palette().color( QPalette::ButtonText );
+	_pItem->xtickMode.addValue( AxesItem::Auto, "auto", true );
+	_pItem->xtickMode.addValue( AxesItem::Manual, "manual" );
 	
-	_item.xlimMode.addValue( AxesItem::Auto, "auto", true );
-	_item.xlimMode.addValue( AxesItem::Manual, "manual" );
+	_pItem->ytickMode.addValue( AxesItem::Auto, "auto", true );
+	_pItem->ytickMode.addValue( AxesItem::Manual, "manual" );
 	
-	_item.ylimMode.addValue( AxesItem::Auto, "auto", true );
-	_item.ylimMode.addValue( AxesItem::Manual, "manual" );
+	_pItem->xlim = Matrix( 1, 2 );
+	_pItem->xlim.setVectorValue( 1, 0.0 );
+	_pItem->xlim.setVectorValue( 2, 1.0 );
+	
+	_pItem->ylim = Matrix( 1, 2 );
+	_pItem->ylim.setVectorValue( 1, 0.0 );
+	_pItem->ylim.setVectorValue( 2, 1.0 );
+	
+	_pItem->xcolor = QApplication::palette().color( QPalette::ButtonText );
+	_pItem->ycolor = QApplication::palette().color( QPalette::ButtonText );
+	
+	_pItem->xlimMode.addValue( AxesItem::Auto, "auto", true );
+	_pItem->xlimMode.addValue( AxesItem::Manual, "manual" );
+	
+	_pItem->ylimMode.addValue( AxesItem::Auto, "auto", true );
+	_pItem->ylimMode.addValue( AxesItem::Manual, "manual" );
+	
+	_pItem->xdir.addValue( AxesItem::Normal, "normal", true );
+	_pItem->xdir.addValue( AxesItem::Reverse, "reverse" );
+	
+	_pItem->ydir.addValue( AxesItem::Normal, "normal", true );
+	_pItem->ydir.addValue( AxesItem::Reverse, "reverse" );
+	
+	// init labels	
+	
+	_pItem->pTitle->setVerticalAlignment( "bottom" );
+	_pItem->pTitle->setHorizontalAlignment( "center" );
+	_pItem->pTitle->setUsePlotCoordinates( "off" );
+	_pItem->pTitle->setMargin( Matrix( 5 ) );
+	
+	_pItem->pLabelX->setVerticalAlignment( "top" );
+	_pItem->pLabelX->setHorizontalAlignment( "center" );
+	_pItem->pLabelX->setUsePlotCoordinates( "off" );
+	_pItem->pLabelX->setMargin( Matrix( 5 ) );
+	
+	_pItem->pLabelY->setVerticalAlignment( "bottom" );
+	_pItem->pLabelY->setHorizontalAlignment( "center" );
+	_pItem->pLabelY->setUsePlotCoordinates( "off" );
+	_pItem->pLabelY->setRotation( 90 );
+	_pItem->pLabelY->setMargin( Matrix( 5 ) );
+	
 }
 
 // ============================================================================
@@ -67,71 +116,56 @@ Axes::~Axes()
 }
 
 // ============================================================================
-/// Sets scene on which axes are painted
-void Axes::setScene( QGraphicsScene* pScene )
-{
-	Q_ASSERT( pScene );
-	pScene->addItem( & _item );
-}
-
-// ============================================================================
 /// Setsd axes position
 void Axes::setPosition( const QRectF& pos )
 {
-	_item.setPos( pos.topLeft() );
-	_item.setSize( pos.size() );
+	_pItem->setPos( pos.topLeft() );
+	_pItem->setSize( pos.size() );
+	_pItem->updateChildPositions();
 }
 
 // ============================================================================
 /// Sets 'box visible' property
 void Axes::setBox( const QString& box )
 {
-	_item.box = box;
-	_item.update();
-}
-
-// ============================================================================
-/// Sets colro property
-void Axes::setColor( const QVariant& color )
-{
-	_item.color.fromVariant( color );
-	_item.update();
+	_pItem->box = box;
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets XTick proeprty. Also sets XTickMode to 'manual'.
 void Axes::setXTick( const Matrix& xtick )
 {
-	_item.xtick = xtick;
-	_item.xtickMode = AxesItem::Manual;
-	_item.update();
+	_pItem->xtick = xtick;
+	_pItem->xtickMode = AxesItem::Manual;
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets YTick proeprty. Also sets YTickMode to 'manual'.
 void Axes::setYTick( const Matrix& ytick )
 {
-	_item.ytick = ytick;
-	_item.ytickMode = AxesItem::Manual;
-	_item.update();
+	_pItem->ytick = ytick;
+	_pItem->ytickMode = AxesItem::Manual;
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets tick mode.
 void Axes::setXTickMode( const QString& mode )
 {
-	_item.xtickMode = mode;
-	_item.recalculateTicks();
-	_item.update();
+	_pItem->xtickMode = mode;
+	_pItem->recalculateTicks();
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets tick mode.
 void Axes::setYTickMode( const QString& mode )
 {
-	_item.xtickMode = mode;
-	_item.recalculateTicks();
-	_item.update();
+	_pItem->xtickMode = mode;
+	_pItem->recalculateTicks();
+	_pItem->update();
 }
 
 // ============================================================================
@@ -148,10 +182,11 @@ void Axes::setXLim( const Matrix& xlim )
 		throw Exception("'XLim' values should be increasing.");
 	}
 	
-	_item.xlim = xlim;
-	_item.xlimMode = AxesItem::Manual;
-	_item.recalculateTicks();
-	_item.update();
+	_pItem->xlim = xlim;
+	_pItem->xlimMode = AxesItem::Manual;
+	_pItem->recalculateTicks();
+	_pItem->updateChildPositions();
+	_pItem->update();
 }
 
 // ============================================================================
@@ -168,38 +203,65 @@ void Axes::setYLim( const Matrix& ylim )
 		throw Exception("'YLim' values should be increasing.");
 	}
 	
-	_item.ylim = ylim;
-	_item.ylimMode = AxesItem::Manual;
-	_item.recalculateTicks();
-	_item.update();
+	_pItem->ylim = ylim;
+	_pItem->ylimMode = AxesItem::Manual;
+	_pItem->updateChildPositions();
+	_pItem->recalculateTicks();
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets XLim mode. If set back to 'auto', XLim is recalulcalted again to match displayed data.
 void Axes::setXLimMode( const QString& mode )
 {
-	_item.xlimMode = mode;
+	_pItem->xlimMode = mode;
 	
-	if ( _item.xlimMode == AxesItem::Auto )
+	if ( _pItem->xlimMode == AxesItem::Auto )
 	{
 		// TODO recalculate xlim here
+		_pItem->updateChildPositions();
 	}
 	
-	_item.update();
+	_pItem->update();
 }
 
 // ============================================================================
 /// Sets YLim mode. If set back to 'auto', YLim is recalulcalted again to match displayed data.
 void Axes::setYLimMode( const QString& mode )
 {
-	_item.ylimMode = mode;
+	_pItem->ylimMode = mode;
 	
-	if ( _item.ylimMode == AxesItem::Auto )
+	if ( _pItem->ylimMode == AxesItem::Auto )
 	{
 		// TODO recalculate xlim here
+		_pItem->updateChildPositions();
 	}
 	
-	_item.update();
+	_pItem->update();
+}
+
+// ============================================================================
+/// Creates child plot object. Assigns handle 'h'.
+/// Do not use this method directly. Use Root:createUIObject instead.
+UIObject* Axes::createPlotObject( const QString& type, Handle h )
+{
+	if ( type == "text" )
+	{
+		Text* pText = new Text( root(), h, this );
+		return pText;
+	}
+	// TODO other types here
+	else
+	{
+		throw Exception( QString("Unknown plot object type: %1").arg( type ) );
+	}
+}
+
+// ============================================================================
+/// MEssage from child: Child size has changed.
+void Axes::childSizeChanged()
+{
+	_pItem->updateChildPositions();
 }
 
 }
