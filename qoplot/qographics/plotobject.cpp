@@ -53,6 +53,9 @@ void PlotObject::initProperties()
 	pItem->usePlotCoordinates.addValue( PlotItem::Off, "off");
 	
 	pItem->position	= Matrix( 3, 1 );
+	
+	pItem->clipping.addValue( PlotItem::On, "on" );
+	pItem->clipping.addValue( PlotItem::Off, "off", true );
 }
 
 // ============================================================================

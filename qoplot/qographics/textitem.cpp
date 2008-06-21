@@ -44,6 +44,14 @@ void TextItem::paint
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
 	pPainter->save();
+	
+		// set clipping
+		if ( clipping == On )
+		{
+			pPainter->setClipRect( clippingRect(), Qt::IntersectClip );
+		}
+	
+		// transform
 		QMatrix matrix;
 		pPainter->rotate( -rotation );
 		pPainter->translate( alignTranlsation() );
@@ -92,7 +100,7 @@ QRectF TextItem::textExtent() const
 	// get text extent
 	QFontMetricsF metrics( font() );
 	
-	return metrics.boundingRect( string );
+	return metrics.tightBoundingRect( string );
 
 }
 
