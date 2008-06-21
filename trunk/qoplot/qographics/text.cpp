@@ -62,8 +62,8 @@ void Text::initProperties()
 	
 	_pItem->verticalAlignment.addValue( TextItem::Top, "top" );
 	_pItem->verticalAlignment.addValue( TextItem::Cap, "cap" );
-	_pItem->verticalAlignment.addValue( TextItem::Middle, "middle" );
-	_pItem->verticalAlignment.addValue( TextItem::Baseline, "baseline", true );
+	_pItem->verticalAlignment.addValue( TextItem::Middle, "middle", true );
+	_pItem->verticalAlignment.addValue( TextItem::Baseline, "baseline" );
 	_pItem->verticalAlignment.addValue( TextItem::Bottom, "bottom" );
 }
 

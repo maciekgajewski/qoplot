@@ -346,6 +346,7 @@ void AxesItem::updateChildPositions()
 		PlotItem* pPlotItem = dynamic_cast<PlotItem*>( pItem );
 		if ( pPlotItem )
 		{
+			// update position
 			if ( pPlotItem->usePlotCoordinates == On )
 			{
 				double x = pPlotItem->position.vectorValue( 2 );
@@ -355,6 +356,8 @@ void AxesItem::updateChildPositions()
 				
 				pPlotItem->setPos( pixel );
 			}
+			// set clipping rectangle
+			pPlotItem->setClippingRect( pPlotItem->mapFromParent( box ).boundingRect() );
 		}
 	}
 }

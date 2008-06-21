@@ -36,6 +36,7 @@ class PlotObject : public UIObject
 	Q_OBJECT
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition );
 	Q_PROPERTY( QString UsePlotCoordinates READ getUsePlotCoordinates WRITE setUsePlotCoordinates );
+	Q_PROPERTY( QString Clipping READ getClipping WRITE setClipping );
 
 public:
 	PlotObject( Root* root, Handle handle, QObject* parent );
@@ -53,6 +54,8 @@ public:
 	QString getUsePlotCoordinates() const { return ((PlotItem*)item())->usePlotCoordinates; }
 	void setUsePlotCoordinates( const QString& s ) { ((PlotItem*)item())->usePlotCoordinates = s; propertyChanged(); }
 
+	QString getClipping() const { return ((PlotItem*)item())->clipping; }
+	void setClipping( const QString& s ) { ((PlotItem*)item())->clipping = s; propertyChanged(); }
 
 
 protected:

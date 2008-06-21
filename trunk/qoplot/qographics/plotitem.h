@@ -36,11 +36,19 @@ public:
 	PlotItem( QGraphicsItem* parent = NULL );
 	virtual ~PlotItem();
 	
+	void setClippingRect( const QRectF& r ) { _clippingRect = r; }
+	const QRectF& clippingRect() const { return _clippingRect; }
+	
 	// enums
 
 	// properties
-	Matrix position;
-	Enum usePlotCoordinates;
+	Matrix position;			///< Position in plot coordinates
+	Enum usePlotCoordinates;	///< If use above position
+	Enum clipping;				///< Clip to plot box on|{off}
+	
+private:
+
+	QRectF _clippingRect;		///< Clipping rectangle, usec to clip to plot area
 
 };
 

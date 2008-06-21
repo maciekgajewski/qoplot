@@ -77,6 +77,13 @@ void Interpreter::interpret( Command& cmd, Root& root )
 			axes( cmd, root );
 			break;
 		}
+		
+		// Text
+		case ocpl::text:
+		{
+			text( cmd, root );
+			break;
+		}
 			
 		default:
 			; // nope
@@ -246,7 +253,7 @@ void Interpreter::figure( Command& cmd, Root& root )
 }
 
 // ============================================================================
-/// Creates axes and current figure. If there si no figure - creates figure too.
+/// Creates axes and current figure. If there is no figure - creates figure too.
 void Interpreter::axes( Command& cmd, Root& root )
 {
 	Handle fig = root.currentFigure();
@@ -261,6 +268,53 @@ void Interpreter::axes( Command& cmd, Root& root )
 	
 	cmd.setArgoutNum( 1 );
 	cmd.addDoubleArgout( 0, axes );
+}
+
+// ============================================================================
+/// Creates text object on current axes
+void Interpreter::text( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 2 )
+	{
+		cmd.retError("Text requires 2 arguments.");
+		return;
+	}
+	
+	if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() )
+	{
+		cmd.retError("Text: first nd second arg should be matrix");
+		return;
+	}
+	
+	if( cmd.argin(1).userType() != QVariant::String )
+	{
+		cmd.retError("Text: second argument should be string");
+	}
+	
+	Matrix position = cmd.arginAsMatrix( 0 );
+	QString string = cmd.arginAsString( 1 );
+	
+	// get current axes
+	Handle h = root.createObject( "text" );
+	
+	Object* pObject = root.objectByHandle( h );
+	
+	if ( pObject )
+	{
+		pObject->setProperty( "String", string );
+		Matrix position3( 1, 3 );
+		position3.setVectorValue( 1, position.vectorValue( 1 ) );
+		position3.setVectorValue( 2, position.vectorValue( 2 ) );
+		pObject->setProperty( "Position", qVariantFromValue<Matrix>( position3 ) );
+		
+		cmd.setArgoutNum( 1 );
+		cmd.addDoubleArgout( 0, h );
+	}
+	else
+	{
+		cmd.retError( "Can't create text object" );
+	}
 }
 
 // EOF
