@@ -49,10 +49,10 @@ public:
 	// properties
 	
 	Matrix getPosition() const { return ((PlotItem*)item())->position; }
-	void setPosition( const Matrix& m ) { ((PlotItem*)item())->position = m; propertyChanged(); }
+	void setPosition( const Matrix& m ) { ((PlotItem*)item())->geometryWillChange(); ((PlotItem*)item())->position = m; propertyChanged(); sizeChanged(); }
 	
-	QString getUsePlotCoordinates() const { return ((PlotItem*)item())->usePlotCoordinates; }
-	void setUsePlotCoordinates( const QString& s ) { ((PlotItem*)item())->usePlotCoordinates = s; propertyChanged(); }
+	virtual QString getUsePlotCoordinates() const { return ((PlotItem*)item())->usePlotCoordinates; }
+	virtual void setUsePlotCoordinates( const QString& s ) { ((PlotItem*)item())->usePlotCoordinates = s; propertyChanged(); }
 
 	QString getClipping() const { return ((PlotItem*)item())->clipping; }
 	void setClipping( const QString& s ) { ((PlotItem*)item())->clipping = s; propertyChanged(); }

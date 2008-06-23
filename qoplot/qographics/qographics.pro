@@ -23,7 +23,9 @@ matrix.h \
  uiitem.h \
  textitem.h \
  plotobject.h \
- plotitem.h
+ plotitem.h \
+ line.h \
+ lineitem.h
 SOURCES += object.cpp \
 root.cpp \
 matrix.cpp \
@@ -38,6 +40,8 @@ matrix.cpp \
  uiitem.cpp \
  textitem.cpp \
  plotobject.cpp \
- plotitem.cpp
+ plotitem.cpp \
+ line.cpp \
+ lineitem.cpp
 FORMS += figurewindow.ui
 

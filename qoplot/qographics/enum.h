@@ -78,7 +78,7 @@ public:
 
 private:
 
-	QMap< int, QString > _values;	///< Possible values
+	QMap< QString, int > _values;	///< Possible values
 	int _defaultValue;				///< Default value
 	int _value;						///< Current value
 };

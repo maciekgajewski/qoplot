@@ -57,6 +57,8 @@ public:
 	
 	virtual UIItem* item() const = 0;			///< Returns pointer to graphics item
 	
+	virtual void free();
+	
 	/// Information: property has been changed.
 	virtual void propertyChanged() { item()->propertyChanged();  }
 	

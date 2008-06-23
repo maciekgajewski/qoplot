@@ -23,6 +23,7 @@
 #include "root.h"
 #include "exceptions.h"
 #include "text.h"
+#include "line.h"
 
 namespace QOGraphics
 {
@@ -106,6 +107,40 @@ void Axes::initProperties()
 	_pItem->pLabelY->setRotation( 90 );
 	_pItem->pLabelY->setMargin( Matrix( 5 ) );
 	
+	Matrix co( 7, 3 );
+	co.setValue( 1, 1, 0.0 );
+	co.setValue( 1, 2, 0.0 );
+	co.setValue( 1, 3, 1.0 );
+	
+	co.setValue( 2, 1, 0.0 );
+	co.setValue( 2, 2, 0.5 );
+	co.setValue( 2, 3, 0.0 );
+	
+	co.setValue( 3, 1, 1.0 );
+	co.setValue( 3, 2, 0.0 );
+	co.setValue( 3, 3, 0.0 );
+
+	co.setValue( 4, 1, 0.0 );
+	co.setValue( 4, 2, 0.75 );
+	co.setValue( 4, 3, 0.75 );
+
+	co.setValue( 5, 1, 0.75 );
+	co.setValue( 5, 2, 0.0 );
+	co.setValue( 5, 3, 0.75 );
+
+	co.setValue( 6, 1, 0.75 );
+	co.setValue( 6, 2, 0.75 );
+	co.setValue( 6, 3, 0.0 );
+
+	co.setValue( 7, 1, 0.25 );
+	co.setValue( 7, 2, 0.25 );
+	co.setValue( 7, 3, 0.25 );
+	
+	_pItem->colorOrder = co;
+	
+	_pItem->nextPlot.addValue( AxesItem::Add, "add" );
+	_pItem->nextPlot.addValue( AxesItem::Replace, "replace", true );
+	_pItem->nextPlot.addValue( AxesItem::ReplaceChildren , "replacechildren" );
 }
 
 // ============================================================================
@@ -250,6 +285,11 @@ UIObject* Axes::createPlotObject( const QString& type, Handle h )
 		Text* pText = new Text( root(), h, this );
 		return pText;
 	}
+	else if ( type == "line" )
+	{
+		Line* pLine = new Line( root(), h, this );
+		return pLine;
+	}
 	// TODO other types here
 	else
 	{
@@ -262,6 +302,25 @@ UIObject* Axes::createPlotObject( const QString& type, Handle h )
 void Axes::childSizeChanged()
 {
 	_pItem->updateChildPositions();
+	_pItem->update();
+}
+
+// ============================================================================
+/// Removes all children, except of constant children
+void Axes::clear()
+{
+	QList<Object*> children = findChildren<Object*>();
+	
+	foreach( Object* pChild, children )
+	{
+		if ( pChild != _pItem->pLabelX	&&
+			pChild != _pItem->pLabelY &&
+			pChild  != _pItem->pTitle )
+		{
+			pChild->free();
+			delete pChild;
+		}
+	}
 }
 
 }

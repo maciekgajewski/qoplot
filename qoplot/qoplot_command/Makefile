@@ -3,7 +3,7 @@ MKOCTFILE=mkoctfile
 DESTDIR=../out
 SRCDIR=../qoplot
 
-all: $(DESTDIR)/qoplot_command.oct $(DESTDIR)/qoplot_path.oct $(DESTDIR)/octplot_redraw.oct 
+all: $(DESTDIR)/qoplot_command.oct $(DESTDIR)/qoplot_path.oct $(DESTDIR)/qoplot_redraw.oct 
 
 $(DESTDIR)/qoplot_command.oct: op_com.o qoplot_command.o
 	$(MKOCTFILE) -v op_com.o qoplot_command.o -o $(DESTDIR)/qoplot_command.oct
@@ -17,8 +17,8 @@ op_com.o: $(SRCDIR)/op_com.cpp $(SRCDIR)/op_com.h
 $(DESTDIR)/qoplot_path.oct: $(DESTDIR)/qoplot_command.oct
 	$(LN_S) qoplot_command.oct $(DESTDIR)/qoplot_path.oct
 
-$(DESTDIR)/octplot_redraw.oct: $(DESTDIR)/qoplot_command.oct
-	$(LN_S) qoplot_command.oct $(DESTDIR)/octplot_redraw.oct
+$(DESTDIR)/qoplot_redraw.oct: $(DESTDIR)/qoplot_command.oct
+	$(LN_S) qoplot_command.oct $(DESTDIR)/qoplot_redraw.oct
 
 clean:
-	rm $(DESTDIR)/octplot_redraw.oct $(DESTDIR)/qoplot_path.oct $(DESTDIR)/qoplot_command.oct op_com.o qoplot_command.o
+	rm $(DESTDIR)/qoplot_redraw.oct $(DESTDIR)/qoplot_path.oct $(DESTDIR)/qoplot_command.oct op_com.o qoplot_command.o

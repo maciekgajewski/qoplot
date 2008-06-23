@@ -49,9 +49,15 @@ Enum::~Enum()
 
 // ============================================================================
 /// Converts Enum to string, returnig string representation of current value.
+/// If multiple strings are associated with value, returns firs one.
 Enum::operator QString() const
 {
-	return _values[ _value ];
+	QList<QString> keys = _values.keys( _value );
+	
+	Q_ASSERT( keys.size() );
+	
+	return keys.first();
+	
 }
 
 // ============================================================================
@@ -65,13 +71,10 @@ Enum::operator int() const
 /// Assigns value from string, searching among avilable values.
 Enum& Enum::operator = ( const QString& str )
 {
-	foreach( int v, _values.keys() )
+	if ( _values.contains( str ) )
 	{
-		if ( _values[ v ] == str )
-		{
-			_value = v;
-			return *this;
-		}
+		_value = _values[ str ];
+		return *this;
 	}
 	
 	throw Exception
@@ -85,7 +88,8 @@ Enum& Enum::operator = ( const QString& str )
 /// Assigns value from integer.
 Enum& Enum::operator = ( int i )
 {
-	if ( _values.contains( i ) )
+	QList<QString> keys = _values.keys( i );
+	if ( keys.size() )
 	{
 		_value = i;
 		return *this;
@@ -98,7 +102,7 @@ Enum& Enum::operator = ( int i )
 /// Adds value to list of available values
 void Enum::addValue( int i, const QString& str, bool def /*= false*/ )
 {
-	_values[ i ] = str;
+	_values[ str ] = i;
 	
 	if ( def )
 	{
@@ -114,15 +118,15 @@ QString Enum::definition() const
 {
 	QStringList valueNames;
 	
-	foreach( int v, _values.keys() )
+	foreach( QString str, _values.keys() )
 	{
-		if ( v == _defaultValue )
+		if ( _values[str] == _defaultValue )
 		{
-			valueNames.append( QString("{%1}").arg( _values[v] ) );
+			valueNames.append( QString("{%1}").arg( str ) );
 		}
 		else
 		{
-			valueNames.append( _values[v] );
+			valueNames.append( str );
 		}
 	}
 	

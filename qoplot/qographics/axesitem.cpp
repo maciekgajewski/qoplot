@@ -19,6 +19,7 @@
 #include <QPainter>
 #include "axesitem.h"
 #include "plotitem.h"
+#include "lineitem.h"
 
 namespace QOGraphics
 {
@@ -65,8 +66,6 @@ void AxesItem::paint
 	, const QStyleOptionGraphicsItem* /*pOption*/
 	, QWidget * /*pWidget*/ /*= NULL*/ )
 {
-	pPainter->setRenderHint( QPainter::Antialiasing, true );
-	
 	drawBox( pPainter );
 	drawXAxis( pPainter );
 	drawYAxis( pPainter );
@@ -74,7 +73,7 @@ void AxesItem::paint
 
 // ============================================================================
 /// Finds position of the inner box, an which data are painted
-QRectF AxesItem::innerBox() const
+QRectF AxesItem::plotBox() const
 {
 	double margin = 0.1; // default margin as size fraction
 	
@@ -120,14 +119,14 @@ void AxesItem::drawBox( QPainter *pPainter )
 	}
 	pPainter->setBrush( color.color() );
 	
-	pPainter->drawRect( innerBox() );
+	pPainter->drawRect( plotBox() );
 }
 
 // ============================================================================
 /// Reclaculates ticks, if in auto mode.
 void AxesItem::recalculateTicks()
 {
-	QRectF boxRect = innerBox();
+	QRectF boxRect = plotBox();
 	double minSpacing = 30.0; // min tick spacing [px] // TODO deduce from font size
 	
 	if ( xtickMode == Auto )
@@ -217,7 +216,7 @@ Matrix AxesItem::generateTicks( double min, double max, double spacing )
 /// Draws X axis, with ticks and label
 void AxesItem::drawXAxis( QPainter *pPainter )
 {
-	QRectF box = innerBox();
+	QRectF box = plotBox();
 	
 	QColor c = xcolor;
 	pPainter->setPen( QPen( c, 1 ) );
@@ -233,7 +232,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 	{
 		double tickPos = xtick.vectorValue( i + 1 );
 		
-		QPointF pixelPos(  box.left() + plotToPixel( QPointF( tickPos, 0 ) ).x()
+		QPointF pixelPos( plotToPixel( QPointF( tickPos, 0 ) ).x()
 			, box.bottom() );
 		
 		// draw tick
@@ -241,7 +240,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 		
 		// draw text
 		QString label;
-		label.sprintf("%g", tickPos );
+		label.sprintf("%.4g", tickPos );
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -258,7 +257,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 /// Draws Y axis, with ticks and label
 void AxesItem::drawYAxis( QPainter *pPainter )
 {
-	QRectF box = innerBox();
+	QRectF box = plotBox();
 	
 	QColor c = ycolor;
 	pPainter->setPen( QPen( c, 1 ) );
@@ -272,14 +271,14 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 	{
 		double tickPos = ytick.vectorValue( i + 1 );
 		
-		QPointF pixelPos(  box.left(), box.top() + plotToPixel( QPointF( 0, tickPos ) ).y() );;
+		QPointF pixelPos(  box.left(), plotToPixel( QPointF( 0, tickPos ) ).y() );
 		
 		// draw tick
 		pPainter->drawLine( pixelPos, pixelPos + QPointF( -tickLength(), 0 ) );
 		
 		// draw text
 		QString label;
-		label.sprintf("%g", tickPos );
+		label.sprintf("%.4g", tickPos );
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -293,7 +292,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 }
 
 // ============================================================================
-/// Converts plot point to pixel. Pixel is relative to inner box's top left corner
+/// Converts plot point to pixel.
 QPointF AxesItem::plotToPixel( const QPointF& p ) const
 {
 	double xmin = xlim.vectorValue( 1 );
@@ -301,8 +300,8 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 	double ymin = ylim.vectorValue( 1 );
 	double ymax = ylim.vectorValue( 2 );
 	
-	QRectF box = innerBox();
-	
+	// find coordinates relative to plot box
+	QRectF box = plotBox();
 	double xPixelsPerUnit = box.width() / ( xmax - xmin );
 	double yPixelsPerUnit = box.height() / ( ymax - ymin );
 	
@@ -315,22 +314,41 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 		? box.height() - ( p.y() - ymin ) * yPixelsPerUnit
 		: ( p.y() - ymin ) * yPixelsPerUnit;
 
-	return QPointF( x, y );
+	// return plot box coorindates trnalsated to axes coordinates
+	return QPointF( x, y ) + box.topLeft();
 }
 
 // ============================================================================
 /// Converts pixel pos to plot position coordinates.
-QPointF AxesItem::pixelToPlot( const QPointF& ) const
+QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 {
-	// TODO
-	return QPointF();
+	double xmin = xlim.vectorValue( 1 );
+	double xmax = xlim.vectorValue( 2 );
+	double ymin = ylim.vectorValue( 1 );
+	double ymax = ylim.vectorValue( 2 );
+	
+	// get coordinates relative to plot box
+	QRectF box = plotBox();
+	QPointF p = pixel - box.topLeft(); // pixel relative t plot box;
+	double xPixelsPerUnit = box.width() / ( xmax - xmin );
+	double yPixelsPerUnit = box.height() / ( ymax - ymin );
+	
+	double x = xdir == Normal
+		? xmin + p.x() / xPixelsPerUnit
+		: xmax - p.x() / xPixelsPerUnit;
+	
+	double y = ydir == Normal
+		? ymax - p.y() / yPixelsPerUnit
+		: ymin + p.y() / yPixelsPerUnit;
+	
+	return QPointF( x, y );
 }
 
 // ============================================================================
 /// Updates child element position after own (or they) geometry change.
 void AxesItem::updateChildPositions()
 {
-	QRectF box = innerBox();
+	QRectF box = plotBox();
 	
 	// first - update position of constant elements
 	
@@ -349,15 +367,15 @@ void AxesItem::updateChildPositions()
 			// update position
 			if ( pPlotItem->usePlotCoordinates == On )
 			{
-				double x = pPlotItem->position.vectorValue( 2 );
-				double y = pPlotItem->position.vectorValue( 1 );
+				double x = pPlotItem->position.vectorValue( 1 );
+				double y = pPlotItem->position.vectorValue( 2 );
 				
-				QPointF pixel = box.topLeft() + plotToPixel( QPointF(x, y) );
+				QPointF pixel = plotToPixel( QPointF(x, y) );
 				
 				pPlotItem->setPos( pixel );
 			}
 			// set clipping rectangle
-			pPlotItem->setClippingRect( pPlotItem->mapFromParent( box ).boundingRect() );
+			pPlotItem->setPlotBox( pPlotItem->mapFromParent( box ).boundingRect() );
 		}
 	}
 }
@@ -372,9 +390,59 @@ void AxesItem::setPixelPositon( PlotItem* pItem, QPointF pos )
 	{
 		pItem->setPos( pos );
 		
-		// TODO set plot coordinates here
+		QPointF plotPos = pixelToPlot( pos );
 		
+		pItem->position.setVectorValue( 1, plotPos.x() );
+		pItem->position.setVectorValue( 2, plotPos.y() );
+		pItem->position.setVectorValue( 3, 0.0 );
 	}
+}
+
+// ============================================================================
+/// Updatex XLim/YLim if in automatic mode
+void AxesItem::dataChanged()
+{
+	// find data boundary from lines
+	
+	QList<QGraphicsItem *> items = children();
+	int linesFound = 0;
+	QRectF dataBoundingRect;
+	
+	foreach( QGraphicsItem* pItem, items )
+	{
+		LineItem* pLineItem = dynamic_cast<LineItem*>( pItem );
+		if ( pLineItem )
+		{
+			if ( linesFound == 0 )
+			{
+				dataBoundingRect = pLineItem->dataBoundingRect();
+			}
+			else
+			{
+				dataBoundingRect |= pLineItem->dataBoundingRect();
+			}
+			linesFound++;
+		}
+	}
+	
+	// apply to axes
+	if ( linesFound > 0 )
+	{
+		dataBoundingRect = dataBoundingRect.normalized();
+		if ( xlimMode == Auto )
+		{
+			xlim.setVectorValue( 1, dataBoundingRect.left() );
+			xlim.setVectorValue( 2, dataBoundingRect.right() );
+		}
+		if ( ylimMode == Auto )
+		{
+			ylim.setVectorValue( 1, dataBoundingRect.top() );
+			ylim.setVectorValue( 2, dataBoundingRect.bottom() );
+		}
+		
+		recalculateTicks();
+	}
+
 }
 
 

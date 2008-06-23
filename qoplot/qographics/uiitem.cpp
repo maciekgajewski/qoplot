@@ -59,9 +59,17 @@ void UIItem::propertyChanged()
 
 // ============================================================================
 /// Warns item that it's geometry will change
-void UIItem::gometryWillChange()
+void UIItem::geometryWillChange()
 {
 	update();
 }
+// ============================================================================
+/// Converts points to pixels
+double UIItem::ptToPixel( double pt, QPaintDevice* /*device*/ ) const
+{
+	// TODO
+	return pt;
+}
+
 
 }

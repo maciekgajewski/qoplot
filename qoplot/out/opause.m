@@ -1,6 +1,7 @@
 function opause(arg)
 
-  octplot_redraw();
+  % MACIEK: is this still needed?
+  %qoplot_redraw();
   
   if(nargin==0)
     builtin("pause");

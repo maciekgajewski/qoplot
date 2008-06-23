@@ -42,7 +42,7 @@ public:
 	virtual ~UIItem();
 	
 	virtual void propertyChanged();		///< Updates item after proertty change
-	void gometryWillChange();
+	void geometryWillChange();
 	
 	// enums used in proeprties
 	enum AutoManual { Auto, Manual };
@@ -65,6 +65,8 @@ protected:
 
 	QPen	pen( const QColor& color ) const;	///< Pen created from properties
 	QFont	font() const;						///< Font created from properties
+	
+	double ptToPixel( double pt, QPaintDevice* device ) const;	///< Converts points to pixels
 	
 };
 

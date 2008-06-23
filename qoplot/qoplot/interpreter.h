@@ -47,6 +47,9 @@ private:
 	void figure( Command& cmd, Root& root );
 	void axes( Command& cmd, Root& root );
 	void text( Command& cmd, Root& root );
+	void line( Command& cmd, Root& root );
+	void cla( Command& cmd, Root& root );
+	void del( Command& cmd, Root& root );
 
 };
 
