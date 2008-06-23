@@ -29,6 +29,7 @@ bool Root::_graphicsInitialized = false;
 // Constructor
 Root::Root( QObject* parent ): Object( NULL, RootHandle, parent )
 {
+	_beingDeleted = false;
 	// init library
 	if ( ! _graphicsInitialized )
 	{
@@ -52,16 +53,18 @@ Root::Root( QObject* parent ): Object( NULL, RootHandle, parent )
 // Destructor
 Root::~Root()
 {
-	// nope
+	_beingDeleted = true;
 }
 
 // ============================================================================
 // Object destroyed
 void Root::objectDestroyed( Handle handle )
 {
+	if ( _beingDeleted ) return;
+	
+	qDebug("Object with handle %d destroyed", handle );
 	Q_ASSERT( _objects.contains( handle ) );
 
-	qDebug("Object with handle %d destroyed", handle );
 
 	_objects.remove( handle );
 	
@@ -266,6 +269,21 @@ Handle Root::currentAxes() const
 	}
 	
 	return InvalidHandle;
+}
+
+// ============================================================================
+/// Makes sure axes are created. Does nothing if axes are created, but if they aren't, creates them.
+void Root::makeSureAxesCreated()
+{
+	const Figure* pFigure = qobject_cast<const Figure*>( objectByHandle( _currentFigure ) );
+	if ( pFigure && pFigure->currentAxes() )
+	{
+		// axes exist, do nothing
+		return;
+	}
+	
+	Handle fig = addFigure();
+	createObject( "axes", fig );
 }
 
 }; // namespace

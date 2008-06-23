@@ -23,6 +23,8 @@
 namespace QOGraphics
 {
 
+class AxesItem;
+
 /**
 Item comon for all plot objects - objects placen on axes.
 
@@ -36,8 +38,9 @@ public:
 	PlotItem( QGraphicsItem* parent = NULL );
 	virtual ~PlotItem();
 	
-	void setClippingRect( const QRectF& r ) { _clippingRect = r; }
-	const QRectF& clippingRect() const { return _clippingRect; }
+	void setPlotBox( const QRectF& r ) { _plotBox = r; }
+	const QRectF& plotBox() const { return _plotBox; }
+	AxesItem* axesItem() const; ///< Returns parent axes item
 	
 	// enums
 
@@ -48,7 +51,7 @@ public:
 	
 private:
 
-	QRectF _clippingRect;		///< Clipping rectangle, usec to clip to plot area
+	QRectF _plotBox;			///< Axes plot box, in this item coordinates
 
 };
 

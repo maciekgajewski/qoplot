@@ -48,7 +48,7 @@ void TextItem::paint
 		// set clipping
 		if ( clipping == On )
 		{
-			pPainter->setClipRect( clippingRect(), Qt::IntersectClip );
+			pPainter->setClipRect( plotBox(), Qt::IntersectClip );
 		}
 	
 		// transform

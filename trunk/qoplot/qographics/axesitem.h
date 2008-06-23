@@ -54,7 +54,10 @@ public:
 	
 	void recalculateTicks();				///< Recalculates ticks
 	void updateChildPositions();			///< Updates child positons
+	void dataChanged();						///< Updates YLim/XLim to current data
 	
+	// enum used in properties
+	enum ReplaceMode { Add, Replace, ReplaceChildren }; 
 	
 	// properties (stored here, set in Axes )
 	
@@ -65,6 +68,8 @@ public:
 	Color xcolor, ycolor;
 	Enum xlimMode, ylimMode;
 	Enum xdir, ydir;
+	Matrix colorOrder;
+	Enum nextPlot;
 	
 	// constant child elements
 	
@@ -73,16 +78,16 @@ public:
 	Text* pTitle;
 	
 		
+	QPointF plotToPixel( const QPointF& p ) const;	///< converts between plot and pixel space
+	QPointF pixelToPlot( const QPointF& p ) const;	///< converts between plot and pixel space
+	QRectF plotBox() const;							///< Returns coordinates of plot box
+	
 private:
 	
 	// utilities
 	
-	QRectF innerBox() const;						///< Finds coordinates of inner box
 	double findSpacing( double len, double pixels, double minPixels );
 	Matrix generateTicks( double min, double max, double spacing );
-	
-	QPointF plotToPixel( const QPointF& p ) const;	///< converts between plot and pixel space
-	QPointF pixelToPlot( const QPointF& p ) const;	///< converts between plot and pixel space
 	
 	double tickLength() { return 5.0; }				///< Tick length, in pixels TODO calculate from property
 	

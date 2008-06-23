@@ -15,18 +15,29 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "plotitem.h"
+#include "axesitem.h"
 
 namespace QOGraphics
 {
 
+// ============================================================================
+// Constructor
 PlotItem::PlotItem( QGraphicsItem* parent ): UIItem( parent )
 {
 }
 
-
+// ============================================================================
+// Destructor
 PlotItem::~PlotItem()
 {
 }
 
+// ============================================================================
+/// Return axes item which is paretn for this plot item.
+AxesItem* PlotItem::axesItem() const
+{
+	// TODO naive implementation, will have to be changed to increment grouping
+	return dynamic_cast<AxesItem*>( parentItem() );
+}
 
 }

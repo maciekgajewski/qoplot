@@ -56,13 +56,13 @@ public:
 	virtual QString getType() const { return "text"; }
 	
 	Matrix getRotation() const { return _pItem->rotation; }
-	void setRotation( const Matrix& m ) { _pItem->gometryWillChange(); _pItem->rotation = m.toScalar(); propertyChanged(); sizeChanged(); }
+	void setRotation( const Matrix& m ) { _pItem->geometryWillChange(); _pItem->rotation = m.toScalar(); propertyChanged(); sizeChanged(); }
 
 	Matrix getMargin() const { return _pItem->margin; }
-	void setMargin( const Matrix& m ) { _pItem->gometryWillChange(); _pItem->margin = m.toScalar(); propertyChanged(); sizeChanged(); }
+	void setMargin( const Matrix& m ) { _pItem->geometryWillChange(); _pItem->margin = m.toScalar(); propertyChanged(); sizeChanged(); }
 
 	QString getString() const { return _pItem->string; }
-	void setString( const QString& s ) { _pItem->gometryWillChange(); _pItem->string = s; propertyChanged(); sizeChanged(); }
+	void setString( const QString& s ) { _pItem->geometryWillChange(); _pItem->string = s; propertyChanged(); sizeChanged(); }
 	
 	QVariant getEdgeColor() const { return _pItem->edgeColor.toVariant(); }
 	void setEdgeColor( const QVariant& v ) { _pItem->edgeColor.fromVariant(v); propertyChanged(); }
@@ -71,10 +71,10 @@ public:
 	void setBackgroundColor( const QVariant& v ) { _pItem->backgroundColor.fromVariant(v); propertyChanged(); }
 	
 	QString getHorizontalAlignment() const { return _pItem->horizontalAlignment; }
-	void setHorizontalAlignment( const QString& s ) { _pItem->gometryWillChange(); _pItem->horizontalAlignment = s; propertyChanged(); sizeChanged(); }
+	void setHorizontalAlignment( const QString& s ) { _pItem->geometryWillChange(); _pItem->horizontalAlignment = s; propertyChanged(); sizeChanged(); }
 
 	QString getVerticalAlignment() const { return _pItem->verticalAlignment; }
-	void setVerticalAlignment( const QString& s ) { _pItem->gometryWillChange(); _pItem->verticalAlignment = s; propertyChanged(); sizeChanged(); }
+	void setVerticalAlignment( const QString& s ) { _pItem->geometryWillChange(); _pItem->verticalAlignment = s; propertyChanged(); sizeChanged(); }
 
 protected:
 

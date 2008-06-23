@@ -16,11 +16,13 @@
 //
 
 #include <QStringList>
+#include <QApplication>
 
 #include "command.h"
 #include "root.h"
 #include "interpreter.h"
 #include "exceptions.h"
+#include "axes.h"
 
 using namespace QOGraphics;
 
@@ -82,6 +84,27 @@ void Interpreter::interpret( Command& cmd, Root& root )
 		case ocpl::text:
 		{
 			text( cmd, root );
+			break;
+		}
+		
+		// Line
+		case ocpl::line:
+		{
+			line( cmd, root );
+			break;
+		}
+		
+		// Cla
+		case ocpl::cla:
+		{
+			cla( cmd, root );
+			break;
+		}
+		
+		// Delete:
+		case ocpl::del:
+		{
+			del( cmd, root );
 			break;
 		}
 			
@@ -283,7 +306,7 @@ void Interpreter::text( Command& cmd, Root& root )
 	
 	if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() )
 	{
-		cmd.retError("Text: first nd second arg should be matrix");
+		cmd.retError("Text: first argument should be matrix");
 		return;
 	}
 	
@@ -295,7 +318,8 @@ void Interpreter::text( Command& cmd, Root& root )
 	Matrix position = cmd.arginAsMatrix( 0 );
 	QString string = cmd.arginAsString( 1 );
 	
-	// get current axes
+	// create text object
+	root.makeSureAxesCreated();
 	Handle h = root.createObject( "text" );
 	
 	Object* pObject = root.objectByHandle( h );
@@ -316,6 +340,106 @@ void Interpreter::text( Command& cmd, Root& root )
 		cmd.retError( "Can't create text object" );
 	}
 }
+
+// ============================================================================
+/// Creates line object on current axes
+void Interpreter::line( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 2 )
+	{
+		cmd.retError("Line requires 2 arguments.");
+		return;
+	}
+	
+	if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() || cmd.argin(1).userType() != qMetaTypeId<Matrix>() )
+	{
+		cmd.retError("Text: first and second arguments should be matrices");
+		return;
+	}
+	
+	Matrix x = cmd.arginAsMatrix( 0 );
+	Matrix y = cmd.arginAsMatrix( 1 );
+	
+	// create object
+	root.makeSureAxesCreated();
+	Handle h = root.createObject( "line" );
+	
+	Object* pObject = root.objectByHandle( h );
+	
+	if ( pObject )
+	{
+		pObject->setProperty( "XData", qVariantFromValue<Matrix>( x ) );
+		pObject->setProperty( "YData", qVariantFromValue<Matrix>( y ) );
+		
+		cmd.setArgoutNum( 1 );
+		cmd.addDoubleArgout( 0, h );
+	}
+	else
+	{
+		cmd.retError( "Can't create line object" );
+	}
+}
+
+// ============================================================================
+/// clears current axes
+void Interpreter::cla( Command& cmd, Root& root )
+{
+	root.makeSureAxesCreated();
+	Handle h = root.currentAxes();
+	
+	Axes* pAxes = qobject_cast<Axes*>( root.objectByHandle( h ) );
+	
+	if ( pAxes )
+	{
+		pAxes->clear();
+		cmd.setArgoutNum( 0 );
+	}
+	else
+	{
+		cmd.retError("Couldn't get current axes");
+	}
+}
+
+// ============================================================================
+/// Deletes object
+void Interpreter::del( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 1 )
+	{
+		cmd.retError("Delete requires argument.");
+		return;
+	}
+	
+	Handle h = Handle(cmd.arginAsMatrix(0).toScalar());
+	
+	// special case - if root deleted - exit
+	if ( h == Object::RootHandle )
+	{
+		cmd.setArgoutNum( 0 );
+		root.free();
+		qApp->quit();
+		return;
+	}
+	else
+	{
+		Object* pObject = root.objectByHandle( h );
+		if ( pObject )
+		{
+			delete pObject;
+			cmd.setArgoutNum( 0 );
+		}
+		else
+		{
+			cmd.retError("Ivalid handle: no such object.");
+		}
+	}
+	
+	
+	
+}
+
 
 // EOF
 

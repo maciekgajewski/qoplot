@@ -81,7 +81,7 @@ void UIObject::initProperties()
 	pItem->clipping.addValue( UIItem::On, "on", true );
 	pItem->clipping.addValue( UIItem::Off, "off");
 	
-	pItem->lineStyle.addValue( Qt::SolidLine, "-");
+	pItem->lineStyle.addValue( Qt::SolidLine, "-", true);
 	pItem->lineStyle.addValue( Qt::DashLine, "--");
 	pItem->lineStyle.addValue( Qt::DotLine, ":");
 	pItem->lineStyle.addValue( Qt::DashDotLine, "-.");
@@ -101,6 +101,14 @@ void UIObject::initProperties()
 	pItem->fontAngle.addValue( QFont::StyleNormal, "normal", true );
 	pItem->fontAngle.addValue( QFont::StyleItalic, "italic" );
 	pItem->fontAngle.addValue( QFont::StyleOblique, "oblique" );
+}
+
+// ============================================================================
+/// Deleted associated Graphics Item. Should be called manually just before 
+/// deleting instance.
+void UIObject::free()
+{
+	delete item();
 }
 
 } // namespace

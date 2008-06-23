@@ -74,6 +74,8 @@ public:
 	void setHandle( Handle h );
 	Root* root() const { return _pRoot; }
 	
+	virtual void free() {} ; ///< Cleans up object when deleted manually
+	
 	// Property access / querying
 	
 	QStringList properties() const;

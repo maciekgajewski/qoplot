@@ -30,6 +30,7 @@ FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
 	setupUi( this );
 	
 	view->setScene( & scene );
+	view->setRenderHint( QPainter::Antialiasing, true );
 }
 
 // ============================================================================

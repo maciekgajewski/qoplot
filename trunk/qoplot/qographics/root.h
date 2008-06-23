@@ -65,6 +65,9 @@ public:
 	/// Returns handle to current figure
 	Handle currentFigure() const { return _currentFigure; }
 	
+	/// Makes sure axes are created
+	void makeSureAxesCreated();
+	
 	/// Returns handle to current axes
 	Handle currentAxes() const;
 	
@@ -104,6 +107,7 @@ private:
 	Handle	_firstFreeHandle;					///< First free handle, used to handle allocation
 	
 	static bool _graphicsInitialized;			///< Flag used to intilaize graphics
+	bool	_beingDeleted;						///< Flag - is deleted already
 
 };
 

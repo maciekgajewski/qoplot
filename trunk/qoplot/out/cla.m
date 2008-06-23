@@ -25,5 +25,5 @@
 ## Keywords: octplot graphics
 
 function cla()
-  octplot_command('cla');
+  qoplot_command('cla');
 endfunction

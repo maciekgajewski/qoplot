@@ -36,33 +36,34 @@ class Axes : public UIObject
 {
 	Q_OBJECT
 	
-	Q_PROPERTY( QString Box READ getBox WRITE setBox );
+	Q_PROPERTY( QString Box READ getBox WRITE setBox )
 	//Q_PROPERTY( QOGraphics::Matrix CLim READ getClim WRITE setClim );
 	//Q_PROPERTY( QString CLimMode READ getCLimMode WRITE setCLimMode );
 	//Q_PROPERTY( Matrix Legend READ getLegend WRITE setLegend );
-	//Q_PROPERTY( QString NextPlot READ getNextPlot WRITE setNextPlot );
+	Q_PROPERTY( QString NextPlot READ getNextPlot WRITE setNextPlot );
 	//Q_PROPERTY( Matrix TickLength READ getTickLength WRITE setTickLength );
 	//Q_PROPERTY( QString XAxisLocation READ getXAxisLocation WRITE setXAxisLocation );
 	//Q_PROPERTY( QString YAxisLocation READ getYAxisLocation WRITE setYAxisLocation );
 	//Q_PROPERTY( QString GridLineStyle READ getGridLineStyle WRITE setGridLineStyle );
-	Q_PROPERTY( QVariant XColor READ getXColor WRITE setXColor );
-	Q_PROPERTY( QVariant YColor READ getYColor WRITE setYColor );
-	Q_PROPERTY( QOGraphics::Matrix XLabel READ getXLabel );
-	Q_PROPERTY( QOGraphics::Matrix YLabel READ getYLabel );
-	Q_PROPERTY( QOGraphics::Matrix Title READ getTitle );
-	Q_PROPERTY( QOGraphics::Matrix XLim READ getXLim WRITE setXLim );
-	Q_PROPERTY( QOGraphics::Matrix YLim READ getYLim WRITE setYLim );
-	Q_PROPERTY( QString XLimMode READ getXLimMode WRITE setXLimMode );
-	Q_PROPERTY( QString YLimMode READ getYLimMode WRITE setYLimMode );
-	Q_PROPERTY( QOGraphics::Matrix XTick READ getXTick WRITE setXTick );
-	Q_PROPERTY( QOGraphics::Matrix YTick READ getYTick WRITE setYTick );
+	Q_PROPERTY( QVariant XColor READ getXColor WRITE setXColor )
+	Q_PROPERTY( QVariant YColor READ getYColor WRITE setYColor )
+	Q_PROPERTY( QOGraphics::Matrix XLabel READ getXLabel )
+	Q_PROPERTY( QOGraphics::Matrix YLabel READ getYLabel )
+	Q_PROPERTY( QOGraphics::Matrix Title READ getTitle )
+	Q_PROPERTY( QOGraphics::Matrix XLim READ getXLim WRITE setXLim )
+	Q_PROPERTY( QOGraphics::Matrix YLim READ getYLim WRITE setYLim )
+	Q_PROPERTY( QString XLimMode READ getXLimMode WRITE setXLimMode )
+	Q_PROPERTY( QString YLimMode READ getYLimMode WRITE setYLimMode )
+	Q_PROPERTY( QOGraphics::Matrix XTick READ getXTick WRITE setXTick )
+	Q_PROPERTY( QOGraphics::Matrix YTick READ getYTick WRITE setYTick )
 	//Q_PROPERTY( QStringList XTickLabel READ getXTickLabel WRITE setXTickLabel );
 	//Q_PROPERTY( QStringList YTickLabel READ getYTickLabel WRITE setYTickLabel );
-	Q_PROPERTY( QString XTickMode READ getXTickMode WRITE setXTickMode );
-	Q_PROPERTY( QString YTickMode READ getYTickMode WRITE setYTickMode );
-	Q_PROPERTY( QString XDir READ getXDir WRITE setXDir );
-	Q_PROPERTY( QString YDir READ getYDir WRITE setYDir );
-
+	Q_PROPERTY( QString XTickMode READ getXTickMode WRITE setXTickMode )
+	Q_PROPERTY( QString YTickMode READ getYTickMode WRITE setYTickMode )
+	Q_PROPERTY( QString XDir READ getXDir WRITE setXDir )
+	Q_PROPERTY( QString YDir READ getYDir WRITE setYDir )
+	Q_PROPERTY( QOGraphics::Matrix ColorOrder READ getColorOrder WRITE setColorOrder )
+	
 public:
 
 	Axes( Root* root, Handle handle, QObject* parent );
@@ -77,8 +78,11 @@ public:
 	/// Plot object factory
 	UIObject* createPlotObject( const QString& type, Handle h );
 	
-	// Message from child - size changed
+	/// Message from child - size changed
 	void childSizeChanged();
+	
+	/// Clears axes (cla)
+	void clear();
 	
 	
 	// prioperties
@@ -127,6 +131,12 @@ public:
 	Matrix getYLabel() const { return Matrix( _pItem->pLabelY->handle() ); }
 	Matrix getTitle() const { return Matrix( _pItem->pTitle->handle() ); }
 	
+	Matrix getColorOrder() const { return _pItem->colorOrder; }
+	void setColorOrder( const Matrix& m ) { _pItem->colorOrder = m; }
+		
+	QString getNextPlot() const { return _pItem->nextPlot; }
+	void setNextPlot( const QString& s) { _pItem->nextPlot = s; }
+
 protected:
 
 	virtual void initProperties();			///< Itnialzies proerties
