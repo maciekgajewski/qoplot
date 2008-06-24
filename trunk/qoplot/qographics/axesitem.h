@@ -39,9 +39,11 @@ public:
 	AxesItem( QGraphicsItem * parent = NULL );
 	virtual ~AxesItem();
 	
-	/// Item proeprties
-	QSizeF size() const { return _size; }
-	void setSize( const QSizeF& size );
+	// Item proeprties
+	//QSizeF size() const { return _size; } TODO remove
+	//void setSize( const QSizeF& size );
+	void updateSize();
+	void setFigureRect( const QRect& r ) { _figureRect = r; }
 	
 	/// Paints item
 	virtual void paint
@@ -50,7 +52,7 @@ public:
 		, QWidget * widget = NULL );
 		
 	/// Returns item bounding rectangle
-	virtual QRectF boundingRect() const{ return QRectF( QPointF(0, 0), _size ); }
+	virtual QRectF boundingRect() const;
 	
 	void recalculateTicks();				///< Recalculates ticks
 	void updateChildPositions();			///< Updates child positons
@@ -58,6 +60,7 @@ public:
 	
 	// enum used in properties
 	enum ReplaceMode { Add, Replace, ReplaceChildren }; 
+	enum Units { Inches, Centimeters, Normalized, Points, Pixels };
 	
 	// properties (stored here, set in Axes )
 	
@@ -70,6 +73,10 @@ public:
 	Enum xdir, ydir;
 	Matrix colorOrder;
 	Enum nextPlot;
+	Matrix position; // 1x4: [ left bottom width height ]
+	Enum units; 	// inches  | centimeters | {normalized} | points | pixels
+	Matrix clim;	// TODO what is this used for?
+	Enum climMode;
 	
 	// constant child elements
 	
@@ -102,7 +109,8 @@ private:
 	
 	// data
 	
-	QSizeF _size;
+	QSizeF _size;							///< Current pixel size
+	QRect _figureRect;						///< Current figure rectangle to paint on
 
 };
 

@@ -111,6 +111,7 @@ void LineItem::drawMarker( QPainter* painter, const QPointF& pos )
 {
 	// TODO
 }
+
 // ============================================================================
 /// Returns data bounding rect.
 QRectF LineItem::dataBoundingRect() const

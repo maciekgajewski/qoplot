@@ -33,11 +33,13 @@ Figure::Figure( Root* root, Handle handle, QObject* parent ) : Object( root, han
 	connect( &_window, SIGNAL(closed()), SLOT(windowClosed()) );
 	connect( &_window, SIGNAL(resized()), SLOT(windowResized()) );
 	
-	_pAxes = NULL; // TODO temp, replace with subplot slots
-	
 	// default color
 	_backgroundColor = QApplication::palette().color( QPalette::Button );
 	_window.scene.setBackgroundBrush( _backgroundColor.color() );
+	_currentAxes = InvalidHandle;
+	
+	// init colormap
+	initColorMap();
 }
 
 // ============================================================================
@@ -91,7 +93,7 @@ void Figure::setPosition( const Matrix& pos )
 	g.setWidth( int( pos.value( 1, 3 ) ) );
 	g.setHeight( int( pos.value( 1, 4 ) ) );
 	
-	qDebug("setting geometry: %d,%d %dx%d", g.x(), g.y(), g.width(), g.height() );
+	//qDebug("setting geometry: %d,%d %dx%d", g.x(), g.y(), g.width(), g.height() );
 	
 	_window.setGeometry( g );
 }
@@ -115,37 +117,82 @@ void Figure::setCurrentAxes( const Matrix& m )
 /// Creates axes with specifed handle. If axes already exists for specified sublot area, they are removed
 Axes* Figure::createAxes( Handle h )
 {
-	// TODO add subplot handling
-	if ( _pAxes )
-	{
-		delete _pAxes;
-	}
-	
-	_pAxes = new Axes( root(), h, this );
+	Axes* pAxes = new Axes( root(), h, this );
+	connect( pAxes, SIGNAL(destroyed( QObject* )), SLOT(axesDeleted(QObject*) ) );
 	
 	_currentAxes = h;
 	
-	positionAxes();
+	windowResized(); // To let axes knwo about our position
 	
-	return _pAxes;
-}
-
-// ============================================================================
-/// Positons axes on figure, so they occupy appropriate places.
-void Figure::positionAxes()
-{
-	// TODO add subplot handling
-	if ( _pAxes )
-	{
-		_pAxes->setPosition( _window.view->rect() );
-	}
+	return pAxes;
 }
 
 // ============================================================================
 /// Handles window resize event. Repositons axes on figure.
 void Figure::windowResized()
 {
-	positionAxes();
+	QList<Axes*> axes = findChildren<Axes*>();
+	foreach( Axes* a, axes )
+	{
+		a->setFigureRect( _window.view->rect() );
+		a->sizeChanged();
+	}
+}
+
+// ============================================================================
+/// Forces scene repaint
+void Figure::redraw()
+{
+	_window.scene.update();
+}
+
+// ============================================================================
+/// Removes all axes form figure
+void Figure::clear()
+{
+	QList<Axes*> axes = findChildren<Axes*>();
+	
+	foreach( Axes* a, axes )
+	{
+		disconnect( a, NULL, this, NULL );
+		a->free();
+		delete a;
+	}
+	
+	_currentAxes = InvalidHandle;
+}
+
+// ============================================================================
+/// Handles axes deletion. If axes are current, invalidates current axes handle
+void Figure::axesDeleted( QObject* pAxes )
+{
+	Axes* a = qobject_cast<Axes*>( pAxes );
+	if ( a && a->handle() == _currentAxes )
+	{
+		_currentAxes = InvalidHandle;
+	}
+}
+
+// ============================================================================
+/// Initialzies color map with nice 64 green-to-red color.
+void Figure::initColorMap()
+{
+	const int colors = 64;
+	Matrix map( colors, 3 );
+	
+	for( int i = 0; i < colors; i++ )
+	{
+		double green	= double( colors - i ) / colors;
+		double red		= double(i) / colors;
+		
+		
+		qDebug("red: %f, green: %f", red, green ); // TODOD remove
+		map.setValue( i+1, 1, red );
+		map.setValue( i+1, 2, green );
+		map.setValue( i+1, 3, 0.0 ); // no blue
+	}
+	
+	_colorMap = map;
 }
 
 

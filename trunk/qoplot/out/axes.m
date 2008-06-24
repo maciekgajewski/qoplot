@@ -29,11 +29,19 @@
 ## Author: Shai Ayal <shaiay@users.sourceforge.net>
 ## Keywords: octplot graphics
 function out = axes(varargin)
-  #TODO support other call version. This is only the simplest one
-  #suppot also axes(h) which sets current axes, and axes('propname',value,...)
-  out = qoplot_command("axes"){1};
-
-  if length(varargin),
-    set(out,varargin{:});
+  
+  if length(varargin) == 1
+    # first argin is a handle, use it to set current axes
+    h = varargin(1){1}
+    if ishandle( h )
+    	set(gcf,'CurrentAxes',h);
+	else
+		usage("axes(h) or axes([prop,value,...])");
+	endif
+  else
+	out = qoplot_command("axes"){1};
+	  if length(varargin),
+    	set(out,varargin{:});
+  	endif
   endif
 endfunction

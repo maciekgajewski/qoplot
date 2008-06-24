@@ -81,9 +81,9 @@ void Object::setProperty( const QString& name, const QVariant& value )
 	
 	if ( propName == "" )
 	{
-		qDebug("No usch property: %s", qPrintable( name ) );
+		qDebug("No such property: %s", qPrintable( name ) );
 	}
-	qDebug("setting property %s, type: %d", qPrintable( propName ), value.userType() );
+	//qDebug("setting property %s, type: %d", qPrintable( propName ), value.userType() );
 	QObject::setProperty( propName.toUtf8().data(), value );
 }
 
@@ -114,13 +114,24 @@ QVariant Object::getParent() const
 // Returns vector of child object handles
 Matrix Object::getChildren() const
 {
-	QList<Object*> children = findChildren<Object*>();
+	QList<QObject*> allChildren = children(); // all children
 	
-	Matrix matrix( 1, children.size() ); // row vector
+	QList<Object*> objectChildren; // list narrowed to Objects
 	
-	for( int i = 0; i < children.size(); i++ )
+	foreach( QObject* pChild, allChildren )
 	{
-		matrix.setValue( 1, i+1, children[ i ]->handle() );
+		Object* pObject = qobject_cast<Object*>( pChild );
+		if ( pObject )
+		{
+			objectChildren.append( pObject );
+		}
+	}
+	
+	Matrix matrix( objectChildren.size(), 1 ); // column vector
+	
+	for( int i = 0; i < objectChildren.size(); i++ )
+	{
+		matrix.setValue( 1, i+1, objectChildren[ i ]->handle() );
 	}
 	
 	return matrix;
