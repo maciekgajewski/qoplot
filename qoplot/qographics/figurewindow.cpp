@@ -30,7 +30,7 @@ FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
 	setupUi( this );
 	
 	view->setScene( & scene );
-	view->setRenderHint( QPainter::Antialiasing, true );
+	
 }
 
 // ============================================================================
@@ -54,6 +54,9 @@ void FigureWindow::closeEvent( QCloseEvent* pEvent )
 /// Emits 'resized()' ingla when window is resized.
 void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
+	view->setSceneRect( view->rect() );
+	QPointF sz = view->mapToScene( QPoint(0, 0 ));
+	//qDebug("scene at 0,0: %f,%f", sz.x(), sz.y() );
 	emit resized();
 }
 

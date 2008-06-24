@@ -37,8 +37,8 @@ class Axes : public UIObject
 	Q_OBJECT
 	
 	Q_PROPERTY( QString Box READ getBox WRITE setBox )
-	//Q_PROPERTY( QOGraphics::Matrix CLim READ getClim WRITE setClim );
-	//Q_PROPERTY( QString CLimMode READ getCLimMode WRITE setCLimMode );
+	Q_PROPERTY( QOGraphics::Matrix CLim READ getCLim WRITE setCLim );
+	Q_PROPERTY( QString CLimMode READ getCLimMode WRITE setCLimMode );
 	//Q_PROPERTY( Matrix Legend READ getLegend WRITE setLegend );
 	Q_PROPERTY( QString NextPlot READ getNextPlot WRITE setNextPlot );
 	//Q_PROPERTY( Matrix TickLength READ getTickLength WRITE setTickLength );
@@ -63,6 +63,9 @@ class Axes : public UIObject
 	Q_PROPERTY( QString XDir READ getXDir WRITE setXDir )
 	Q_PROPERTY( QString YDir READ getYDir WRITE setYDir )
 	Q_PROPERTY( QOGraphics::Matrix ColorOrder READ getColorOrder WRITE setColorOrder )
+	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
+	Q_PROPERTY( QString Units READ getUnits WRITE setUnits )
+	
 	
 public:
 
@@ -71,12 +74,18 @@ public:
 	
 	// visual setup and properties
 	
-	void setPosition( const QRectF& pos ); /// Sets axes postion in figure
+	//void setPosition( const QRectF& pos ); /// Sets axes postion in figure TODO remove
 	virtual UIItem* item() const { return _pItem; }
 	
 	
 	/// Plot object factory
 	UIObject* createPlotObject( const QString& type, Handle h );
+	
+	/// Size changed -  update actual size to figure/position
+	void sizeChanged();
+	
+	/// Message from figure - figure rect
+	void setFigureRect( const QRect& r ){ _pItem->setFigureRect( r ); }
 	
 	/// Message from child - size changed
 	void childSizeChanged();
@@ -136,6 +145,18 @@ public:
 		
 	QString getNextPlot() const { return _pItem->nextPlot; }
 	void setNextPlot( const QString& s) { _pItem->nextPlot = s; }
+	
+	Matrix getPosition() const { return _pItem->position; }
+	void setPosition( const Matrix& m ) { _pItem->geometryWillChange(); _pItem->position = m; sizeChanged(); }
+	
+	QString getUnits() const { return _pItem->units; }
+	void setUnits( const QString& s ) { _pItem->units = s; }// TODO apply
+	
+	Matrix getCLim() const { return _pItem->clim; }
+	void setCLim( const Matrix& m ) { _pItem->clim = m; }
+	
+	QString getCLimMode() const { return _pItem->climMode; }
+	void setCLimMode( const QString& s ) { _pItem->climMode = s; }
 
 protected:
 

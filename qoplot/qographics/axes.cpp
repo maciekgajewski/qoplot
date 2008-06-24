@@ -141,6 +141,27 @@ void Axes::initProperties()
 	_pItem->nextPlot.addValue( AxesItem::Add, "add" );
 	_pItem->nextPlot.addValue( AxesItem::Replace, "replace", true );
 	_pItem->nextPlot.addValue( AxesItem::ReplaceChildren , "replacechildren" );
+	
+	_pItem->units.addValue( AxesItem::Inches, "inches" );
+	_pItem->units.addValue( AxesItem::Centimeters, "centimeters" );
+	_pItem->units.addValue( AxesItem::Normalized, "normalized", true );
+	_pItem->units.addValue( AxesItem::Points, "points" );
+	_pItem->units.addValue( AxesItem::Pixels, "pixels" );
+	
+	_pItem->position = Matrix( 1, 4 );
+	_pItem->position.setVectorValue( 1, 0.1 );
+	_pItem->position.setVectorValue( 2, 0.1 );
+	_pItem->position.setVectorValue( 3, 0.8 );
+	_pItem->position.setVectorValue( 4, 0.8 );
+	
+	Matrix clim( 1, 2 );
+	clim.setVectorValue( 1, 0.0 );
+	clim.setVectorValue( 2, 1.0 );
+	
+	_pItem->clim = clim;
+	
+	_pItem->climMode.addValue( AxesItem::Auto, "auto", true );
+	_pItem->climMode.addValue( AxesItem::Manual, "manual" );
 }
 
 // ============================================================================
@@ -152,13 +173,14 @@ Axes::~Axes()
 
 // ============================================================================
 /// Setsd axes position
+/*
 void Axes::setPosition( const QRectF& pos )
 {
 	_pItem->setPos( pos.topLeft() );
 	_pItem->setSize( pos.size() );
 	_pItem->updateChildPositions();
 }
-
+*/
 // ============================================================================
 /// Sets 'box visible' property
 void Axes::setBox( const QString& box )
@@ -321,6 +343,15 @@ void Axes::clear()
 			delete pChild;
 		}
 	}
+	
+	_pItem->update();
+}
+
+// ============================================================================
+/// Size changedm or becouse figure was resize, od becouse 'position' property has changed.
+void Axes::sizeChanged()
+{
+	_pItem->updateSize();
 }
 
 }

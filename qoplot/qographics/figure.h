@@ -39,6 +39,7 @@ class Figure : public Object
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
 	Q_PROPERTY( QVariant Color READ getColor WRITE setColor )
 	Q_PROPERTY( QOGraphics::Matrix CurrentAxes READ getCurrentAxes WRITE setCurrentAxes );
+	Q_PROPERTY( QOGraphics::Matrix ColorMap READ getColorMap WRITE setColorMap );
 	
 public:
 	
@@ -57,6 +58,11 @@ public:
 	
 	QGraphicsScene* scene(){ return & _window.scene; }		///< Returns graphics scene to which items are added
 	
+	/// Redraws scene
+	void redraw();
+	
+	/// Removes all axes
+	void clear();
 	
 	// properties
 	
@@ -72,22 +78,29 @@ public:
 	Handle currentAxes() const { return _currentAxes; }
 	void setCurrentAxes( const Matrix&m );
 
+	Matrix getColorMap() const { return _colorMap; }
+	void setColorMap( const Matrix& m ) { _colorMap = m; }
+
+
 private slots:
 
 	void windowClosed();			//!< Handles window closing
 	void windowResized();			//!< Handle window resize
+	
+	//! Handles axes deletion
+	void axesDeleted( QObject* pAxes );
 
 private:
 	
-	void positionAxes();			//!< Positions axes on figure
-
+	void initColorMap();
+	
 	// Data
 	
 	FigureWindow _window;			///< Actual window
 	Color		_backgroundColor;	///< Figure's background color
 	Handle		_currentAxes;		///< Current axes
+	Matrix		_colorMap;			///< Color map
 	
-	Axes* _pAxes; // temp - only axes
 };
 
 }; // namespace

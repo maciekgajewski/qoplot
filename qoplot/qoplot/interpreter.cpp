@@ -23,6 +23,7 @@
 #include "interpreter.h"
 #include "exceptions.h"
 #include "axes.h"
+#include "figure.h"
 
 using namespace QOGraphics;
 
@@ -45,8 +46,6 @@ Interpreter::~Interpreter()
 /// feeds command back with return values
 void Interpreter::interpret( Command& cmd, Root& root )
 {
-	qDebug("interpeter command id: %d", cmd.id() );
-	
 	try
 	{
 	// interpret commands
@@ -107,7 +106,27 @@ void Interpreter::interpret( Command& cmd, Root& root )
 			del( cmd, root );
 			break;
 		}
-			
+		
+		// Clf
+		case ocpl::clf:
+		{
+			clf( cmd, root );
+			break;
+		}
+		
+		// Redraw
+		case ocpl::redraw:
+		{
+			redraw( cmd, root );
+			break;
+		}
+		
+		// Ishnd
+		case ocpl::ishnd:
+		{
+			ishnd( cmd, root );
+		}
+		
 		default:
 			; // nope
 	}
@@ -435,11 +454,57 @@ void Interpreter::del( Command& cmd, Root& root )
 			cmd.retError("Ivalid handle: no such object.");
 		}
 	}
-	
-	
-	
 }
 
+// ============================================================================
+/// Redraws current figure
+void Interpreter::redraw( Command& cmd, Root& root )
+{
+	Figure* pFig = qobject_cast<Figure*>( root.objectByHandle( root.currentFigure() ) );
+	
+	if ( pFig )
+	{
+		pFig->redraw();
+	}
+	
+	cmd.setArgoutNum( 0 );
+}
+
+// ============================================================================
+/// clears current figure
+void Interpreter::clf( Command& cmd, Root& root )
+{
+	Figure* pFig = qobject_cast<Figure*>( root.objectByHandle( root.currentFigure() ) );
+	
+	if ( pFig )
+	{
+		pFig->clear(); // create existing figure
+	}
+	else
+	{
+		root.addFigure(); // or add a new one
+	}
+	
+	cmd.setArgoutNum( 0 );
+}
+
+// ============================================================================
+/// checks param is a handle. Returns 0 ar 1.
+void Interpreter::ishnd( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 1 )
+	{
+		cmd.retError("ishnd expects argument.");
+		return;
+	}
+	
+	Handle h = Handle(cmd.arginAsMatrix(0).toScalar());
+	
+	cmd.setArgoutNum( 1 );
+	
+	cmd.addDoubleArgout( 0, root.objectByHandle( h ) != NULL );
+}
 
 // EOF
 

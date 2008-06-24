@@ -49,7 +49,10 @@ private:
 	void text( Command& cmd, Root& root );
 	void line( Command& cmd, Root& root );
 	void cla( Command& cmd, Root& root );
+	void clf( Command& cmd, Root& root );
 	void del( Command& cmd, Root& root );
+	void redraw( Command& cmd, Root& root );
+	void ishnd( Command& cmd, Root& root );
 
 };
 

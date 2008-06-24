@@ -32,7 +32,7 @@ function _out = ishandle (h)
 
   _out = false;  
   if (isnumeric(h))
-    _out = logical(octplot_command("ishnd",h){1});
+    _out = logical(qoplot_command("ishnd",h){1});
   end
 
 endfunction

@@ -62,6 +62,11 @@ function out = subplot(m,n,p)
   for i=ax',
     cpos = get(i,"position");
 
+	#debug
+	i
+	pos
+	cpos
+
     ## first check if subplot exists
     if(sum(abs(pos(:)-cpos(:)))<10*eps)
       set(gcf(),"currentaxes",i);
@@ -78,7 +83,7 @@ function out = subplot(m,n,p)
     lox = line_overlap(l1x,l2x);
     loy = line_overlap(l1y,l2y);
     if( lox & loy)
-      octplot_command("delete",i);
+      qoplot_command("delete",i);
     endif
         
   endfor

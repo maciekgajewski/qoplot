@@ -52,12 +52,14 @@ AxesItem::~AxesItem()
 
 // ============================================================================
 /// Sets axes size
+/*
 void AxesItem::setSize( const QSizeF& size )
 {
 	_size = size;
 	recalculateTicks();
 	prepareGeometryChange();
 }
+*/
 
 // ============================================================================
 /// Paints item on scene
@@ -75,6 +77,7 @@ void AxesItem::paint
 /// Finds position of the inner box, an which data are painted
 QRectF AxesItem::plotBox() const
 {
+	/* TODO remove
 	double margin = 0.1; // default margin as size fraction
 	
 	// calculate minimal allowed margins
@@ -103,6 +106,11 @@ QRectF AxesItem::plotBox() const
 	
 	return QRectF( leftMargin, topMargin, 
 		_size.width() - leftMargin - rightMargin, _size.height() - bottomMargin - topMargin );
+	*/
+	
+	// plot box is described by _size and positioned at item orgin now.
+	return QRectF( 0, 0, _size.width(), _size.height() );
+	
 }
 
 // ============================================================================
@@ -445,5 +453,74 @@ void AxesItem::dataChanged()
 
 }
 
+// ============================================================================
+/// Updates size to fiogure size and positioin/units properties
+void AxesItem::updateSize()
+{
+	Q_ASSERT( position.vectorSize() >= 4 );
+	
+	double left, bottom, width, height;
+	
+	if ( units == Normalized )
+	{
+		left	= _figureRect.left() + _figureRect.width() * position.vectorValue( 1 );
+		bottom	= _figureRect.bottom() - _figureRect.height() * position.vectorValue( 2 );
+		width	= _figureRect.width() * position.vectorValue( 3 );
+		height	= _figureRect.height() * position.vectorValue( 4 );
+		
+		/*qDebug("left: %f (%f of %d), bottom: %f (%f of %d), height: %f (%f of %d)", left, position.vectorValue( 1 ),_figureRect.width(),
+			 bottom, position.vectorValue( 2 ), _figureRect.height(),
+			 height, position.vectorValue( 4 ), _figureRect.height()
+			 );*/
+	}
+	else if ( units == Pixels )
+	{
+		left	= _figureRect.left() + position.vectorValue( 1 );
+		bottom	= _figureRect.bottom() - position.vectorValue( 2 );
+		width	= position.vectorValue( 3 );
+		height	= position.vectorValue( 4 );
+		
+	}
+	else
+	{
+		qWarning("Units other than normalized and pixel not supported currently");
+		return;
+	}
+	
+	setPos( left, bottom - height );
+	_size = QSizeF( width, height );
+	recalculateTicks();
+	prepareGeometryChange();
+	updateChildPositions();
+
+	update();
+}
+
+// ============================================================================
+/// Axes bounding rectangle. Adds margins to plot box
+QRectF AxesItem::boundingRect() const
+{
+	
+	// Top - title and X labels when X axis on top
+	double topMargin = X_LABELS_MARGIN + pTitle->item()->boundingRect().height();
+	
+	// Bottom - X labels
+	double bottomMargin = X_LABELS_MARGIN + pLabelX->item()->boundingRect().height();
+	
+	
+	// Left - y labels
+	double leftMargin = Y_LABELS_MARGIN + pLabelY->item()->boundingRect().width();
+	
+	// Right - y labels
+	double rightMargin = Y_LABELS_MARGIN;
+	
+	
+	// create rectangle
+	
+	return QRectF( -leftMargin, -topMargin, 
+		_size.width() + leftMargin + rightMargin, _size.height() + bottomMargin + topMargin );
+	
+
+}
 
 } // namespace

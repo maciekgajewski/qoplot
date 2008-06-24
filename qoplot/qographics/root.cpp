@@ -62,7 +62,6 @@ void Root::objectDestroyed( Handle handle )
 {
 	if ( _beingDeleted ) return;
 	
-	qDebug("Object with handle %d destroyed", handle );
 	Q_ASSERT( _objects.contains( handle ) );
 
 
@@ -276,14 +275,18 @@ Handle Root::currentAxes() const
 void Root::makeSureAxesCreated()
 {
 	const Figure* pFigure = qobject_cast<const Figure*>( objectByHandle( _currentFigure ) );
-	if ( pFigure && pFigure->currentAxes() )
+	if ( pFigure )
 	{
-		// axes exist, do nothing
-		return;
+		if ( pFigure->currentAxes() == InvalidHandle )
+		{
+			createObject( "axes", _currentFigure );
+		}
 	}
-	
-	Handle fig = addFigure();
-	createObject( "axes", fig );
+	else
+	{
+		Handle fig = addFigure();
+		createObject( "axes", fig );
+	}
 }
 
 }; // namespace
