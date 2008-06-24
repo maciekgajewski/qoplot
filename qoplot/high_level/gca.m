@@ -27,6 +27,10 @@ function out = gca()
   fh = gcf();
   if ~isempty(fh),
     out = get(fh,"currentaxes");
+    if ( isempty( out ) )
+      cla;
+      out = get(fh,"currentaxes");
+    endif
   else
     out = [];
   endif

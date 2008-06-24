@@ -33,7 +33,8 @@ static const double Y_LABELS_MARGIN		= 50;	///< Margin reserved for y axis label
 
 // ============================================================================
 /// Constructor
-AxesItem::AxesItem( QGraphicsItem * parent /*= NULL*/ ) : UIItem(parent)
+AxesItem::AxesItem( Figure* pFigure,  QGraphicsItem * parent /*= NULL*/ )
+	: UIItem(parent), _pFigure( pFigure )
 {
 	_size = QSize( 100, 100 );
 	

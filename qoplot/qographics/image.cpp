@@ -1,4 +1,4 @@
-// plotitem.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// image.cpp, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,41 +14,42 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#include "plotitem.h"
-#include "axesitem.h"
+#include "image.h"
 
 namespace QOGraphics
 {
 
 // ============================================================================
 // Constructor
-PlotItem::PlotItem( QGraphicsItem* parent ): UIItem( parent )
+Image::Image( Root* root, Handle handle, QObject* parent ): PlotObject( root, handle, parent )
 {
-	// nope
+	_pItem = new ImageItem();
+	addToParent();
+	initProperties();
 }
 
 // ============================================================================
 // Destructor
-PlotItem::~PlotItem()
+Image::~Image()
 {
 	// nope
 }
 
 // ============================================================================
-/// Return axes item which is paretn for this plot item.
-AxesItem* PlotItem::axesItem() const
+/// Intializes properties
+void Image::initProperties()
 {
-	// TODO naive implementation, will have to be changed to increment grouping
-	return dynamic_cast<AxesItem*>( parentItem() );
+	PlotObject::initProperties();
+	
+	_pItem->xdata = Matrix::scalar( 0 );
+	_pItem->ydata = Matrix::scalar( 0 );
+	
+	_pItem->mode.addValue( ImageItem::Colormap, "colormap", true );
+	_pItem->mode.addValue( ImageItem::RGB, "rgb" );
+	_pItem->mode.addValue( ImageItem::RGBA, "rgba" );
+	_pItem->mode.addValue( ImageItem::Intensity, "intensity" );
 }
 
-// ============================================================================
-/// Returns figure to which plot item belongs
-Figure* PlotItem::figure() const
-{
-	AxesItem* pAxesItem = axesItem();
-	
-	return pAxesItem->figure();
-}
+
 
 }

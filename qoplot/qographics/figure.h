@@ -57,6 +57,7 @@ public:
 	Axes* createAxes( Handle h );
 	
 	QGraphicsScene* scene(){ return & _window.scene; }		///< Returns graphics scene to which items are added
+	const Matrix& colorMap() const { return _colorMap; }
 	
 	/// Redraws scene
 	void redraw();
@@ -74,7 +75,7 @@ public:
 	Matrix getPosition() const;
 	void setPosition( const Matrix& pos );
 	
-	Matrix getCurrentAxes() const { return Matrix::scalar( _currentAxes ); }
+	Matrix getCurrentAxes() const;
 	Handle currentAxes() const { return _currentAxes; }
 	void setCurrentAxes( const Matrix&m );
 

@@ -65,7 +65,6 @@ Matrix Figure::getPosition() const
 	int screenHeight = QApplication::desktop()->height();
 	QRect g = _window.geometry();
 	int bottom = screenHeight - g.y() - g.height();
-	qDebug("screen height: %d, geom y %d, geom h %d", screenHeight,  g.y(), g.height() );
 	
 	pos.setValue( 1, 1, g.x() ); // left
 	pos.setValue( 1, 2, bottom ); // bottom
@@ -185,8 +184,6 @@ void Figure::initColorMap()
 		double green	= double( colors - i ) / colors;
 		double red		= double(i) / colors;
 		
-		
-		qDebug("red: %f, green: %f", red, green ); // TODOD remove
 		map.setValue( i+1, 1, red );
 		map.setValue( i+1, 2, green );
 		map.setValue( i+1, 3, 0.0 ); // no blue
@@ -195,6 +192,19 @@ void Figure::initColorMap()
 	_colorMap = map;
 }
 
+// ============================================================================
+/// Returns 1x1 matrix with current axis handle, or empty matrix if no current axes.
+Matrix Figure::getCurrentAxes() const
+{
+	if ( _currentAxes != InvalidHandle )
+	{
+		return Matrix::scalar( _currentAxes );
+	}
+	else
+	{
+		return Matrix();
+	}
+}
 
 }; // namespace
 
