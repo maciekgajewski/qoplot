@@ -53,6 +53,7 @@ private:
 	void del( Command& cmd, Root& root );
 	void redraw( Command& cmd, Root& root );
 	void ishnd( Command& cmd, Root& root );
+	void image( Command& cmd, Root& root );
 
 };
 

@@ -19,6 +19,7 @@
 
 #include "uiitem.h"
 #include "enum.h"
+#include "figure.h"
 
 namespace QOGraphics
 {
@@ -41,6 +42,7 @@ public:
 	void setPlotBox( const QRectF& r ) { _plotBox = r; }
 	const QRectF& plotBox() const { return _plotBox; }
 	AxesItem* axesItem() const; ///< Returns parent axes item
+	Figure* figure() const;
 	
 	// enums
 

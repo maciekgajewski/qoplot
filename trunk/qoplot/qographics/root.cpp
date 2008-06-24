@@ -34,9 +34,7 @@ Root::Root( QObject* parent ): Object( NULL, RootHandle, parent )
 	if ( ! _graphicsInitialized )
 	{
 		// Register matrix type
-		int mid = qRegisterMetaType< Matrix >();
-		qDebug("matrix type id: %d", mid );
-		//qRegisterMetaType< Enum >( "Enum" ); TODO not needed?
+		qRegisterMetaType< Matrix >();
 		
 		_graphicsInitialized = true;
 	}

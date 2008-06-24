@@ -38,7 +38,11 @@ enum command_id {
   null,
   redraw,
   print,
-  del} ;
+  del,
+  
+  // qoplot additions:
+  image = 100
+  } ;
 enum type_id {real,str,ok,err,warn} ;
 
 struct parameter {

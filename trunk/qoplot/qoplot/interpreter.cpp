@@ -125,6 +125,14 @@ void Interpreter::interpret( Command& cmd, Root& root )
 		case ocpl::ishnd:
 		{
 			ishnd( cmd, root );
+			break;
+		}
+		
+		// Iamge
+		case ocpl::image:
+		{
+			image( cmd, root );
+			break;
 		}
 		
 		default:
@@ -199,7 +207,7 @@ void Interpreter::get( Command& cmd, Root& root )
 	{
 		QString propName = cmd.argin(1).toString();
 		QVariant value = pObject->getProperty( propName );
-		qDebug("getting property %s", qPrintable( propName ) );
+		//qDebug("getting property %s", qPrintable( propName ) );
 		cmd.addArgout( 0, value );
 	}
 }
@@ -225,7 +233,6 @@ void Interpreter::set( Command& cmd, Root& root )
 		// check if object exists
 		Handle h = Handle( cmd.arginAsMatrix(0).toScalar() );
 		Object* pObject = root.objectByHandle( h );
-		qDebug("set: handle = %d", h );
 		if ( ! pObject )
 		{
 			cmd.retError("No such object");
@@ -504,6 +511,55 @@ void Interpreter::ishnd( Command& cmd, Root& root )
 	cmd.setArgoutNum( 1 );
 	
 	cmd.addDoubleArgout( 0, root.objectByHandle( h ) != NULL );
+}
+
+// ============================================================================
+/// Creates image object
+void Interpreter::image( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 1 )
+	{
+		cmd.retError("image expects argument.");
+		return;
+	}
+	
+		
+	Handle h = root.createObject( "image" );
+	Object* pImage = root.objectByHandle( h ); 
+	
+	if ( ! pImage )
+	{
+		cmd.retError( "Couldn't create image");
+		return;
+	}
+	
+	cmd.setArgoutNum( 1 );
+	
+	// 3 param version?
+	if ( cmd.nargin() >= 3 )
+	{
+		// create RGB image
+		Matrix r = cmd.arginAsMatrix( 0 );
+		Matrix g = cmd.arginAsMatrix( 1 );
+		Matrix b = cmd.arginAsMatrix( 2 );
+		
+		pImage->setProperty( "Mode", "rgb" );
+		pImage->setProperty( "CDataR", qVariantFromValue<Matrix>( r ) );
+		pImage->setProperty( "CDataG", qVariantFromValue<Matrix>( g ) );
+		pImage->setProperty( "CDataB", qVariantFromValue<Matrix>( b ) );
+		
+	}
+	else
+	{
+		// Create colormap image
+		Matrix cdata = cmd.arginAsMatrix( 0 );
+		pImage->setProperty( "Mode", "colormap" );
+		pImage->setProperty( "CData", qVariantFromValue<Matrix>( cdata ) );
+	}
+	
+	cmd.addDoubleArgout( 0, h );
+
 }
 
 // EOF

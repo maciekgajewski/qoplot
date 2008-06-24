@@ -24,6 +24,7 @@
 #include "exceptions.h"
 #include "text.h"
 #include "line.h"
+#include "image.h"
 
 namespace QOGraphics
 {
@@ -33,7 +34,7 @@ namespace QOGraphics
 Axes::Axes( Root* root, Handle handle, QObject* parent ): UIObject(root, handle, parent)
 {
 	// Create item
-	_pItem = new AxesItem();
+	_pItem = new AxesItem( qobject_cast<Figure*>( parent) );
 	
 	// create mandatory children
 	_pItem->pTitle = new Text( root, InvalidHandle, this );
@@ -311,6 +312,11 @@ UIObject* Axes::createPlotObject( const QString& type, Handle h )
 	{
 		Line* pLine = new Line( root(), h, this );
 		return pLine;
+	}
+	else if ( type == "image" )
+	{
+		Image* pImage = new Image( root(), h, this );
+		return pImage;
 	}
 	// TODO other types here
 	else

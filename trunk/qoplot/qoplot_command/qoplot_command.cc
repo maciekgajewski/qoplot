@@ -226,6 +226,8 @@ Do nothing, but load qoplot\n\
 checks if the object @var{handle} has the @var{property}\n\
 @item ishnd @var{handle}\n\
 checks if the object @var{handle} exists\n\
+@item image @var{data}\n\
+creates image plot object\n\
 @end table\n\
 @end deftypefn\n")
 {
@@ -265,6 +267,7 @@ checks if the object @var{handle} exists\n\
   else if(cmd=="delete" ) id = ocpl::del;
   else if(cmd=="isprop" ) id = ocpl::isprop;
   else if(cmd=="ishnd" ) id = ocpl::ishnd;
+  else if(cmd=="image" ) id = ocpl::image;
   else if(cmd=="noop" ) {
     op_connect();
     retval(0) =0;

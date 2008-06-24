@@ -62,7 +62,9 @@ function varargout = contour(varargin)
     i1 += c(2,i1)+1;
   endwhile
 
-  set(gca(),"clim",[min(lev) max(lev)]);
+  if( get(gca, 'CLimMode') == 'auto' )
+  	set(gca(),"clim",[min(lev) max(lev)]);
+  endif
   
   ## folowing dm's suggestion to surpress output if none asked for
   if nargout > 0

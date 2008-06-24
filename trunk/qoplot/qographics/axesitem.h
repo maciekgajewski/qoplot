@@ -26,6 +26,8 @@
 namespace QOGraphics
 {
 
+class Figure;
+
 /**
 Gpahics item representingm and associated with Axes object.
 
@@ -36,14 +38,13 @@ class AxesItem : public UIItem
 {
 
 public:
-	AxesItem( QGraphicsItem * parent = NULL );
+	AxesItem( Figure* figure,  QGraphicsItem * parent = NULL );
 	virtual ~AxesItem();
 	
 	// Item proeprties
-	//QSizeF size() const { return _size; } TODO remove
-	//void setSize( const QSizeF& size );
 	void updateSize();
 	void setFigureRect( const QRect& r ) { _figureRect = r; }
+	Figure* figure() const { return _pFigure; }
 	
 	/// Paints item
 	virtual void paint
@@ -111,6 +112,7 @@ private:
 	
 	QSizeF _size;							///< Current pixel size
 	QRect _figureRect;						///< Current figure rectangle to paint on
+	Figure* _pFigure;						///< Figure
 
 };
 
