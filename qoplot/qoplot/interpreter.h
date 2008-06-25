@@ -54,6 +54,7 @@ private:
 	void redraw( Command& cmd, Root& root );
 	void ishnd( Command& cmd, Root& root );
 	void image( Command& cmd, Root& root );
+	void print( Command& cmd, Root& root );
 
 };
 

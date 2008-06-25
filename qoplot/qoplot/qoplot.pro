@@ -33,3 +33,5 @@ CONFIG += exceptions \
 
 CONFIG -= release
 
+QT += svg
+

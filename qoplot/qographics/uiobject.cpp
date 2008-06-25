@@ -87,7 +87,7 @@ void UIObject::initProperties()
 	pItem->lineStyle.addValue( Qt::DashDotLine, "-.");
 	pItem->lineStyle.addValue( Qt::NoPen, "none");
 	
-	pItem->lineWidth	= 1.0;
+	pItem->lineWidth	= 0.5;	// [pt]
 	
 	pItem->fontSize		= 8.0;	// [pt]
 	pItem->fontName		= QApplication::font().family();

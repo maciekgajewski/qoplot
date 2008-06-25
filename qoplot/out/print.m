@@ -44,14 +44,20 @@
 ##     JPEG (B)
 ##   @item png
 ##     PNG (B)
+##   @item svg
+##     SVG (V)
 ##   @end table
 ##
 ##  (V) denotes a vector format, (B) denotes a bitmap format
 ## @item -r@var{resolution}
-##   resolution for bitmap formats in dpi (default resolution 150 dpi)
+##   resolution for bitmap formats in dpi (defaults to current screen resolution)
+## @item -S@var{size}
+##   size for bitmap formats, i.e. -S640x480
 ## @end table
 ## 
 ## The filename and options can be given in any order.
+##
+## Page size is controler by figure's PaperType property.
 ##
 ## If you are using Octave 2.1.x or above, command("print") will change 
 ## print from a function to a command, so instead of typing 
@@ -67,11 +73,13 @@
 function print(varargin)
   
   ## default resolution for bitmaps
-  res = "-r150";
+  res = "0";
   ## default output device -- native to octplot
   device = "epsc2";
+  ## default size for bitmaps - null
+  bitmapSize = "";
   ## default output name
-  fname="octplot_hardcopy";
+  fname="octave_print";
   _op_fmt = 0;
   
   for i=1:nargin
@@ -79,9 +87,11 @@ function print(varargin)
     if isstr(arg)
       if(length(arg>2))
         if(arg(1:2) == "-r")
-          res = arg;
+          res = arg(3:end);
         elseif(arg(1:2) == "-d")
           device=arg(3:end);
+        elseif(arg(1:2) == "-S")
+          bitmapSize = arg(3:end);
         elseif(length(arg))
           fname=arg;
         else
@@ -94,45 +104,7 @@ function print(varargin)
       error("print: expecting string arguments");
     endif
   endfor
-      
-  ## direct octplot printing
-  if( ~isempty(findstr("ps",device)))
-    if( isempty(findstr("eps",device)))
-      _op_fmt = 1;
-    endif
-    octplot_command("print",fname,_op_fmt);
-  else
-    ## we need ghostscript for these filetypes, so find it. The output args
-    ## if the system function have changed from version 2.1.x to 2.9.x
-    ## so we must check for that
-    [a,b] = system("which \\gs");
-    if(isstr(a))
-      gs = a;
-    else
-      gs = b;
-    endif
-    ## strip all non-printing chars (mainly cr/lf)
-    gs = gs(gs>=" ");
-    if( ~exist(gs,"file"))
-      error("Printing to this format requires ghostscript");
-    endif
-    gs_commandline=sprintf("%s -dEPSCrop -q -dSAFER -dBATCH -dNOPAUSE %s ",gs,res);
-    fn=tmpnam();
-    octplot_command("print",fn,0);
-    
-    if( strcmp(device,"pdf") )
-      system(sprintf("%s -sDEVICE=pdfwrite -sOutputFile=%s %s",\
-                      gs_commandline , fname, fn));
-    elseif( strcmp(device,"png") )
-      system(sprintf("%s  -dTextAlphaBits=4 -sDEVICE=png16m -sOutputFile=%s %s",\
-                      gs_commandline , fname, fn));
-    elseif( strcmp(device,"jpg") )
-      system(sprintf("%s  -dTextAlphaBits=4 -sDEVICE=jpeg -sOutputFile=%s %s",\
-                      gs_commandline , fname, fn));
-    else
-      error("Unknown output format %s",device);
-    endif
-    
-    unlink(fn);
-  endif
+
+  # Unlike octplot, qoplot makes all printing by it self, using Qt's printing
+  qoplot_command("print", fname, device, res, bitmapSize );
 endfunction

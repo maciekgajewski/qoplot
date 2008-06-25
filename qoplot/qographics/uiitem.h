@@ -63,10 +63,12 @@ public:
 	
 protected:
 
-	QPen	pen( const QColor& color ) const;	///< Pen created from properties
+	/// Pen created from properties
+	QPen	pen( const QColor& color, const QPaintDevice* pDevice   ) const;
 	QFont	font() const;						///< Font created from properties
 	
-	double ptToPixel( double pt, QPaintDevice* device ) const;	///< Converts points to pixels
+	/// Converts points to pixels
+	double ptToPixel( double pt, const QPaintDevice* device ) const;
 	
 };
 

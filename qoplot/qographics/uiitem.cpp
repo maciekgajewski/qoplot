@@ -38,9 +38,9 @@ UIItem::~UIItem()
 
 // ============================================================================
 /// Returns pen created form provided color and LineWidth and LineStyle properties.
-QPen UIItem::pen( const QColor& color ) const
+QPen UIItem::pen( const QColor& color, const QPaintDevice* pDevice  ) const
 {
-	return QPen( QBrush(color), lineWidth, Qt::PenStyle( int(lineStyle) ) );
+	return QPen( QBrush(color), ptToPixel( lineWidth, pDevice ), Qt::PenStyle( int(lineStyle) ) );
 }
 
 // ============================================================================
@@ -64,11 +64,15 @@ void UIItem::geometryWillChange()
 	update();
 }
 // ============================================================================
-/// Converts points to pixels
-double UIItem::ptToPixel( double pt, QPaintDevice* /*device*/ ) const
+/// Converts points to pixels. Uses mean of logical device's X/Y dpi.
+double UIItem::ptToPixel( double pt, const QPaintDevice* pDevice ) const
 {
-	// TODO
-	return pt;
+	Q_ASSERT( pDevice );
+	
+	// use mean of X/Y logical dpis
+	double dpi = ( pDevice->logicalDpiX() + pDevice->logicalDpiY() ) / 2.0;
+	
+	return pt*dpi/72.0; // 'dpi' pixels in inch, 72 points in inch.
 }
 
 
