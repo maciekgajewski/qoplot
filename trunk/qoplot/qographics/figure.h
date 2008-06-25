@@ -17,9 +17,10 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 
-#include <object.h>
+#include "object.h"
 #include "figurewindow.h"
 #include "color.h"
+#include "enum.h"
 
 namespace QOGraphics
 {
@@ -40,8 +41,13 @@ class Figure : public Object
 	Q_PROPERTY( QVariant Color READ getColor WRITE setColor )
 	Q_PROPERTY( QOGraphics::Matrix CurrentAxes READ getCurrentAxes WRITE setCurrentAxes );
 	Q_PROPERTY( QOGraphics::Matrix ColorMap READ getColorMap WRITE setColorMap );
-	
+	Q_PROPERTY( QString PaperType READ getPaperType WRITE setPaperType );
+	Q_PROPERTY( QString PaperOrientation READ getPaperOrientation WRITE setPaperOrientation );
 public:
+	
+	// Enums
+	
+	enum PrintDevice  { Ps = 1, Eps, Pdf, Png, Jpeg, Svg }; ///< Print devices
 	
 	// construction / destruction
 	
@@ -65,6 +71,9 @@ public:
 	/// Removes all axes
 	void clear();
 	
+	/// Prints to file
+	void print( const QString& fileName, int device, int resolution, QSize size = QSize() );
+	
 	// properties
 	
 	virtual QString getType() const { return "figure"; }
@@ -81,6 +90,12 @@ public:
 
 	Matrix getColorMap() const { return _colorMap; }
 	void setColorMap( const Matrix& m ) { _colorMap = m; }
+	
+	QString getPaperType() const { return _paperType; }
+	void setPaperType( const QString& s ) { _paperType = s; }
+	
+	QString getPaperOrientation() const { return _paperOrientation; }
+	void setPaperOrientation( const QString& s ) { _paperOrientation = s; }
 
 
 private slots:
@@ -94,6 +109,9 @@ private slots:
 private:
 	
 	void initColorMap();
+	void printToPixmap( const QString& fileName, const char* format, int resolution = 0, QSize size = QSize() );
+	void printToPrinter( const QString& fileName, int format, int resoultion = 0 );
+	void printToSvg( const QString& fileName );
 	
 	// Data
 	
@@ -101,6 +119,8 @@ private:
 	Color		_backgroundColor;	///< Figure's background color
 	Handle		_currentAxes;		///< Current axes
 	Matrix		_colorMap;			///< Color map
+	Enum		_paperType;			///< Paper format used for printing
+	Enum		_paperOrientation;	///< Paper orientation: {portrait}|landscape
 	
 };
 

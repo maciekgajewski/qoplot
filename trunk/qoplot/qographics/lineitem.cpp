@@ -16,6 +16,7 @@
 //
 
 #include <QPainter>
+#include <QPainterPath>
 
 #include "lineitem.h"
 #include "axesitem.h"
@@ -65,7 +66,7 @@ void LineItem::paint
 		}
 		
 		// set pen
-		pPainter->setPen( pen( color ) );
+		pPainter->setPen( pen( color, pPainter->device() ) );
 		
 		// first point
 		int i = 0;
@@ -107,9 +108,135 @@ QRectF LineItem::boundingRect() const
 
 // ============================================================================
 /// Draws marker at specified location using item's marker settings
-void LineItem::drawMarker( QPainter* painter, const QPointF& pos )
+void LineItem::drawMarker( QPainter* pPainter, const QPointF& pos )
 {
-	// TODO
+	// do nothing if no markers required
+	if ( marker == None )
+	{
+		return;
+	}
+	
+	double size = ptToPixel( markerSize, pPainter->device() );
+	double half = size/2;
+	
+	pPainter->save();
+	pPainter->setPen( pen( markerEdgeColor, pPainter->device() ) );
+	pPainter->setBrush( QColor( markerFaceColor ) );
+	
+	QPainterPath path;
+	switch( marker )
+	{
+		case Plus:
+			path.moveTo( 0, -half );
+			path.lineTo( 0, half ); // |
+			
+			path.moveTo( -half, 0 );
+			path.lineTo( half, 0 );// --
+			break;
+			
+		case Circle:
+			path.addEllipse( -half, -half, size, size );
+			break;
+			
+		case Asterix:
+			path.moveTo( -half, 0 );
+			path.lineTo( half, 0 ); //--
+			
+			path.moveTo( -half/2, -half );
+			path.lineTo( half/2, half ); // /
+			
+			path.moveTo( -half/2, half );
+			path.lineTo( half/2, -half ); // 
+			break;
+		
+		default: // just use point as default
+		case Point:
+			path.addEllipse( -half/3, -half/3, size/3, size/3 ); // 1/3 of cicrcle
+			break;
+			
+		case Cross:
+			path.moveTo( -half, -half );
+			path.lineTo( half, half ); // /
+			
+			path.moveTo( -half, half );
+			path.lineTo( half, -half ); // 
+			break;
+			
+		case Square:
+			path.addRect( -half, -half, size, size );
+			break;
+			
+		case Diamond:
+			path.moveTo( 0, -half );
+			path.lineTo( -half, 0 );
+			path.lineTo( 0, half );
+			path.lineTo( half, 0 );
+			path.closeSubpath();
+			break;
+			
+		case TriangleUp:
+			path.moveTo( -half, -half );
+			path.lineTo( 0, half );
+			path.lineTo( half, -half );
+			path.closeSubpath();
+			break;
+			
+		case TriangleDown:
+			path.moveTo( -half, half );
+			path.lineTo( 0, -half );
+			path.lineTo( half, half );
+			path.closeSubpath();
+			break;
+			
+		case TriangleLeft:
+			path.moveTo( half, half );
+			path.lineTo( half, -half );
+			path.lineTo( -half, 0 );
+			path.closeSubpath();
+			break;
+			
+		case TriangleRight:
+			path.moveTo( -half, half );
+			path.lineTo( -half, -half );
+			path.lineTo( half, 0 );
+			path.closeSubpath();
+			break;
+			
+		case Pentagram:
+			// coordinates generated with octave :)
+			
+			path.moveTo( half * 3.0900e-01,  half * 9.5106e-01 );
+			path.lineTo( half * -1.5400e-01, half *  .7553e-01 );
+			path.lineTo( half * -8.0900e-01, half *  5.8779e-01 );
+			path.lineTo( half * -5.0000e-01, half *  6.1230e-17 );
+			path.lineTo( half * -8.0900e-01, half * -5.8779e-01 );
+			path.lineTo( half * -1.5400e-01, half * -4.7553e-01 );
+			path.lineTo( half * 3.0900e-01, half * -9.5106e-01 );
+			path.lineTo( half * 4.0400e-01, half * -2.9389e-01 );
+			path.lineTo( half * 1.0000e+00, half * -2.4492e-16 );
+			path.lineTo( half * 4.0400e-01, half * 2.9389e-01 );
+			path.closeSubpath();
+			break;
+			
+		case Hexagram:
+			path.moveTo( half * 8.6603e-01   , half * 5.0000e-01 );
+			path.lineTo( half * 2.5000e-01   , half * 4.3301e-01 );
+			path.lineTo( half * 6.1230e-17   , half * 1.0000e+00 );
+			path.lineTo( half * -2.5000e-01   , half * 4.3301e-01 );
+			path.lineTo( half * -8.6603e-01   , half * 5.0000e-01 );
+			path.lineTo( half * -5.0000e-01   , half * 6.1230e-17 );
+			path.lineTo( half * -8.6603e-01  , half * -5.0000e-01 );
+			path.lineTo( half * -2.5000e-01  , half * -4.3301e-01 );
+			path.lineTo( half * -1.8369e-16  , half * -1.0000e+00 );
+			path.lineTo( half * 2.5000e-01  , half * -4.3301e-01 );
+			path.lineTo( half * 8.6603e-01  , half * -5.0000e-01 );
+			path.lineTo( half * 5.0000e-01  , half * -1.2246e-16 );
+			path.closeSubpath();
+			break;
+	} // marker switch
+	pPainter->translate( pos );
+	pPainter->drawPath( path );
+	pPainter->restore();
 }
 
 // ============================================================================

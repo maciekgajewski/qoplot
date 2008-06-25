@@ -49,3 +49,5 @@ matrix.cpp \
  imageitem.cpp
 FORMS += figurewindow.ui
 
+QT += svg
+

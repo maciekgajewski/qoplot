@@ -177,15 +177,15 @@ void ImageItem::createColormapImage()
 	{
 		for( int x = 0; x< w; x++ )
 		{
-			int colorIndex = round(( cdata.value(y+1, x+1)-cmin)/(cmax-cmin)*cmlength)+1;
+			int colorIndex = (int)round(( cdata.value(y+1, x+1)-cmin)/(cmax-cmin)*cmlength)+1;
 			
 			if ( colorIndex < 1 ) colorIndex = 1;
 			if ( colorIndex > cmlength ) colorIndex = cmlength;
 			
 			_image.setPixel( x, y, qRgb
-					( 255*pFig->colorMap().value( colorIndex, 1 )
-					, 255*pFig->colorMap().value( colorIndex, 2 )
-					, 255*pFig->colorMap().value( colorIndex, 3 )
+					( int( 255*pFig->colorMap().value( colorIndex, 1 ) )
+					, int( 255*pFig->colorMap().value( colorIndex, 2 ) )
+					, int( 255*pFig->colorMap().value( colorIndex, 3 ) )
 					)
 				);
 		}
@@ -220,9 +220,9 @@ void ImageItem::createIntensityImage()
 			if ( intensity > 1.0 ) intensity = 1.0;
 			
 			_image.setPixel( x, y, qRgb
-					( 255*intensity
-					, 255*intensity
-					, 255*intensity
+					( int( 255*intensity )
+					, int( 255*intensity )
+					, int( 255*intensity )
 					)
 				);
 		}
@@ -264,9 +264,9 @@ void ImageItem::createRGBImage()
 			if ( b > 1.0 ) b = 1.0;
 			
 			_image.setPixel( x, y, qRgb
-					( 255*r
-					, 255*g
-					, 255*b
+					( int( 255*r )
+					, int( 255*g )
+					, int( 255*b )
 					)
 				);
 		}

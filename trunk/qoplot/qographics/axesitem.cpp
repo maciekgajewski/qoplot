@@ -228,7 +228,8 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 	QRectF box = plotBox();
 	
 	QColor c = xcolor;
-	pPainter->setPen( QPen( c, 1 ) );
+	pPainter->setPen( pen( c, pPainter->device() ) );
+	pPainter->setFont( font() );
 	
 	// draw at the bottom of the box TODO add top|bottom property
 	
@@ -269,7 +270,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 	QRectF box = plotBox();
 	
 	QColor c = ycolor;
-	pPainter->setPen( QPen( c, 1 ) );
+	pPainter->setPen( pen( c, pPainter->device() ) );
 	
 	// draw at the bottom of the box TODO add top|bottom property
 	

@@ -60,14 +60,14 @@ void TextItem::paint
 		QRectF extent = textExtent();
 		QRectF frame = QRectF( -margin, -margin, extent.width() + 2*margin, extent.height() + 2*margin );
 		
-		pPainter->setPen( pen( QColor(edgeColor) ) );
+		pPainter->setPen( pen( QColor(edgeColor), pPainter->device() ) );
 		pPainter->setBrush( QColor( backgroundColor ) );
 		pPainter->drawRect( frame );
 	
 		// draw text
 		pPainter->setPen( QColor( color ) );
 		pPainter->setFont( font() );
-		pPainter->drawText( 0, extent.height(), string );
+		pPainter->drawText( QPointF( 0, extent.height() ), string );
 	pPainter->restore();
 }
 	

@@ -135,6 +135,13 @@ void Interpreter::interpret( Command& cmd, Root& root )
 			break;
 		}
 		
+		// Print
+		case ocpl::print:
+		{
+			print( cmd, root );
+			break;
+		}
+		
 		default:
 			; // nope
 	}
@@ -559,6 +566,85 @@ void Interpreter::image( Command& cmd, Root& root )
 	}
 	
 	cmd.addDoubleArgout( 0, h );
+
+}
+
+// ============================================================================
+/// Prints current figure. Paramd: file name, device, resolution, bitmap size.
+void Interpreter::print( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 4 )
+	{
+		cmd.retError("print expects 4 arguments.");
+		return;
+	}
+	
+	// parse params
+	
+	//  - file name
+	QString fileName = cmd.arginAsString( 0 );
+	if ( fileName.isEmpty() )
+	{
+		cmd.retError("print: file name can not be empty.");
+		return;
+	}
+	
+	// - device 
+	Enum device;
+	device.addValue( Figure::Ps, "ps" );
+	device.addValue( Figure::Ps, "ps2" );
+	device.addValue( Figure::Ps, "psc" );
+	device.addValue( Figure::Ps, "psc2" );
+	device.addValue( Figure::Eps, "eps" );
+	device.addValue( Figure::Eps, "eps2" );
+	device.addValue( Figure::Eps, "epsc" );
+	device.addValue( Figure::Eps, "epsc2" );
+	device.addValue( Figure::Pdf, "pdf" );
+	device.addValue( Figure::Png, "png" );
+	device.addValue( Figure::Jpeg, "jpg" );
+	device.addValue( Figure::Svg, "svg" );
+	
+	device = cmd.arginAsString( 1 ); // thios will throw exception if wrong format string used
+
+	// - resolution
+	bool ok;
+	int resolution = cmd.arginAsString( 2 ).toInt( &ok );
+	if ( !ok || resolution < 0 )
+	{
+		cmd.retError( "print: resultion must be non-negative integer" );
+		return;
+	}
+	
+	// - size
+	QSize size;
+	QString sizeStr = cmd.arginAsString( 3 );
+	if ( ! sizeStr.isEmpty() )
+	{
+		QRegExp rx( "(\\d+)x(\\d+)", Qt::CaseInsensitive );
+		
+		if ( ! rx.exactMatch( sizeStr ) )
+		{
+			cmd.retError( "print: size has to be in following form: WIDTHxHEIGHT." );
+		}
+		
+		size.setWidth( rx.cap( 1 ).toInt() );
+		size.setHeight( rx.cap( 2 ).toInt() );
+		
+	}
+	
+	// get current figure
+	Figure* pFigure =  qobject_cast<Figure*>( root.objectByHandle( root.currentFigure() ) );
+
+	if ( pFigure )
+	{
+		pFigure->print( fileName, device, resolution, size );
+		cmd.setArgoutNum( 0 ); // happy end
+	}
+	else
+	{
+		cmd.retError( "print: no figure to print." );
+	}
 
 }
 
