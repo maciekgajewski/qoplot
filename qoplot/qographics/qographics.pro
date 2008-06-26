@@ -27,7 +27,9 @@ matrix.h \
  line.h \
  lineitem.h \
  image.h \
- imageitem.h
+ imageitem.h \
+ legend.h \
+ legenditem.h
 SOURCES += object.cpp \
 root.cpp \
 matrix.cpp \
@@ -46,7 +48,9 @@ matrix.cpp \
  line.cpp \
  lineitem.cpp \
  image.cpp \
- imageitem.cpp
+ imageitem.cpp \
+ legend.cpp \
+ legenditem.cpp
 FORMS += figurewindow.ui
 
 QT += svg

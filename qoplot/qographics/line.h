@@ -60,8 +60,8 @@ public:
 	QVariant getMarkerEdgeColor() const { return _pItem->markerEdgeColor.toVariant(); }
 	void setMarkerEdgeColor( const QVariant& v ) { _pItem->markerEdgeColor.fromVariant(v); propertyChanged(); }
 	
-	QVariant getMarkerFaceColor() const { return _pItem->markerEdgeColor.toVariant(); }
-	void setMarkerFaceColor( const QVariant& v ) { _pItem->markerEdgeColor.fromVariant(v); propertyChanged(); }
+	QVariant getMarkerFaceColor() const { return _pItem->markerFaceColor.toVariant(); }
+	void setMarkerFaceColor( const QVariant& v ) { _pItem->markerFaceColor.fromVariant(v); propertyChanged(); }
 
 	Matrix getMarkerSize() const { return _pItem->markerSize; }
 	void setMarkerSize( const Matrix& m ) { _pItem->geometryWillChange(); _pItem->markerSize = m.toScalar(); sizeChanged(); }

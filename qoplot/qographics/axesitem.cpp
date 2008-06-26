@@ -384,7 +384,7 @@ void AxesItem::updateChildPositions()
 				
 				pPlotItem->setPos( pixel );
 			}
-			// set clipping rectangle
+			// set plot rectangle
 			pPlotItem->setPlotBox( pPlotItem->mapFromParent( box ).boundingRect() );
 		}
 	}

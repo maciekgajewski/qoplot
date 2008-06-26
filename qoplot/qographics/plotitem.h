@@ -39,10 +39,13 @@ public:
 	PlotItem( QGraphicsItem* parent = NULL );
 	virtual ~PlotItem();
 	
-	void setPlotBox( const QRectF& r ) { _plotBox = r; }
+	virtual void setPlotBox( const QRectF& r ) { _plotBox = r; }
 	const QRectF& plotBox() const { return _plotBox; }
 	AxesItem* axesItem() const; ///< Returns parent axes item
 	Figure* figure() const;
+	
+	/// Draws icon used to represent object in legend
+	virtual void drawIcon( QPainter* painter, const QRectF& rect );
 	
 	// enums
 
@@ -50,6 +53,8 @@ public:
 	Matrix position;			///< Position in plot coordinates
 	Enum usePlotCoordinates;	///< If use above position
 	Enum clipping;				///< Clip to plot box on|{off}
+	Enum annotation;			///< Annotation (object visible in legend) on|{off}
+	QString	displayName;		///< Name used by legend
 	
 private:
 

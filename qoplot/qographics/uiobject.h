@@ -45,9 +45,9 @@ Q_OBJECT
 	Q_PROPERTY( QString FontAngle READ getFontAngle WRITE setFontAngle );
 	Q_PROPERTY( QString FontName READ getFontName WRITE setFontName );
 	
+	Q_PROPERTY( QString Visible	READ getVisible		WRITE setVisible )
+	Q_PROPERTY( QString Selected READ getSelected WRITE setSelected )
 	
-	Q_PROPERTY( QString DisplayName READ getDisplayName WRITE setDisplayName ); // TODO plot objects only
-
 
 public:
 	UIObject ( Root* root, Handle handle, QObject* parent );
@@ -85,9 +85,12 @@ public:
 	QString getFontName() const { return item()->fontName; }
 	void setFontName( const QString& s ){ item()->fontName = s; propertyChanged(); }
 
-	QString getDisplayName() const { return item()->displayName; }
-	void setDisplayName( const QString& s ){ item()->displayName = s; propertyChanged(); }
-
+	virtual QString getVisible() const;
+	virtual void setVisible( const QString& str );
+	
+	virtual QString getSelected() const { return "off"; }
+	virtual void setSelected( const QString& ) {}
+	
 protected:
 
 	void addToParent();							///< Adds graphics item to parent

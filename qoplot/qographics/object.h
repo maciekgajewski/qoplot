@@ -46,10 +46,9 @@ class Object : public QObject
 	
 	Q_PROPERTY( QVariant Parent	READ getParent )
 	Q_PROPERTY( QString Type	READ getType )
+	Q_PROPERTY( QString HandleVisibility READ getHandleVisibility WRITE setHandleVisibility );
 	
 	Q_PROPERTY( QOGraphics::Matrix UserData	READ getUserData	WRITE setUserData )
-	Q_PROPERTY( QString Visible	READ getVisible		WRITE setVisible )
-	Q_PROPERTY( QString Selected READ getSelected WRITE setSelected )
 	Q_PROPERTY( QString Tag READ getTag WRITE setTag )
 	Q_PROPERTY( QOGraphics::Matrix Children READ getChildren )
 	
@@ -62,6 +61,8 @@ public:
 		InvalidHandle	= -1,		//!< Invalid handle
 		RootHandle		= 0			//!< Handle of root object
 	};
+	
+	enum HandleVisibility{ VisibilityOn, VisibilityOff };
 
 	// Createtion/destruction
 	
@@ -90,15 +91,12 @@ public:
 	Matrix getUserData() const { return _userData; }
 	void setUserData( const Matrix& data ) { _userData = data; }
 	
-	virtual QString getVisible() const { return _visible; }
-	virtual void setVisible( const QString& str ) { _visible = str; }
-	Enum visible() const { return _visible; }
-	
-	virtual QString getSelected() const { return "off"; }
-	virtual void setSelected( const QString& ) {}
-	
 	QString getTag() const { return _tag; }
 	void setTag( const QString& tag ) { _tag = tag; }
+	
+	QString getHandleVisibility() const { return _handleVisibility; }
+	void setHandleVisibility( const QString& s ) { _handleVisibility = s; }
+	Enum handleVisibility() const { return _handleVisibility; }
 	
 	Matrix getChildren() const;
 	
@@ -112,9 +110,8 @@ private:
 	Handle	_handle;				//!< Object handle
 	
 	Matrix		_userData;			//!< Associated user data
-	QString			_tag;			//!< Associated tag
-	
-	Enum 		_visible;
+	QString		_tag;				//!< Associated tag
+	Enum		_handleVisibility;	///< Handle visibility
 	
 	/// Mapping between lowercase proeprty naems and actual names
 	QMap< QString, QString > _caseMap;

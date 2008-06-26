@@ -20,6 +20,7 @@
 #include "uiobject.h"
 #include "axesitem.h"
 #include "text.h"
+#include "legend.h"
 
 namespace QOGraphics
 {
@@ -66,6 +67,8 @@ class Axes : public UIObject
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition )
 	Q_PROPERTY( QString Units READ getUnits WRITE setUnits )
 	
+	///\brief Handle to axes Legend object.
+	Q_PROPERTY( QOGraphics::Matrix Legend READ getLegend )
 	
 public:
 
@@ -139,6 +142,7 @@ public:
 	Matrix getXLabel() const { return Matrix( _pItem->pLabelX->handle() ); }
 	Matrix getYLabel() const { return Matrix( _pItem->pLabelY->handle() ); }
 	Matrix getTitle() const { return Matrix( _pItem->pTitle->handle() ); }
+	Matrix getLegend() const { return Matrix( _pItem->pLegend->handle() ); }
 	
 	Matrix getColorOrder() const { return _pItem->colorOrder; }
 	void setColorOrder( const Matrix& m ) { _pItem->colorOrder = m; }

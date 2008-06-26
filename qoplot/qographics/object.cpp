@@ -32,8 +32,8 @@ Object::Object( Root* pRoot, Handle handle, QObject* parent ): QObject( parent )
 	_pRoot = pRoot;
 	
 	// init params
-	_visible.addValue( 0, "no" );
-	_visible.addValue( 1, "yes", true );
+	_handleVisibility.addValue( VisibilityOn, "on", true );
+	_handleVisibility.addValue( VisibilityOff, "off" );
 	
 }
 
@@ -103,7 +103,7 @@ QVariant Object::getProperty( const QString& name )
 }
 
 // ============================================================================
-// Returns matrix with parent handle, or empty matrix.
+/// Returns matrix with parent handle, or empty matrix.
 QVariant Object::getParent() const
 {
 	// TODO
@@ -111,7 +111,8 @@ QVariant Object::getParent() const
 }
 
 // ============================================================================
-// Returns vector of child object handles
+/// Returns vector of child object handles. Respetsc children's 'HandleVisibility' property
+/// setting, so children with visibility set to 'off' are not listed
 Matrix Object::getChildren() const
 {
 	QList<QObject*> allChildren = children(); // all children
@@ -123,7 +124,10 @@ Matrix Object::getChildren() const
 		Object* pObject = qobject_cast<Object*>( pChild );
 		if ( pObject )
 		{
-			objectChildren.append( pObject );
+			if ( pObject->handleVisibility() == VisibilityOn )
+			{
+				objectChildren.append( pObject );
+			}
 		}
 	}
 	

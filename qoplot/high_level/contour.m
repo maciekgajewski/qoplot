@@ -38,6 +38,30 @@
 
 function varargout = contour(varargin)
 
+  if (nargin==1)
+    vn = 10;
+    z = varargin{1};
+    x = 1:size(z,2);
+    y = 1:size(z,1);
+  elseif (nargin==2)
+    vn = varargin{2};
+    z = varargin{1};
+    x = 1:size(z,2);
+    y = 1:size(z,1);
+  elseif (nargin==3)
+    vn = 10;
+    x = varargin{1};
+    y = varargin{2};
+    z = varargin{3};
+  elseif (nargin==4)
+    vn = varargin{4};
+    x = varargin{1};
+    y = varargin{2};
+    z = varargin{3};
+  else
+    error("Wrong number of arguments");
+  endif
+  
   [c,lev] = contourc(varargin{:});
   cmap = get(gcf(),"colormap");
   
@@ -45,6 +69,13 @@ function varargout = contour(varargin)
 
   __nxtplt__();
 
+  ## set axes XLim and YLim to accomodate contour
+  xlim = get( gca, 'XLim' );
+  ylim = get( gca, 'YLim' );
+  
+  set( gca, 'XLim', [ min( [ xlim x ] ), max( [xlim x] ) ] );
+  set( gca, 'YLim', [ min( [ ylim y ] ), max( [ylim y] ) ] );
+  
   ## decode contourc output format
   i1 = 1;
   n=1;
