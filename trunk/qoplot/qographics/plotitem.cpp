@@ -51,4 +51,12 @@ Figure* PlotItem::figure() const
 	return pAxesItem->figure();
 }
 
+// ============================================================================
+/// Draws icon used to represent icon in legend. 
+/// Icon is painted using provided painter, and fills provided rectangle.
+void PlotItem::drawIcon( QPainter* /*painter*/, const QRectF& /*rect*/ )
+{
+	// default implementation does nothing
+}
+
 }

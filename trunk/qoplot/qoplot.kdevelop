@@ -153,13 +153,13 @@
     <run>
       <directoryradio>executable</directoryradio>
       <runarguments>
-        <qoplot></qoplot>
+        <qoplot/>
       </runarguments>
       <cwd>
         <qoplot>/home/gajewskim/src/qoplot/..</qoplot>
       </cwd>
       <debugarguments>
-        <qoplot></qoplot>
+        <qoplot/>
       </debugarguments>
       <mainprogram>/home/gajewskim/src/qoplot</mainprogram>
       <programargs/>

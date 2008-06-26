@@ -120,7 +120,11 @@ void LineItem::drawMarker( QPainter* pPainter, const QPointF& pos )
 	double half = size/2;
 	
 	pPainter->save();
-	pPainter->setPen( pen( markerEdgeColor, pPainter->device() ) );
+	
+	// set pen and brush
+	QPen p = pen( markerEdgeColor, pPainter->device() );
+	p.setStyle( Qt::SolidLine ); // forces solid line
+	pPainter->setPen( p );
 	pPainter->setBrush( QColor( markerFaceColor ) );
 	
 	QPainterPath path;
@@ -205,16 +209,16 @@ void LineItem::drawMarker( QPainter* pPainter, const QPointF& pos )
 		case Pentagram:
 			// coordinates generated with octave :)
 			
-			path.moveTo( half * 3.0900e-01,  half * 9.5106e-01 );
-			path.lineTo( half * -1.5400e-01, half *  .7553e-01 );
-			path.lineTo( half * -8.0900e-01, half *  5.8779e-01 );
-			path.lineTo( half * -5.0000e-01, half *  6.1230e-17 );
-			path.lineTo( half * -8.0900e-01, half * -5.8779e-01 );
-			path.lineTo( half * -1.5400e-01, half * -4.7553e-01 );
-			path.lineTo( half * 3.0900e-01, half * -9.5106e-01 );
-			path.lineTo( half * 4.0400e-01, half * -2.9389e-01 );
-			path.lineTo( half * 1.0000e+00, half * -2.4492e-16 );
-			path.lineTo( half * 4.0400e-01, half * 2.9389e-01 );
+			path.moveTo( half *   -5.8779e-01, half *    8.0902e-01 );
+			path.lineTo( half *   -3.8042e-01, half *    1.2361e-01 );
+			path.lineTo( half *   -9.5106e-01, half *   -3.0902e-01 );
+			path.lineTo( half *   -2.3511e-01, half *   -3.2361e-01 );
+			path.lineTo( half *   -1.8369e-16, half *   -1.0000e+00 );
+			path.lineTo( half *    2.3511e-01, half *   -3.2361e-01 );
+			path.lineTo( half *    9.5106e-01, half *   -3.0902e-01 );
+			path.lineTo( half *    3.8042e-01, half *    1.2361e-01 );
+			path.lineTo( half *    5.8779e-01, half *    8.0902e-01 );
+			path.lineTo( half *    1.2246e-16, half *    4.0000e-01 );
 			path.closeSubpath();
 			break;
 			
@@ -275,6 +279,22 @@ QRectF LineItem::dataBoundingRect() const
 void LineItem::dataChanged()
 {
 	axesItem()->dataChanged();
+}
+
+// ============================================================================
+/// Draws line icon used in legend.
+void LineItem::drawIcon( QPainter* pPainter, const QRectF& rect )
+{
+	QPen linePen = pen( color, pPainter->device() );
+	
+	pPainter->setPen( linePen );
+	
+	// draw line
+	pPainter->drawLine( QPointF( rect.left(), rect.top() + rect.height()/2 ),
+		 QPointF( rect.right(), rect.top() + rect.height()/2 ) );
+		 
+	// draw marker
+	drawMarker( pPainter, QPointF( rect.left() + rect.width()/2, rect.top() + rect.height()/2 ) );
 }
 
 }

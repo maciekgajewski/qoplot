@@ -37,6 +37,13 @@ class PlotObject : public UIObject
 	Q_PROPERTY( QOGraphics::Matrix Position READ getPosition WRITE setPosition );
 	Q_PROPERTY( QString UsePlotCoordinates READ getUsePlotCoordinates WRITE setUsePlotCoordinates );
 	Q_PROPERTY( QString Clipping READ getClipping WRITE setClipping );
+	Q_PROPERTY( QString Annotation READ getAnnotation WRITE setAnnotation );
+	
+	///\brief Name displayed in legend.
+	///
+	/// This string is used by Legend to display object.
+	Q_PROPERTY( QString DisplayName READ getDisplayName WRITE setDisplayName );
+
 
 public:
 	PlotObject( Root* root, Handle handle, QObject* parent );
@@ -57,6 +64,11 @@ public:
 	QString getClipping() const { return ((PlotItem*)item())->clipping; }
 	void setClipping( const QString& s ) { ((PlotItem*)item())->clipping = s; propertyChanged(); }
 
+	QString getAnnotation() const { return ((PlotItem*)item())->annotation; }
+	void setAnnotation( const QString& s ) { ((PlotItem*)item())->annotation = s; propertyChanged(); }
+
+	QString getDisplayName() const { return ((PlotItem*)item())->displayName; }
+	void setDisplayName( const QString& s ){ ((PlotItem*)item())->displayName = s; propertyChanged(); }
 
 protected:
 

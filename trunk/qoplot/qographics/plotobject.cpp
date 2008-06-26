@@ -56,6 +56,9 @@ void PlotObject::initProperties()
 	
 	pItem->clipping.addValue( PlotItem::On, "on" );
 	pItem->clipping.addValue( PlotItem::Off, "off", true );
+	
+	pItem->annotation.addValue( PlotItem::On, "on" );
+	pItem->annotation.addValue( PlotItem::Off, "off", true );
 }
 
 // ============================================================================

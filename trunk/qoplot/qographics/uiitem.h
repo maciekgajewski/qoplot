@@ -41,7 +41,7 @@ public:
 	UIItem( QGraphicsItem* parent = NULL );
 	virtual ~UIItem();
 	
-	virtual void propertyChanged();		///< Updates item after proertty change
+	virtual void propertyChanged();		///< Updates item after property change
 	void geometryWillChange();
 	
 	// enums used in proeprties
@@ -53,7 +53,6 @@ public:
 	
 	Color	color;			///< Color used
 	Enum	clipping;		///< CLipping to parent On|Off
-	QString	displayName;	///< Name used by legend
 	Enum	lineStyle;		///< Line style (uses Qt:PenStyle)
 	double	lineWidth;		///< Line width
 	double	fontSize;		///< Font size [pt] TODO add other units support

@@ -25,6 +25,7 @@
 #include "text.h"
 #include "line.h"
 #include "image.h"
+#include "legend.h"
 
 namespace QOGraphics
 {
@@ -40,10 +41,12 @@ Axes::Axes( Root* root, Handle handle, QObject* parent ): UIObject(root, handle,
 	_pItem->pTitle = new Text( root, InvalidHandle, this );
 	_pItem->pLabelX = new Text( root, InvalidHandle, this );
 	_pItem->pLabelY = new Text( root, InvalidHandle, this );
+	_pItem->pLegend = new Legend( root, InvalidHandle, this );
 	
 	root->addObject( _pItem->pTitle );
 	root->addObject( _pItem->pLabelX );
 	root->addObject( _pItem->pLabelY );
+	root->addObject( _pItem->pLegend );
 	
 	// go on with initializations
 	initProperties();
@@ -95,18 +98,29 @@ void Axes::initProperties()
 	_pItem->pTitle->setVerticalAlignment( "bottom" );
 	_pItem->pTitle->setHorizontalAlignment( "center" );
 	_pItem->pTitle->setUsePlotCoordinates( "off" );
+	_pItem->pTitle->setHandleVisibility( "off" );
 	_pItem->pTitle->setMargin( Matrix( 5 ) );
 	
 	_pItem->pLabelX->setVerticalAlignment( "top" );
 	_pItem->pLabelX->setHorizontalAlignment( "center" );
 	_pItem->pLabelX->setUsePlotCoordinates( "off" );
+	_pItem->pLabelX->setHandleVisibility( "off" );
 	_pItem->pLabelX->setMargin( Matrix( 5 ) );
 	
 	_pItem->pLabelY->setVerticalAlignment( "bottom" );
 	_pItem->pLabelY->setHorizontalAlignment( "center" );
 	_pItem->pLabelY->setUsePlotCoordinates( "off" );
 	_pItem->pLabelY->setRotation( 90 );
+	_pItem->pLabelY->setHandleVisibility( "off" );
 	_pItem->pLabelY->setMargin( Matrix( 5 ) );
+	
+	// init legend
+	
+	_pItem->pLegend->setHandleVisibility( "off" );
+	_pItem->pLegend->setVisible( "off" );
+	_pItem->pLabelY->setUsePlotCoordinates( "off" );
+	
+	// color order
 	
 	Matrix co( 7, 3 );
 	co.setValue( 1, 1, 0.0 );

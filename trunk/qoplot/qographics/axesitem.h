@@ -27,6 +27,7 @@ namespace QOGraphics
 {
 
 class Figure;
+class Legend;
 
 /**
 Gpahics item representingm and associated with Axes object.
@@ -81,9 +82,10 @@ public:
 	
 	// constant child elements
 	
-	Text* pLabelX;
-	Text* pLabelY;
-	Text* pTitle;
+	Text*	pLabelX;
+	Text*	pLabelY;
+	Text*	pTitle;
+	Legend*	pLegend;
 	
 		
 	QPointF plotToPixel( const QPointF& p ) const;	///< converts between plot and pixel space

@@ -1,4 +1,4 @@
-// lineitem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// legenditem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,28 +14,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef QOGRAPHICSLINEITEM_H
-#define QOGRAPHICSLINEITEM_H
+#ifndef QOGRAPHICSLEGENDITEM_H
+#define QOGRAPHICSLEGENDITEM_H
 
 #include "plotitem.h"
 #include "enum.h"
-#include "matrix.h"
 
 namespace QOGraphics
 {
 
 /**
-Graphics item used to paint line object. Associated with Line object.
-
+LegendItem, used to draw legend
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
 
-class LineItem : public PlotItem
+class LegendItem : public PlotItem
 {
 
 public:
-	LineItem( QGraphicsItem* parent = NULL );
-	virtual ~LineItem();
+	LegendItem ( QGraphicsItem* parent = NULL );
+	virtual ~LegendItem();
 	
 	/// Paints item
 	virtual void paint
@@ -46,31 +44,31 @@ public:
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
 	
-	void dataChanged();
-	QRectF dataBoundingRect() const;	///< Returns data boundary
+	void updateLegend(); ///< Updates list of plot objects.
 	
-	virtual void drawIcon( QPainter* painter, const QRectF& rect );
+	void positionChanged();	///< Handle positoon property change / axes size change
 	
-	// enums
-	enum MarkerType { None, Plus, Circle, Asterix, Point, Cross, Square, Diamond, TriangleUp,
-		TriangleDown, TriangleLeft, TriangleRight, Pentagram, Hexagram };
+	virtual void setPlotBox( const QRectF& r );
+	
+	// enums used in properties
+	enum LegendPosition { North, West, East, South, NorthEast, NorthWest, SouthEast, SouthWest };
 	
 	// properties
 	
-	Enum marker;
-	Color markerEdgeColor;
-	Color markerFaceColor;
-	double markerSize;		///< Marker size, in points (1/72 inch)
-	Matrix xdata, ydata;	///< Data
-	
+	Enum position;		///< Legend position within the plot box
+	Enum box;			///< If box should be painted
+	Color edgeColor;	///< Frame edge color
+
+	QList<PlotItem*> items;		///< Plot items displayed in legend
+
 private:
 
-	void drawMarker( QPainter* painter, const QPointF& pos ); ///< Draws marker
+	QSizeF findSize();				///< Finds size of legend
 };
 
 }
 
-#endif // QOGRAPHICSLINEITEM_H
+#endif // QOGRAPHICSLEGENDITEM_H
 
 // EOF
 

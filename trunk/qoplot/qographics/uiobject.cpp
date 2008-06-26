@@ -111,6 +111,31 @@ void UIObject::free()
 	delete item();
 }
 
+// ============================================================================
+/// Gets object visibility status
+QString UIObject::getVisible() const
+{
+	return item()->isVisible() ? "on" : "off";
+}
+
+// ============================================================================
+/// Hides/shows object
+void UIObject::setVisible( const QString& str )
+{
+	if ( str == "on" )
+	{
+		item()->show();
+	}
+	else if ( str == "off" )
+	{
+		item()->hide();
+	}
+	else
+	{
+		throw Exception("Invalid visibility value. Valid values are: {on} | off.");
+	}
+}
+
 } // namespace
 
 // EOF
