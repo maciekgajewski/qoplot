@@ -46,16 +46,27 @@ void Legend::initProperties()
 	_pItem->box.addValue( LegendItem::On, "on", true );
 	_pItem->box.addValue( LegendItem::Off, "off" );
 	
-	_pItem->position.addValue( LegendItem::North, "North" );
-	_pItem->position.addValue( LegendItem::South, "South" );
-	_pItem->position.addValue( LegendItem::West, "West" );
-	_pItem->position.addValue( LegendItem::East, "East" );
-	_pItem->position.addValue( LegendItem::NorthWest, "NorthWest" );
-	_pItem->position.addValue( LegendItem::NorthEast, "NorthEast", true );
-	_pItem->position.addValue( LegendItem::SouthWest, "SouthWest" );
-	_pItem->position.addValue( LegendItem::SouthEast, "SouthEast" );
+	_pItem->location.addValue( LegendItem::North, "North" );
+	_pItem->location.addValue( LegendItem::South, "South" );
+	_pItem->location.addValue( LegendItem::West, "West" );
+	_pItem->location.addValue( LegendItem::East, "East" );
+	_pItem->location.addValue( LegendItem::NorthWest, "NorthWest" );
+	_pItem->location.addValue( LegendItem::NorthEast, "NorthEast", true );
+	_pItem->location.addValue( LegendItem::SouthWest, "SouthWest" );
+	_pItem->location.addValue( LegendItem::SouthEast, "SouthEast" );
+	_pItem->location.addValue( LegendItem::North, "n" );
+	_pItem->location.addValue( LegendItem::South, "s" );
+	_pItem->location.addValue( LegendItem::West, "w" );
+	_pItem->location.addValue( LegendItem::East, "e" );
+	_pItem->location.addValue( LegendItem::NorthWest, "nw" );
+	_pItem->location.addValue( LegendItem::NorthEast, "ne" );
+	_pItem->location.addValue( LegendItem::SouthWest, "sw" );
+	_pItem->location.addValue( LegendItem::SouthEast, "se" );
 	
-	_pItem->color = QApplication::palette().color( QPalette::ButtonText );
+	_pItem->edgeColor	= QApplication::palette().color( QPalette::ButtonText );
+	_pItem->color		= QApplication::palette().color( QPalette::ButtonText );
+	_pItem->faceColor	= Qt::white;
+	_pItem->faceAlpha	= 1.0;
 }
 
 // ============================================================================
@@ -72,18 +83,19 @@ void Legend::updateLegend()
 	
 	for( int i = 0; i < ch.vectorSize(); i++ )
 	{
-		Handle h = Handle( ch.vectorValue( i ) );
+		Handle h = Handle( ch.vectorValue( i+1 ) ); // 1-based index!
 		
 		PlotObject* pPlotObject = qobject_cast<PlotObject*>( root()->objectByHandle( h ) );
 		if ( pPlotObject )
 		{
-			if ( pPlotObject->getAnnotation() == "on" )
+			if ( pPlotObject->getAnnotation() == "on" && pPlotObject->getDisplayName() != "" )
 			{
 				_pItem->items.append( (PlotItem*)pPlotObject->item() );
 			}
 		}
 	}
 	
+	_pItem->locationChanged();
 	_pItem->update();
 }
 

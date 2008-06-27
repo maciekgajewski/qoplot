@@ -31,13 +31,6 @@
 ## @noindent Supported properties:
 ##
 ## @table @samp
-## @item line [HandleVect] (ro)
-## holds the handles of the legend line objects
-## @item label [HandleVect] (ro)
-## holds the handles of the legend text objects
-## @item patch [HandleVect] (ro)
-## holds the handle of the legend's patch object which is used to draw
-## the legend's box
 ## @item Clipping [radio]
 ## Will the legend be clipped to the axes ? can be either one of "on" or "off"
 ## @item FontName [radio]
@@ -50,6 +43,8 @@
 ## The legend box's edgecolor
 ## @item FaceColor [color]
 ## The legend box's face color
+## @item FaceAlpha [0-1]
+## The legend box's face alpha (opacity)
 ## @item Location [radio]
 ## Specifies the textbox location. Can be one of the 8 major compass
 ## directiona, abbreviated or not (i.e northwest or nw). Default is NE.

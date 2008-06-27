@@ -76,8 +76,6 @@ function [color_order_ptr,handle] =__plt__(xdata,ydata,color_order_ptr,props)
       endif
       for j=1:length(handle)
         set(handle(j),props(i).name,props(i).val);
-        # turn on annotation
-        set(handle(j), 'Annotation', 'on' );
       endfor
     endfor
   endif

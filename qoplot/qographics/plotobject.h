@@ -65,10 +65,10 @@ public:
 	void setClipping( const QString& s ) { ((PlotItem*)item())->clipping = s; propertyChanged(); }
 
 	QString getAnnotation() const { return ((PlotItem*)item())->annotation; }
-	void setAnnotation( const QString& s ) { ((PlotItem*)item())->annotation = s; propertyChanged(); }
+	void setAnnotation( const QString& s );
 
 	QString getDisplayName() const { return ((PlotItem*)item())->displayName; }
-	void setDisplayName( const QString& s ){ ((PlotItem*)item())->displayName = s; propertyChanged(); }
+	void setDisplayName( const QString& s );
 
 protected:
 

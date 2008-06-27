@@ -26,7 +26,7 @@ namespace QOGraphics
 // Constructor
 TextItem::TextItem() : PlotItem()
 {
-	// nothing
+	setZValue( 0.5 ); // Above lines, below legend. TODO do some infrastructure for this
 }
 
 // ============================================================================

@@ -93,6 +93,12 @@ void Axes::initProperties()
 	_pItem->ydir.addValue( AxesItem::Normal, "normal", true );
 	_pItem->ydir.addValue( AxesItem::Reverse, "reverse" );
 	
+	_pItem->gridLineStyle.addValue( Qt::SolidLine, "-" );
+	_pItem->gridLineStyle.addValue( Qt::DashLine, "--");
+	_pItem->gridLineStyle.addValue( Qt::DotLine, ":" );
+	_pItem->gridLineStyle.addValue( Qt::DashDotLine, "-.");
+	_pItem->gridLineStyle.addValue( Qt::NoPen, "none", true );
+	
 	// init labels	
 	
 	_pItem->pTitle->setVerticalAlignment( "bottom" );
@@ -186,16 +192,6 @@ Axes::~Axes()
 	// nope
 }
 
-// ============================================================================
-/// Setsd axes position
-/*
-void Axes::setPosition( const QRectF& pos )
-{
-	_pItem->setPos( pos.topLeft() );
-	_pItem->setSize( pos.size() );
-	_pItem->updateChildPositions();
-}
-*/
 // ============================================================================
 /// Sets 'box visible' property
 void Axes::setBox( const QString& box )
@@ -320,16 +316,19 @@ UIObject* Axes::createPlotObject( const QString& type, Handle h )
 	if ( type == "text" )
 	{
 		Text* pText = new Text( root(), h, this );
+		newPlotObject( pText );
 		return pText;
 	}
 	else if ( type == "line" )
 	{
 		Line* pLine = new Line( root(), h, this );
+		newPlotObject( pLine );
 		return pLine;
 	}
 	else if ( type == "image" )
 	{
 		Image* pImage = new Image( root(), h, this );
+		newPlotObject( pImage );
 		return pImage;
 	}
 	// TODO other types here
@@ -345,6 +344,7 @@ void Axes::childSizeChanged()
 {
 	_pItem->updateChildPositions();
 	_pItem->update();
+	updateLegend();
 }
 
 // ============================================================================
@@ -357,13 +357,15 @@ void Axes::clear()
 	{
 		if ( pChild != _pItem->pLabelX	&&
 			pChild != _pItem->pLabelY &&
-			pChild  != _pItem->pTitle )
+			pChild != _pItem->pTitle &&
+			pChild != _pItem->pLegend )
 		{
+			disconnect( pChild, NULL, this, NULL );
 			pChild->free();
 			delete pChild;
 		}
 	}
-	
+	updateLegend();
 	_pItem->update();
 }
 
@@ -372,6 +374,56 @@ void Axes::clear()
 void Axes::sizeChanged()
 {
 	_pItem->updateSize();
+}
+
+// ============================================================================
+/// Handles new plot object.
+void Axes::newPlotObject( PlotObject* object )
+{
+	connect( object, SIGNAL( destroyed( QObject* )), SLOT(plotObjectDestroyed(QObject*) ) );
+	updateLegend();
+}
+
+// ============================================================================
+/// Handles plot object destruction.
+/// Updates legend. Legend holds pointer to plot items, and references it, so it is important that 
+/// legend is updated when object dies.
+void Axes::plotObjectDestroyed( QObject* /*object*/ )
+{
+	updateLegend();
+}
+
+// ============================================================================
+/// Message from children: legend has to be updated. should be called by children when
+/// annotate property changes, or when new child is added/removed.
+void Axes::updateLegend()
+{
+	_pItem->pLegend->updateLegend();
+}
+
+// ============================================================================
+/// Resets axes to default settings.
+void Axes::reset()
+{
+	// TODO labels should also be resetted
+	
+	_pItem->xlimMode = AxesItem::Auto;
+	_pItem->ylimMode = AxesItem::Auto;
+	
+	Matrix lim(1,2);
+	lim.setVectorValue( 1, 0.0 );
+	lim.setVectorValue( 1, 1.0 );
+	
+	_pItem->xlim = lim;
+	_pItem->ylim = lim;
+	
+	_pItem->pTitle->setString( "" );
+	_pItem->pLabelX->setString( "" );
+	_pItem->pLabelY->setString( "" );
+	
+	_pItem->pLegend->setVisible( "off" );
+	_pItem->pLegend->setLocation( "ne" );
+	
 }
 
 }

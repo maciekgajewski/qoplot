@@ -19,7 +19,7 @@
 ## @deftypefn {Function File} {} grid (@var{hstat})
 ## This function sets the grid status for the current axes
 ## @var{hstat} can be "on" or "off". if used without arguments, toggles
-## the hold state of the axes.
+## the grid state of the axes.
 ## @end deftypefn
 ## @seealso{plot}
 

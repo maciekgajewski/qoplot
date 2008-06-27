@@ -426,6 +426,7 @@ void Interpreter::cla( Command& cmd, Root& root )
 	if ( pAxes )
 	{
 		pAxes->clear();
+		pAxes->reset();
 		cmd.setArgoutNum( 0 );
 	}
 	else

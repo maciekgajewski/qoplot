@@ -68,4 +68,22 @@ void PlotObject::sizeChanged()
 	_pAxes->childSizeChanged();
 }
 
+// ============================================================================
+/// Sets annotation property.
+void PlotObject::setAnnotation( const QString& s )
+{
+	((PlotItem*)item())->annotation = s;
+	propertyChanged();
+	axes()->updateLegend();
+}
+
+// ============================================================================
+/// Sets display name changed property.
+void PlotObject::setDisplayName( const QString& s )
+{
+	((PlotItem*)item())->displayName = s;
+	propertyChanged();
+	axes()->updateLegend();
+}
+
 }

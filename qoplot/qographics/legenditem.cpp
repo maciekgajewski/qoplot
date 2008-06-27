@@ -25,7 +25,7 @@ namespace QOGraphics
 {
 
 // constants
-static const double MARGIN	= 4;		// Margin between entries and box [pt]
+static const double MARGIN	= 4;		// Margin between entries and box, and between icon and label [pt]
 static const double ICON_WIDTH = 20;	// Icon width [pt]
 static const double AXES_MARGIN = 10;	// MArgin between legend and axes [pt]
 
@@ -35,7 +35,7 @@ static const double AXES_MARGIN = 10;	// MArgin between legend and axes [pt]
 // Constructor
 LegendItem::LegendItem ( QGraphicsItem* parent ) : PlotItem ( parent )
 {
-	// nothing
+	setZValue( 1.0 ); // above all
 }
 
 // ============================================================================
@@ -58,12 +58,14 @@ void LegendItem::paint
 	double margin		= ptToPixel( MARGIN, QApplication::desktop() ); // uses desktop as paint device by default
 	double iconWidth	= ptToPixel( ICON_WIDTH, QApplication::desktop()  );
 	QSizeF size			= findSize();
-	double textWidth	= size.width() - 2*margin - iconWidth;
+	double textWidth	= size.width() - 3*margin - iconWidth;
 	
 	// draw box
 	pPainter->setFont( f );
 	pPainter->setPen( pen( QColor( edgeColor ), pPainter->device() ) );
-	pPainter->setBrush( QColor( color ) );
+	QColor bkgnd = QColor( faceColor );
+	bkgnd.setAlphaF( faceAlpha );
+	pPainter->setBrush( bkgnd );
 	pPainter->drawRect( QRectF( QPointF( 0, 0 ), size ) );
 	
 	// draw items
@@ -75,8 +77,11 @@ void LegendItem::paint
 		pItem->drawIcon( pPainter, iconRect );
 		
 		// draw text
-		QRectF textRect( margin+iconWidth, y, textWidth, metrics.lineSpacing() );
+		QRectF textRect( 2*margin+iconWidth, y, textWidth, metrics.lineSpacing() );
+		pPainter->setPen( QColor( color ) );
 		pPainter->drawText( textRect, Qt::AlignVCenter | Qt::AlignLeft, pItem->displayName );
+		
+		y += metrics.lineSpacing();
 	}
 }
 	
@@ -118,7 +123,7 @@ QSizeF LegendItem::findSize()
 	double iconWidth	= ptToPixel( ICON_WIDTH, QApplication::desktop()  );
 	
 	// ok, assembly size
-	return QSizeF( margin*2 + iconWidth + textWidth, margin*2 + metrics.lineSpacing()*items.size() );
+	return QSizeF( margin*3 + iconWidth + textWidth, margin*2 + metrics.lineSpacing()*items.size() );
 }
 
 // ============================================================================
@@ -126,18 +131,19 @@ QSizeF LegendItem::findSize()
 void LegendItem::setPlotBox( const QRectF& r )
 {
 	PlotItem::setPlotBox( r );
-	positionChanged();
+	locationChanged();
 }
 
 // ============================================================================
-/// Handles positon property change / axes sizechange
-void LegendItem::positionChanged()
+/// Handles location property change / axes sizechange
+void LegendItem::locationChanged()
 {
+	prepareGeometryChange();
 	QSizeF size = findSize();
 	QRectF box = axesItem()->plotBox(); // plot box in paren coorindates, as we are goint to set pos in parent space
 	double axesMargin = ptToPixel( AXES_MARGIN, QApplication::desktop() ); 
 	
-	switch ( int(position) )
+	switch ( int(location) )
 	{
 		case North:
 			setPos( box.left() + ( box.width() - size.width() )/2, box.top() + axesMargin );
@@ -170,6 +176,8 @@ void LegendItem::positionChanged()
 		case SouthWest:
 			setPos( box.left() + axesMargin, box.bottom() - axesMargin - size.height() );
 	}
+	
+	update();
 	
 }
 

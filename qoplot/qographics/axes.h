@@ -45,7 +45,12 @@ class Axes : public UIObject
 	//Q_PROPERTY( Matrix TickLength READ getTickLength WRITE setTickLength );
 	//Q_PROPERTY( QString XAxisLocation READ getXAxisLocation WRITE setXAxisLocation );
 	//Q_PROPERTY( QString YAxisLocation READ getYAxisLocation WRITE setYAxisLocation );
-	//Q_PROPERTY( QString GridLineStyle READ getGridLineStyle WRITE setGridLineStyle );
+	
+	///\brief Grid line style.
+	///
+	///\par Possible values:
+	/// {none} | - | -. | -- | :
+	Q_PROPERTY( QString GridLineStyle READ getGridLineStyle WRITE setGridLineStyle );
 	Q_PROPERTY( QVariant XColor READ getXColor WRITE setXColor )
 	Q_PROPERTY( QVariant YColor READ getYColor WRITE setYColor )
 	Q_PROPERTY( QOGraphics::Matrix XLabel READ getXLabel )
@@ -84,6 +89,9 @@ public:
 	/// Plot object factory
 	UIObject* createPlotObject( const QString& type, Handle h );
 	
+	/// Message from children:  legends needs to be updated
+	void updateLegend();
+	
 	/// Size changed -  update actual size to figure/position
 	void sizeChanged();
 	
@@ -95,6 +103,9 @@ public:
 	
 	/// Clears axes (cla)
 	void clear();
+	
+	/// Resets axes to defautl settings
+	void reset();
 	
 	
 	// prioperties
@@ -161,12 +172,21 @@ public:
 	
 	QString getCLimMode() const { return _pItem->climMode; }
 	void setCLimMode( const QString& s ) { _pItem->climMode = s; }
+	
+	QString getGridLineStyle() const { return _pItem->gridLineStyle; }
+	void setGridLineStyle( const QString& s ) { _pItem->gridLineStyle = s; propertyChanged(); }
 
 protected:
 
 	virtual void initProperties();			///< Itnialzies proerties
 
+private slots:
+
+	void plotObjectDestroyed( QObject* object );
+
 private:
+	
+	void newPlotObject( PlotObject* object );
 	
 	// data
 	
