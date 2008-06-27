@@ -29,10 +29,11 @@ class Legend : public PlotObject
 {
 Q_OBJECT
 
-	///\brief Legend position within axes.
+	///\brief Legend location on axes.
 	///\par Possible values
 	/// North | West | East | South | {NorthEast} | NorthWest | SouthEast | SouthWest
-	Q_PROPERTY( QString Position READ getPosition WRITE setPosition )
+	/// or: n | w |e |s |ne |nw |se | sw
+	Q_PROPERTY( QString Location READ getLocation WRITE setLocation )
 	
 	///\brief Controls painting box around the legend.
 	///
@@ -45,6 +46,16 @@ Q_OBJECT
 	///
 	/// Color used to draw box around legend. 
 	Q_PROPERTY( QVariant EdgeColor READ getEdgeColor WRITE setEdgeColor )
+
+	///\brief Legend face color.
+	///
+	/// Color used to draw legend's background. Defaults to white.
+	Q_PROPERTY( QVariant FaceColor READ getFaceColor WRITE setFaceColor )
+
+	///\brief Legend face opacity.
+	///
+	/// Face opacity - real value from 0.0 to 1.0 inclusive.
+	Q_PROPERTY( QOGraphics::Matrix FaceAlpha READ getFaceAlpha WRITE setFaceAlpha )
 
 public:
 	
@@ -64,11 +75,17 @@ public:
 	QString getBox() const { return _pItem->box; }
 	void setBox( const QString& s ) { _pItem->box = s; propertyChanged(); }
 	
-	QString getPosition() const { return _pItem->position; }
-	void setPosition( const QString& s ) { _pItem->position = s; propertyChanged(); }
+	QString getLocation() const { return _pItem->location; }
+	void setLocation( const QString& s ) { _pItem->location = s; propertyChanged(); }
 
 	QVariant getEdgeColor() const { return _pItem->edgeColor.toVariant(); }
 	void setEdgeColor( const QVariant& v ) { _pItem->edgeColor.fromVariant(v); propertyChanged(); }
+
+	QVariant getFaceColor() const { return _pItem->faceColor.toVariant(); }
+	void setFaceColor( const QVariant& v ) { _pItem->faceColor.fromVariant(v); propertyChanged(); }
+
+	Matrix getFaceAlpha() const { return Matrix( _pItem->faceAlpha ); }
+	void setFaceAlpha( const Matrix& m ) { _pItem->faceAlpha = m.toScalar(); propertyChanged(); }
 
 protected:
 

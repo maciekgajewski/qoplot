@@ -54,6 +54,12 @@ void Color::fromVector( const Matrix& vector )
 		, int(vector.vectorValue( 2 ) * 255 )
 		, int(vector.vectorValue( 3 ) * 255 )
 		);
+		
+	// apply alpha if available
+	if ( vector.vectorSize() > 3 )
+	{
+		_color.setAlphaF( vector.vectorValue( 4 ) );
+	}
 }
 
 // ============================================================================
@@ -117,11 +123,12 @@ void Color::fromVariant( const QVariant& variant )
 /// Creates RGB 3x1 vector from color.
 Matrix Color::toMatrix() const
 {
-	Matrix m(1, 3 );
+	Matrix m(1, 4 );
 	
-	m.setVectorValue( 1 , _color.red() );
-	m.setVectorValue( 2 , _color.green() );
-	m.setVectorValue( 3 , _color.blue() );
+	m.setVectorValue( 1 , _color.redF() );
+	m.setVectorValue( 2 , _color.greenF() );
+	m.setVectorValue( 3 , _color.blueF() );
+	m.setVectorValue( 4 , _color.alphaF() );
 
 	return m;
 }

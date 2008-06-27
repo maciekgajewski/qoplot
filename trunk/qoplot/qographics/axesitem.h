@@ -79,6 +79,7 @@ public:
 	Enum units; 	// inches  | centimeters | {normalized} | points | pixels
 	Matrix clim;	// TODO what is this used for?
 	Enum climMode;
+	Enum gridLineStyle;
 	
 	// constant child elements
 	

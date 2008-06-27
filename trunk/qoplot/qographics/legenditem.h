@@ -46,18 +46,20 @@ public:
 	
 	void updateLegend(); ///< Updates list of plot objects.
 	
-	void positionChanged();	///< Handle positoon property change / axes size change
+	void locationChanged();	///< Handle positoon property change / axes size change
 	
 	virtual void setPlotBox( const QRectF& r );
 	
 	// enums used in properties
-	enum LegendPosition { North, West, East, South, NorthEast, NorthWest, SouthEast, SouthWest };
+	enum LegendLocation { North, West, East, South, NorthEast, NorthWest, SouthEast, SouthWest };
 	
 	// properties
 	
-	Enum position;		///< Legend position within the plot box
+	Enum location;		///< Legend position within the plot box
 	Enum box;			///< If box should be painted
 	Color edgeColor;	///< Frame edge color
+	Color faceColor;	///< Face color
+	double faceAlpha;	///< Face alpha (opacity)
 
 	QList<PlotItem*> items;		///< Plot items displayed in legend
 

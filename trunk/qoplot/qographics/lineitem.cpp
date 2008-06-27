@@ -46,6 +46,7 @@ void LineItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
+	
 	AxesItem* pAxesItem = axesItem();
 	Q_ASSERT( pAxesItem );
 	
@@ -103,7 +104,8 @@ QRectF LineItem::boundingRect() const
 	
 	QRectF axesRect = axesItem()->boundingRect();
 	
-	return mapFromParent( axesRect ).boundingRect();
+	QRectF r =  mapFromParent( axesRect ).boundingRect();
+	return r;
 }
 
 // ============================================================================

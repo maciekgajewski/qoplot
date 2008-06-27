@@ -200,16 +200,17 @@ Matrix AxesItem::generateTicks( double min, double max, double spacing )
 	QList<double> ticks;
 	
 	// find first
-	double minMinusDelta = min - (max-min)*0.0001;
-	double first = ceil( minMinusDelta / spacing ) * spacing;
-	double tick = first;
+	double minMinusDelta = min - (max-min)*0.001;
+	double maxPlusDelta = min + (max-min)*1.001; // sometimes last ticks runs away
 	
-	double maxPlusDelta = min + (max-min)*1.0001; // sometimes last ticks runs away
-	while( tick <= maxPlusDelta  )
+	int firstIndex	= int( ceil( minMinusDelta / spacing ) );
+	int lastIndex	= int( floor( maxPlusDelta / spacing ) );
+	
+	for( int i = firstIndex; i <= lastIndex; i++ )
 	{
-		ticks.append( tick );
-		tick += spacing;
+		ticks.append( i * spacing );
 	}
+	
 	
 	Matrix v( 1, ticks.size() );
 	
@@ -228,7 +229,10 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 	QRectF box = plotBox();
 	
 	QColor c = xcolor;
-	pPainter->setPen( pen( c, pPainter->device() ) );
+	QPen linePen = pen( c, pPainter->device() );
+	pPainter->setPen( linePen );
+	QPen gridPen = linePen;
+	gridPen.setStyle( Qt::PenStyle( int( gridLineStyle ) ) );
 	pPainter->setFont( font() );
 	
 	// draw at the bottom of the box TODO add top|bottom property
@@ -246,11 +250,12 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 			, box.bottom() );
 		
 		// draw tick
+		pPainter->setPen( linePen );
 		pPainter->drawLine( pixelPos, pixelPos + QPointF( 0, tickLength() ) );
 		
 		// draw text
 		QString label;
-		label.sprintf("%.4g", tickPos );
+		label.sprintf("%.2g", tickPos );
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -259,6 +264,9 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 			
 		pPainter->drawText( textRect, Qt::AlignHCenter|Qt::AlignTop, label );
 		
+		// draw grid line
+		pPainter->setPen( gridPen );
+		pPainter->drawLine( pixelPos, pixelPos + QPointF( 0, -box.height() ) );
 	}
 	
 }
@@ -270,7 +278,10 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 	QRectF box = plotBox();
 	
 	QColor c = ycolor;
-	pPainter->setPen( pen( c, pPainter->device() ) );
+	QPen linePen = pen( c, pPainter->device() );
+	pPainter->setPen( linePen );
+	QPen gridPen = linePen;
+	gridPen.setStyle( Qt::PenStyle( int( gridLineStyle ) ) );
 	
 	// draw at the bottom of the box TODO add top|bottom property
 	
@@ -284,11 +295,12 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 		QPointF pixelPos(  box.left(), plotToPixel( QPointF( 0, tickPos ) ).y() );
 		
 		// draw tick
+		pPainter->setPen( linePen );
 		pPainter->drawLine( pixelPos, pixelPos + QPointF( -tickLength(), 0 ) );
 		
 		// draw text
 		QString label;
-		label.sprintf("%.4g", tickPos );
+		label.sprintf("%.2g", tickPos);
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -297,6 +309,9 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 			
 		pPainter->drawText( textRect, Qt::AlignRight|Qt::AlignVCenter, label );
 		
+		// draw grid line
+		pPainter->setPen( gridPen );
+		pPainter->drawLine( pixelPos, pixelPos + QPointF( box.width(), 0 ) );
 	}
 	
 }

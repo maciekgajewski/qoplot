@@ -40,7 +40,8 @@ UIItem::~UIItem()
 /// Returns pen created form provided color and LineWidth and LineStyle properties.
 QPen UIItem::pen( const QColor& color, const QPaintDevice* pDevice  ) const
 {
-	return QPen( QBrush(color), ptToPixel( lineWidth, pDevice ), Qt::PenStyle( int(lineStyle) ) );
+	double width = qRound( qMin( 1.0, ptToPixel( lineWidth, pDevice ) ) );
+	return QPen( QBrush(color), int(width), Qt::PenStyle( int(lineStyle) ) );
 }
 
 // ============================================================================

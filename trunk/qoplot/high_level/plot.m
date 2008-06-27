@@ -187,6 +187,13 @@ function hout = plot (varargin)
   set(ca,"xscale","linear");
   set(ca,"yscale","linear");
 
+  # turn on annotation for all created lines
+  for i = 1:length(h)
+    set(h(i), 'Annotation', 'on');
+  endfor
+  
+
+
   if(nargout)
     hout = h;
   endif

@@ -46,26 +46,27 @@
 function handle = legend (varargin)
 
   lgnd = get(gca(),"legend");
-  name_s = 1;
-  name_e = length(varargin);
+  name_s = 1; # names start index in varargin
+  name_e = length(varargin); # names end index
+  visible = "on"; # defautl value of 'visible' property
   
   if length(varargin)==1,
     arg1 = tolower(varargin{1});
     if isstr(arg1),
       if strcmp(arg1,"show") | strcmp(arg1,"on"),
-	set(lgnd,"visible","on");
-	name_s = 2;
+        visible = "on";
+        name_s = 2;
       elseif strcmp(arg1,"hide") | strcmp(arg1,"off"),
-	set(lgnd,"visible","off");
-	name_s = 2;
+        visible = "off";
+        name_s = 2;
       elseif strcmp(arg1,"toggle") ,
-	if(strcmp(get(lgnd,"visible"),"on"))
-	  set(lgnd,"visible","off");
-	  name_s = 2;
-	else
-	  set(lgnd,"visible","on");
-	  name_s = 2;
-	endif
+        if(strcmp(get(lgnd,"visible"),"on"))
+          visible = "off";
+          name_s = 2;
+        else
+          visible = "on";
+          name_s = 2;
+        endif
       endif
     endif
   endif
@@ -74,8 +75,8 @@ function handle = legend (varargin)
   if length(varargin)>=2,
     if isstr(varargin{end-1}) & isstr(varargin{end})
       if strcmp(tolower(varargin{end-1}),"location")
-	set(lgnd,"Location",varargin{end});
-	name_e -= 2;
+        set(lgnd,"Location",varargin{end});
+        name_e -= 2;
       endif
     endif
   endif
@@ -92,12 +93,14 @@ function handle = legend (varargin)
   li = name_s;
   ci = length(chld);
   while(li<=name_e & ci>0)
-    if strcmp(get(chld(ci),"type"),"line"),
-      set(chld(ci),"label",varargin{li++});
+    if strcmp(get(chld(ci),"Annotation"),"on"),
+      set(chld(ci),"DisplayName",varargin{li++});
     endif
     ci --;
   endwhile
   
-    if nargout , handle=lgnd ; endif
+  set(lgnd,"visible", visible );
+
+  if nargout , handle=lgnd ; endif
 
 endfunction
