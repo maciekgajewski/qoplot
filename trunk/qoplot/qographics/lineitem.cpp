@@ -28,7 +28,7 @@ namespace QOGraphics
 /// Constructor
 LineItem::LineItem( QGraphicsItem* parent ): PlotItem( parent )
 {
-	// nope
+	setZValue( 0.5 ); // above axes
 }
 
 // ============================================================================

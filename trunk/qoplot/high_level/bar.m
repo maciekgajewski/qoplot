@@ -16,9 +16,9 @@
 ## 02111-1307, USA.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {} @var{h}= bar ([@var{x}],@var{y},[@var{width}],[@var{'color'}])
+## @deftypefn {Function File} {} @var{h}= bar ([@var{x}],@var{y},[@var{width}|@var{'color'}|@var{'plottype'}])
 ## Draws a bar graph. Graphs the rows of @var{y}. The default width is 0.8
-## The default color is "r" (red).
+## The default color is taken from axes 'ColorOrder' property.
 ## Returns in @var{h} the handles of the patch objects used to draw the
 ## bars.
 ##
@@ -44,7 +44,7 @@
 ## @end example
 ## @noindent
 ## plots 10 bars with hights from 2 to 20
-## color is blue, 10 handles will be returned
+## color is blue.
 ##
 ## @example
 ## x = 1:10;
@@ -53,7 +53,7 @@
 ## @end example
 ## @noindent
 ## plots 10 bars with hights from 2 to 20
-## bar width is 0.6, 10 handles will be returned
+## bar width is 0.6.
 ##
 ## @example
 ## x = 1:10;
@@ -63,7 +63,6 @@
 ## @noindent
 ## plots 10 bars with hights from 2 to 20
 ## bar width is 0.6, bar color is magenta
-## 10 handles will be returned
 ##
 ## @example
 ## x = 1:10;

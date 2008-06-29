@@ -26,6 +26,7 @@
 #include "line.h"
 #include "image.h"
 #include "legend.h"
+#include "patch.h"
 
 namespace QOGraphics
 {
@@ -330,6 +331,12 @@ UIObject* Axes::createPlotObject( const QString& type, Handle h )
 		Image* pImage = new Image( root(), h, this );
 		newPlotObject( pImage );
 		return pImage;
+	}
+	else if ( type == "patch" )
+	{
+		Patch* pPatch = new Patch( root(), h, this );
+		newPlotObject( pPatch );
+		return pPatch;
 	}
 	// TODO other types here
 	else
