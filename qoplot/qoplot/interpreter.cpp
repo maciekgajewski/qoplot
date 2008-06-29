@@ -142,6 +142,13 @@ void Interpreter::interpret( Command& cmd, Root& root )
 			break;
 		}
 		
+		// Patch
+		case ocpl::patch:
+		{
+			patch( cmd, root );
+			break;
+		}
+		
 		default:
 			; // nope
 	}
@@ -647,6 +654,47 @@ void Interpreter::print( Command& cmd, Root& root )
 		cmd.retError( "print: no figure to print." );
 	}
 
+}
+
+// ============================================================================
+// Creates patch on current axes. Params: xdata, ydata
+void Interpreter::patch( Command& cmd, Root& root )
+{
+	// check params
+	if ( cmd.nargin() < 2 )
+	{
+		cmd.retError( "Patch expects 2 argments." );
+		return;
+	}
+	if( cmd.argin(0).userType() != qMetaTypeId<Matrix>() || cmd.argin(1).userType() != qMetaTypeId<Matrix>() )
+	{
+		cmd.retError("Patch: arguments should be matrices.");
+		return;
+	}
+	
+	// get data
+	Matrix xdata = cmd.arginAsMatrix( 0 );
+	Matrix ydata = cmd.arginAsMatrix( 1 );
+	
+	// create object
+	root.makeSureAxesCreated();
+	Handle h = root.createObject( "patch" );
+	
+	Object* pObject = root.objectByHandle( h );
+	
+	if ( pObject )
+	{
+		pObject->setProperty( "XData", qVariantFromValue<Matrix>( xdata ) );
+		pObject->setProperty( "YData", qVariantFromValue<Matrix>( ydata ) );
+		
+		cmd.setArgoutNum( 1 );
+		cmd.addDoubleArgout( 0, h );
+	}
+	else
+	{
+		cmd.retError( "Can't create patch object." );
+	}
+	
 }
 
 // EOF

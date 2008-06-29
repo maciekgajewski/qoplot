@@ -21,9 +21,6 @@
 ## the current axes.
 ## For an uniform colored patch, @var{c} can be given as [r, g, b]-vector, scalar value refering
 ## to the current colormap, or single character (e.g. 'r' for red).
-## If @var{c} is a vector with the length of @var{x} and @var{y} its values
-## are interpreted as indices to the current colormap. A linear interpolation
-## is applied to the face color and the shading is set to 'interp'.
 ##
 ## The remainder of the arguments, if any, are taken as property value pairs
 ## and are applied to the patch
@@ -37,40 +34,24 @@
 
 function ret = patch (x, y, c, varargin)
 
-  if (length(x) != length(y))
+  if (size(x) != size(y))
     usage('size of x and y must be equal')
   end
+  
+  # if x and y are vectors, make sure there are colums
+  if min( size(x)) == 1
+  	l = length(x);
+  	x = reshape( x, l, 1 );
+  	y = reshape( y, l, 1 );
+  endif
 
-  handle = octplot_command('patch', x, y, []){1};
+  handle = qoplot_command('patch', x, y ){1};
   if (length(c) == 1)
-    if isstr(c)
       # have color string
       set(handle, "FaceColor", c);
-    elseif isnan(c)
-      set(handle, "FaceColor", [1 1 1]);
-      set(handle, "CData", c);
-    elseif isnumeric(c)
-      # have color index
-      set(handle, "FaceColor", "flat");
-      set(handle, "CData", c);
-    else
-      # unknown color value
-      error("color value not valid");
-    end
-  elseif (length(c) == 3)
-    # have rgb/rgba value
-    set(handle, "FaceColor", c);
-  else
-    # color vector
-    if (length(c) != length(x))
-      usage("size of x and c must be equal")
-    else
-      set(handle, "FaceColor", "interp");
-      set(handle, "CData", c);
-    end
-  end 
-
-  if length(varargin),
+  endif
+  
+ if length(varargin),
     set(handle, varargin{:});
   endif
   if nargout, ret = handle; endif

@@ -31,7 +31,7 @@
 ##
 ## @table @samp
 ## @item LineWidth [scalar]
-## Edge linewidth in pixels
+## Edge linewidth in points
 ## @item Clipping [radio]
 ## Will the patch be clipped to the axes ? can be either one of "on" or "off"
 ## @item EdgeColor [colspec]
@@ -42,19 +42,11 @@
 ## or an [r,g,b] vector
 ## @item LineStyle [linespec]
 ## Edge linestyle. Can be one of "-","--",":","-.","none"
-## @item Marker
-## Edge marker style. Can be one of "none","+","o","*",".","x"
-## @item MarkeEdgeColor [colspec]
-## Edge marker edge color
-## @item MarkeFaceColor [colspec]
-## Edge marker face color
-## @item MarkerSize [scalar]
-## Edge marker size in pixels
 ## @item Parent [handle]
 ## Patch's parent axes
-## @item XData [vector]
-## @item YData [vector]
-## Patch's data. XData and YData should be the same length
+## @item XData [matrix]
+## @item YData [matrix]
+## Patch's data. XData and YData should be the same size
 ## @item Visible [Radio]
 ## Patch's visibility, can be one of "on" or "off"
 ## @item Type [string]

@@ -29,7 +29,9 @@ matrix.h \
  image.h \
  imageitem.h \
  legend.h \
- legenditem.h
+ legenditem.h \
+ patch.h \
+ patchitem.h
 SOURCES += object.cpp \
 root.cpp \
 matrix.cpp \
@@ -50,7 +52,9 @@ matrix.cpp \
  image.cpp \
  imageitem.cpp \
  legend.cpp \
- legenditem.cpp
+ legenditem.cpp \
+ patch.cpp \
+ patchitem.cpp
 FORMS += figurewindow.ui
 
 QT += svg

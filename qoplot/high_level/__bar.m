@@ -37,21 +37,14 @@ function h =__bar(varargin)
   
   
   # check input arguments
-  [x,y,definedColor,width,plottype,yIsMatrix] = checkInputArgs(varargin{1:end-1});
-  ## TODO: yisMatrix won't be used... I think so
+  [x,y,color,width,plottype] = checkInputArgs(varargin{1:end-1});
+  # x        - vector of x-coordinates of bars
+  # y        - matrix of bar sieries to draw. Series are in rows, data in columns
+  # width    - relative bar width
+  # color    - bar color, used only for single bar sieries. Otherwise ColorOrder used.
+  # plottype - can be: 'grouped'/'stacked'/'hist'/'histc' (irrevelant for single patch)
 
-  # prepare inputs to usable datas
-  if ( strcmp(strCallerFunc,"hist") | strcmp(strCallerFunc,"histh"))
-    plottype="histogram";
-    y = y';
-    sizeY = size(y,2);
-    temp = ones(sizeY,4);
-    for i = 1:sizeY
-      temp(i,:)= definedColor;
-    endfor
-    definedColor = temp;
-  endif
-  [dx,xx,yy] = prepareBarData(x,y,width,plottype,yIsMatrix);
+  [dx,xx,yy] = prepareBarData( x, y, width, plottype );
 
 
   if(min(yy)<0 & max(yy)>0)
@@ -107,6 +100,9 @@ function h =__bar(varargin)
 ## ===========================================================
 #  additional functions
 ## ===========================================================
+
+# -------------------------------------------------------------------
+# Prepare bar data
 
   function [dx,xx,yy] = prepareBarData(x,y,width,plottype,yIsMatrix)
 
@@ -205,214 +201,92 @@ function h =__bar(varargin)
     endif
 
   endfunction
+
+
+
 # ------------------------------------------------------------
-  function [x,y,definedColor,width,plottype,yIsMatrix] = checkInputArgs(varargin)
+# Check Input Args
+
+  function [x,y,color,width,plottype] = checkInputArgs(varargin)
   
     # default values
     width = 0.8;
-    definedColor = "r";
+    color = "r";
     plottype = "grouped";
-    yIsMatrix = 0;
 
+    # One param - only Y
     if(nargin==1),
       y=varargin{1};
       if any(size(y)==1),
         x=1:length(y);
-        definedColor = setColorMatrix(definedColor,y);
       else
         x=1:size(y,1);
-      ## this seems to be a difference between earlier versions
-      # and svn versionn 400
-      #  definedColor = get(gca,"colororder")
-        definedColor = setColorMatrix(definedColor);
       endif
 
+    # Two params: x,Y or Y,color or Y,plottype or Y,width
     elseif(nargin==2)
-      x=varargin{1};
-      y=varargin{2};
-      if any(size(y)==1),
-        definedColor = setColorMatrix(definedColor,y);
+      # both (hopefully) numeric - x,Y or Y,width
+      if ( isnumeric( varargin{2} )
+        if ( isscalar( varargin{2} ) )
+          y=varargin{1};
+          width=varargin{2};
+        else
+          x=varargin{1};
+          y=varargin{2};
+        endif
+      # second is color or plottype
       else
-##      TODO: old style  #definedColor = get(gca,"colororder");
-        definedColor = setColorMatrix(definedColor);
+        s = varargin{2};
+        if s == 'grouped' || s == 'stacked' || s == 'histc' || s == 'hist'
+          plottype = s;
+        else
+          color = s;
+        endif
       endif
-
+      
+    # three params: x, Y, string or x,Ymwidth
     elseif(nargin==3)
       x=varargin{1};
       y=varargin{2};
-      if (isnumeric(varargin{3}) & isscalar(varargin{3}))
-        width=varargin{3};
+      if ( isnumeric( varargin{3} ) )
+        width = varargin{3};
       else
-        # in this case, it can be still a style or a color
-        if (ischar(varargin{3}) & length(varargin{3})>1)
-          # now it can't be a color definition	  
-	      if (strcmp(varargin{3},"stacked") | strcmp(varargin{3},"grouped") )
-	        plottype = varargin{3};
-	      else
-	        error("Unknown type argument")
-	      endif
+        # third is color or plottype
+        s = varargin{3};
+        if s == 'grouped' || s == 'stacked' || s == 'histc' || s == 'hist'
+          plottype = s;
         else
-          definedColor = varargin{3};
-          # check if a valid color is defined
-	      if any(size(definedColor))<1
-	        error("Dimension of color is wrong")
-	      endif
-	      [n m] = size(definedColor);
-	      for i=1:n
-	        testColor = definedColor(i,:);
-            if ~iscolorspec(testColor)
-              disp("WARNING: Unknown color specification, will change color to red.");
-              definedColor = "r";
-	          break;
-            endif
-	      endfor
+          color = s;
         endif
       endif
-      if any(size(y)==1)
-        definedColor = setColorMatrix(definedColor,y);
-      else
-        definedColor = setColorMatrix(definedColor);
-      endif
-
-    elseif(nargin==4)
-      x=varargin{1};
-      y=varargin{2};
-      if (isnumeric(varargin{3}) & isscalar(varargin{3}))
-        width=varargin{3};
-      else
-        # in this case, it can be only a color
-        definedColor = varargin{3};
-        # check if a valid color is defined
-        if any(size(definedColor))<1
-          error("Dimension of color is wrong")
-        endif
-        [n m] = size(definedColor);
-        for i=1:n
-          testColor = definedColor(i,:);
-          if ~iscolorspec(testColor)
-            disp("WARNING: Unknown color specification, will change color to red.");
-            definedColor = "r";
-            break;
-          endif
-        endfor
-        if any(size(y)==1)
-          definedColor = setColorMatrix(definedColor,y);
-        else
-          definedColor = setColorMatrix(definedColor);
-        endif
-      endif
-      # in this case, it can be still a style or a color
-      if (ischar(varargin{4}) & length(varargin{4})>1)
-        # now it can't be a color definition
-	    if (strcmp(varargin{4},"stacked") | strcmp(varargin{4},"grouped") )
-	      plottype = varargin{4};
-	      definedColor = setColorMatrix(definedColor);
-	    else
-	      error("Unknown type argument")
-	    endif
-      else
-        definedColor = varargin{4};
-	    if !ischar(definedColor)
-          # check if a valid color is defined
-	      if any(size(definedColor))<1
-	        error("Dimension of color is wrong")
-	      endif
-	      [n m] = size(definedColor);
-	      for i=1:n
-	        testColor = definedColor(i,:);
-            if ~iscolorspec(testColor)
-              disp("WARNING: Unknown color specification, will change color to red.");
-              definedColor = "r";
-	          break;
-            endif
-	      endfor
-	      if n>1
-	        definedColor = setColorMatrix(definedColor);
-	      else
-	        definedColor = setColorMatrix(definedColor,y);
-	      endif
-	    else
-	      definedColor = setColorMatrix(definedColor,y);
-	    endif # !ischar(definedColor)
-      endif
-    elseif(nargin==5)
-      x=varargin{1};
-      y=varargin{2};
-      width=varargin{3};
-      definedColor=varargin{4};
-      # check if a valid color is defined
-      if any(size(definedColor))<1
-	    error("Dimension of color is wrong")
-      endif
-      [n m] = size(definedColor);
-      for i=1:n
-	    testColor = definedColor(i,:);
-        if ~iscolorspec(testColor)
-          disp("WARNING: Unknown color specification, will change color to red.");
-          definedColor = "r";
-	      break;
-        endif
-      endfor
-      if any(size(y)==1)
-        definedColor = setColorMatrix(definedColor,y);
-      else
-        definedColor = setColorMatrix(definedColor);
-      endif
-      plottype=varargin{5};
-
     endif
-  endfunction
-# ------------------------------------------------------------
-  function definedColor = setColorMatrix(definedColor,y)
-    
-    if (nargin==2)
-      if (ischar(definedColor))    
-        switch definedColor
-          case "r"
-            definedColor = [1 0 0 1];
-          case "g"
-            definedColor = [0 1 0 1];
-          case "b"
-            definedColor = [0 0 1 1];
-          case "c"
-            definedColor = [0 1 1 1];
-          case "m"
-            definedColor = [1 0 1 1];
-          case "y"
-            definedColor = [1 1 0 1];
-          case "k"
-            definedColor = [0 0 0 1];
-          case "w"
-            definedColor = [1 1 1 1];
-        endswitch
-     else # if it's a rgb-triple
-       definedColor = [definedColor 1];
-     endif # if (ischar(definedColor))
+  
+  # if y is vector, make sure it's a column vector
+  if( any(size(y)) == 1 )
+    y = reshape( y, length(y), 1 );
+  endif
 
-      sizeY = size(y,2);
-      temp = ones(sizeY,4);
-      for i = 1:sizeY
-        temp(i,:)=definedColor;
-      endfor
-      definedColor = temp;
-    else
-      if !(ischar(definedColor))
-        [n m] = size(definedColor);
-        if (n<=7)
-          definedColor(:,end+1) = 1;
-	endif
-      else
-        definedColor = [1 0 0 1;
-                      0 0 1 1;
-                      0 1 0 1;
-                      1 1 0 1;
-                      0 1 1 1;
-                      1 0 1 1;
-                      1 1 1 1];
-	endif
-    endif  
+  # check types
+  if ( ! isnumeric(y) || isscalar(y) )
+    error("Bar data should be vector or matrix.");
+  endif
+   
+  # check x
+  if ( ! isnumeric(x) || isscalar(x) || min( size(x) ) > 2 )
+    error("Bar x-coordinates should be vector.");
+  endif
+  
+  # y is vector?
+  if( any(size(y)) == 1 )
+    if ( length(x) != length(y) )
+      error("X and Y sizes should match.");
+    endif
+  else
+    if( length(x) != size(Y,1) )
+      error("X size shoud match number of rows in Y");
+    endif
+  endif
 
-  endfunction
 
 ## ===========================================================
 #  END additional functions
