@@ -95,7 +95,7 @@
       <designerintegration>ExternalDesigner</designerintegration>
       <root>/usr/lib/qt4</root>
       <qmake>/usr/bin/qmake-qt4</qmake>
-      <designer></designer>
+      <designer>/usr/bin/designer-qt4</designer>
       <designerpluginpaths/>
     </qt>
     <codecompletion>
@@ -148,7 +148,7 @@
   </kdevfilecreate>
   <kdevtrollproject>
     <general>
-      <activedir>qoplot</activedir>
+      <activedir>contourc</activedir>
     </general>
     <run>
       <directoryradio>executable</directoryradio>
