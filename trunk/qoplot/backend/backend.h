@@ -64,14 +64,7 @@ public:
 		return 72.0;
 	}
 	
-	Matrix get_screen_size (void) const
-	{
-		printf("qoplot: get screen size\n");
-		Matrix sz (1, 2, 0.0);
-		sz(0) = 100;
-		sz(1) = 100;
-		return sz;
-	}
+	Matrix get_screen_size(void) const;
 	
 private:
 

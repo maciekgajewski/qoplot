@@ -34,6 +34,7 @@ function h =__bar(varargin)
   strCallerFunc = varargin{end};
 
   __nxtplt__();
+  persistent color_order_pointer = 1;
   
   
   # check input arguments
@@ -44,54 +45,67 @@ function h =__bar(varargin)
   # color    - bar color, used only for single bar sieries. Otherwise ColorOrder used.
   # plottype - can be: 'grouped'/'stacked'/'hist'/'histc' (irrevelant for single patch)
 
-  [dx,xx,yy] = prepareBarData( x, y, width, plottype );
-
-
-  if(min(yy)<0 & max(yy)>0)
-    draw_ax = 1;
-  else
-    draw_ax = 0;
-  endif
-
-  hh = [];
-  [nr,nc] = size(y);
+  series = size( y, 2 );
+  bars   = size( y, 1 );
   
-
-  if  (strcmp(strCallerFunc,"barh") | strcmp(strCallerFunc,"histh"))
-  # horizontal bars
-    for j=1:nr
-      for i=1:nc
-        hh = [ \
-	      hh , \
-	      patch(\
-		    [yy(j,1+(i-1)*4),yy(j,2+(i-1)*4),yy(j,3+(i-1)*4),yy(j,4+(i-1)*4)],\
-		    [xx(j,1+(i-1)*4),xx(j,2+(i-1)*4),xx(j,3+(i-1)*4),xx(j,4+(i-1)*4)],\
-		    definedColor(i,1:3))];
-	  endfor
-    endfor
-    if( draw_ax )
-      line( [0,0],\
-            [-dx(1)*width/2+x(1),dx(end)*width/2+x(end)],\
-            "Color","k");
+  
+  
+  # ========= single series - paint differently ===============
+  if series == 1 
+    # get color
+    if isempty( color )
+      colors = get( gca, 'ColorOrder' );
+      color = colors( color_order_pointer, : );
+      color_order_pointer = mod( color_order_pointer + 1, size( colors, 1) );
     endif
+    xm = [];
+    ym = [];
+    for i = 1:bars
+      # find coordinates for this bar
+      xs = [ x(i) - width/2; x(i) - width/2;  x(i) + width/2; x(i) + width/2 ];
+      ys = [ 0; y(i); y(i); 0 ];
+      # append to matrix
+      xm = [xm  xs];
+      ym = [ym ys];
+    endfor
+    barxlim = [ min(x) - width*0.75, max(x) + width*0.75 ];
+    barylim = [ min(0, min(y)) max(y) ]; # find new xlim/ylim
+    
+    # horizontal bars
+    if ( strcmp(strCallerFunc, 'barh') )
+      
+      # preapre axes
+      if ( strcmp( get( gca, 'XLimMode'), 'auto') )
+        set( gca, 'XLim', barylim );
+      endif
+      if ( strcmp( get( gca, 'YLimMode'), 'auto') )
+        set( gca, 'YLim', barxlim );
+      endif
+      
+      #create patch
+      hh = patch( ym, xm, color );
+    
+    # vertical bars
+    else
+      # preapre axes
+      if ( strcmp( get( gca, 'XLimMode'), 'auto') )
+        set( gca, 'XLim', barxlim );
+      endif
+      if ( strcmp( get( gca, 'YLimMode'), 'auto') )
+        set( gca, 'YLim', barylim );
+      endif
+      
+      #create patch
+      hh = patch( xm, ym, color );
+    endif
+  # ========= multisetries bars - take use of plottype, paint defferently =========
   else
-  # vertical bars
-    for j=1:nr
-      for i=1:nc
-        hh = [ \
-	      hh , \
-	      patch(\
-		    [xx(j,1+(i-1)*4), xx(j,2+(i-1)*4), xx(j,3+(i-1)*4), xx(j,4+(i-1)*4)],\
-		    [yy(j,1+(i-1)*4), yy(j,2+(i-1)*4), yy(j,3+(i-1)*4), yy(j,4+(i-1)*4)],\
-		    definedColor(i,1:3))];
-	  endfor
+    for s = [1:series]
     endfor
-    if( draw_ax )
-      line( [-dx(1)*width/2+x(1),dx(end)*width/2+x(end)],\
-            [0,0],\
-            "Color","k");
-    endif
   endif
+  
+      
+
 
   if nargout,
     h = hh;
@@ -101,108 +115,6 @@ function h =__bar(varargin)
 #  additional functions
 ## ===========================================================
 
-# -------------------------------------------------------------------
-# Prepare bar data
-
-  function [dx,xx,yy] = prepareBarData(x,y,width,plottype,yIsMatrix)
-
-    dx = diff(x(:)');
-    dx = [dx(1),dx,dx(end)];
-
-    xLength = length(x);
-    xBounds = [];
-    xx = [];
-    yy = [];
-    xTemp = [];
-    yTemp = [];
-    
-
-    if (!strcmp(plottype,"histogram"))
-      for i = 1:xLength
-        xBounds = [xBounds; x(i)-width/2];
-      endfor
-    else
-      for i = 1:xLength
-        xBounds = [xBounds; x(i)-dx(i)/2];
-      endfor
-    endif
-
-    [nRows,nColumns] = size(y);
-    
-    # TODO:
-    # "unnice" programmed, should be redesigned sometimes
-    # this means the next 2 rows
-    # <Michel D. Schmid>
-    nUnequal1 = find(dx(:)!=1);
-    if ( !isempty(nUnequal1) || (strcmp(plottype,"grouped") & (nRows>1)))
-      div1=width/nColumns;
-      newWidth = div1*width;
-      diff1 = div1-newWidth;
-      deltaPos = diff1/2;
-
-      for j=1:nRows
-        for i=1:nColumns
-          xBar = xBounds(j,1) + deltaPos + (i-1)*div1 ;
-          xTemp = [xTemp xBar xBar xBar+newWidth xBar+newWidth];
-          yTemp = [yTemp [0 1 1 0]*y(j,i)];
-        endfor
-        xx = [xx;xTemp];
-        yy = [yy;yTemp];
-        xTemp = [];
-        yTemp = [];
-      endfor
-    elseif ( (strcmp(plottype,"grouped") & (nRows==1)) | \
-             (strcmp(plottype,"histogram") & (nRows==1))  )
-      # y is no matrix
-      for i=1:nColumns
-        xBar = xBounds(i,1);
-        if strcmp(plottype,"histogram")
-          xx = [xx xBar xBar xBar+dx(i) xBar+dx(i)];
-	else
-          xx = [xx xBar xBar xBar+width xBar+width];
-	endif
-        yy = [yy [0 1 1 0]*y(i)];
-      endfor
-    elseif (strcmp(plottype,"stacked") & (nRows>1))
-      # y is matrix; plottype is stacked
-      y = y';
-      for j=1:nColumns
-        for i=1:nRows
-          xBar = xBounds(i,1);
-          xTemp = [xTemp xBar xBar xBar+width xBar+width];
-          if (j==1)
-            yTemp = [yTemp [0 1 1 0]*y(j,i)];
-          elseif (j>1)
-            yTemp = [yTemp [yy(j-1,(i-1)*4+2),yy(j-1,(i-1)*4+2),\
-			    yy(j-1,i*4-1),yy(j-1,i*4-1)]+[0 1 1 0]*y(j,i)];
-          endif
-        endfor
-        xx = [xx;xTemp];
-        yy = [yy;yTemp];
-        xTemp = [];
-        yTemp = [];
-      endfor
-      tempX4 = [];
-      tempY4 = [];
-      nColumns = size(yy,2)/4;
-      nRows = size(yy,1);
-      for j= 1:nColumns
-        for i=1:nRows
-          tempX4 = [tempX4 xx(i,(j-1)*4+1:j*4)];
-          tempY4 = [tempY4 yy(i,(j-1)*4+1:j*4)];
-        endfor
-        xTemp = [xTemp;tempX4];
-        yTemp = [yTemp;tempY4];
-        tempX4 = [];
-        tempY4 = [];
-      endfor
-      xx = xTemp;
-      yy = yTemp;
-    endif
-
-  endfunction
-
-
 
 # ------------------------------------------------------------
 # Check Input Args
@@ -211,25 +123,22 @@ function h =__bar(varargin)
   
     # default values
     width = 0.8;
-    color = "r";
+    color = [];
     plottype = "grouped";
 
     # One param - only Y
-    if(nargin==1),
-      y=varargin{1};
-      if any(size(y)==1),
-        x=1:length(y);
-      else
-        x=1:size(y,1);
-      endif
+    if(nargin==1)
+      y = varargin{1};
+      x = findx(y);
 
     # Two params: x,Y or Y,color or Y,plottype or Y,width
     elseif(nargin==2)
       # both (hopefully) numeric - x,Y or Y,width
-      if ( isnumeric( varargin{2} )
+      if ( isnumeric( varargin{2} ) )
         if ( isscalar( varargin{2} ) )
           y=varargin{1};
           width=varargin{2};
+          x = findx(y);
         else
           x=varargin{1};
           y=varargin{2};
@@ -237,11 +146,12 @@ function h =__bar(varargin)
       # second is color or plottype
       else
         s = varargin{2};
-        if s == 'grouped' || s == 'stacked' || s == 'histc' || s == 'hist'
+        if s == 'grouped' || s == 'stacked'
           plottype = s;
         else
           color = s;
         endif
+        x = findx(y);
       endif
       
     # three params: x, Y, string or x,Ymwidth
@@ -253,7 +163,7 @@ function h =__bar(varargin)
       else
         # third is color or plottype
         s = varargin{3};
-        if s == 'grouped' || s == 'stacked' || s == 'histc' || s == 'hist'
+        if s == 'grouped' || s == 'stacked'
           plottype = s;
         else
           color = s;
@@ -286,7 +196,18 @@ function h =__bar(varargin)
       error("X size shoud match number of rows in Y");
     endif
   endif
+  
+  endfunction
 
+# -----------
+# find X for y
+function x=findx(y)
+  # find x for y
+  if any(size(y)==1),
+    x=1:length(y);
+  else
+    x=1:size(y,1);
+  endif
 
 ## ===========================================================
 #  END additional functions

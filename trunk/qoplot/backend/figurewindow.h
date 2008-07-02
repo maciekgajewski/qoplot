@@ -23,6 +23,8 @@
 #include "octave/oct.h"
 #include "octave/graphics.h"
 
+#include "uiitem.h"
+
 #include "ui_figurewindow.h"
 
 namespace QOGraphics
@@ -41,8 +43,11 @@ public:
 	FigureWindow( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
 	virtual ~FigureWindow();
 	
+	/// Creates local copy of provided properties
+	void copyProperties( const figure::properties* pProperties );
+	
 	// public attributes
-	QGraphicsScene scene;	///< Scene on which child elemens are painted
+	
 
 signals:
 
@@ -58,7 +63,20 @@ protected:
 	
 private:
 
-	figure::properties* _pProperties;		///< Properties used to setup figure
+	/// Master method called when properties has changed
+	void propertiesChanged();
+	
+	void updatePosition();	///< Updates geometry to 'position' and 'units' property
+	void updateChildren();	///< Updates child elements
+	
+	UIItem* createItem( base_properties* pProps );
+	
+	// data
+	
+	figure::properties*	_pProperties;		///< Properties used to setup figure
+	QGraphicsScene		_scene;				///< Scene on which child elemens are painted
+	
+	QMap<double, UIItem*> _children;		///< Map faciliting updating children
 
 };
 

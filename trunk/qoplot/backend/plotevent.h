@@ -19,6 +19,9 @@
 
 #include <QEvent>
 
+#include <octave/oct.h>
+#include <octave/graphics.h>
+
 namespace QOGraphics {
 
 /**
@@ -40,6 +43,9 @@ public:
 	
 	ActionType	action;		///< Requested action
 	double		figure;		///< Figure in question
+	
+	/// Pointer to figure properties object.
+	figure::properties* pProperties;
 };
 
 }
