@@ -16,8 +16,10 @@
 //
 
 #include <QCloseEvent>
+#include <QDesktopWidget>
 
 #include "figurewindow.h"
+#include "converters.h"
 
 namespace QOGraphics
 {
@@ -30,7 +32,7 @@ FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
 	_pProperties = NULL;
 	setupUi( this );
 	
-	view->setScene( & scene );
+	view->setScene( & _scene );
 	
 }
 
@@ -38,7 +40,11 @@ FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
 /// Destructor
 FigureWindow::~FigureWindow()
 {
-	// nope
+	if ( _pProperties )
+	{
+		delete _pProperties;
+		_pProperties = NULL;
+	}
 }
 
 // ============================================================================
@@ -59,6 +65,145 @@ void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
 	QPointF sz = view->mapToScene( QPoint(0, 0 ));
 	//qDebug("scene at 0,0: %f,%f", sz.x(), sz.y() );
 	emit resized();
+}
+
+// ============================================================================
+/// Makes copy of provided property set.
+void FigureWindow::copyProperties( const figure::properties* pProperties )
+{
+	if ( _pProperties )
+	{
+		delete _pProperties;
+	}
+	
+	_pProperties = new figure::properties( *pProperties );
+	propertiesChanged();
+}
+
+// ============================================================================
+/// Called when properties are changed. Updates figure state to it's properties.
+void FigureWindow::propertiesChanged()
+{
+	Q_ASSERT( _pProperties );
+	
+	// color 
+	_scene.setBackgroundBrush( colorFromOctave( _pProperties->get_color() ) );
+	
+	// position
+	updatePosition();
+	
+	// resize
+	statusBar()->setSizeGripEnabled( _pProperties->get_resize() == "on" );
+	// TODO really block resising here
+	
+	// update children
+	updateChildren();
+}
+
+// ============================================================================
+/// Updates window position to position property.
+void FigureWindow::updatePosition()
+{
+	std::string units = _pProperties->get_units();
+	Matrix pos = _pProperties->get_position().matrix_value();
+	int screenHeight = QApplication::desktop()->height();
+	
+	if ( units == "pixels" )
+	{
+		QRect g;
+		g.setY( int( screenHeight - pos.elem(1) - pos.elem(3) ) );
+		g.setX( int( pos.elem(0) ) );
+		
+		g.setWidth( int( pos.elem(2) ) );
+		g.setHeight( int( pos.elem(3) ) );
+		
+		qDebug("setting geometry: %d,%d %dx%d", g.x(), g.y(), g.width(), g.height() );
+		
+		setGeometry( g );
+	}
+	else
+	{
+		qDebug("Position units other than pixels not supported currently");
+	}
+}
+
+// ============================================================================
+/// Updates childre. Adds and removes children as they are appearing on/disappearing from
+/// children list, and propagates properties to them
+void FigureWindow::updateChildren()
+{
+	Matrix cm = _pProperties->get_children();
+	
+	int count = cm.nelem();
+	QMap<double, UIItem*> newMap;
+	
+	for( int i = 0; i < count; i++ )
+	{
+		double h = cm.elem(i);
+		base_properties* pProps = NULL;
+		
+		graphics_object obj = gh_manager::get_object (h);
+		if ( obj )
+		{
+			// get properties
+			pProps = &obj.get_properties();
+		}
+		
+		// 1 - do we have this child already?
+		if ( ! _children.contains( h ) )
+		{
+			// no, we don't
+			// create object
+			newMap.insert( h, createItem( pProps ) );
+		}
+		else
+		{
+			// yes, we have it
+			// 2. is it the same type?
+			if ( _children[h]->properties()->get_type() == pProps->get_type() )
+			{
+				// just update
+				_children[h]->copyProperties( pProps );
+				newMap.insert( h, _children[h] );
+				_children.remove( h ); // remove from old map
+			}
+			else
+			{
+				// type changed - re-create
+				// TODO
+				qDebug("re-creation not implemented");
+			}
+		}
+	}
+	
+	// now items that left on old map should be removed
+	foreach( double h, _children.keys() )
+	{
+		delete  _children[h];
+	}
+	
+	// flip tables
+	_children = newMap;
+}
+
+// ============================================================================
+/// Creates item, basing on value returned by proeprties get_type(). Initialies item with new properties.
+UIItem* FigureWindow::createItem( base_properties* pProps )
+{
+	Q_ASSERT( pProps );
+	
+	// axes
+	if ( pProps->get_type() == "axes" )
+	{
+		// TODO create axes
+		qDebug("should create axes now");
+	}
+	else
+	{
+		qDebug("FigureWindow::createItem: unsupported item type: %s", pProps->get_type().c_str() );
+	}
+		
+	return NULL;
 }
 
 }; // namespace

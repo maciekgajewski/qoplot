@@ -48,7 +48,7 @@ bool FigureManager::event ( QEvent* pEvent )
 		{
 			if ( pPlotEvent->action == PlotEvent::Redraw )
 			{
-				redrawFigure( pPlotEvent->figure );
+				redrawFigure( pPlotEvent->figure, pPlotEvent->pProperties );
 			}
 			else if ( pPlotEvent->action == PlotEvent::Close )
 			{
@@ -63,20 +63,35 @@ bool FigureManager::event ( QEvent* pEvent )
 
 // ============================================================================
 /// Redraws figure, if exists, or creates new one with specified handle.
-void FigureManager::redrawFigure( double h )
+/// The figure is provided with new set of properies, and asked to copy and apply them.
+/// Properties copying is synchronized with main octave thread.
+void FigureManager::redrawFigure( double h, const figure::properties* pProps )
 {
+	FigureWindow* pFigure = NULL;
 	if ( _figures.contains( h ) )
 	{
-		FigureWindow* pFigure = _figures[ h ];
+		pFigure = _figures[ h ];
 		// TODO redraw here
 	}
 	else
 	{
 		// create
-		FigureWindow* pFigure = new FigureWindow();
+		pFigure = new FigureWindow();
 		_figures[ h ] = pFigure;
-		pFigure->show();
 	}
+	
+	Q_ASSERT( pFigure );
+	Q_ASSERT( pProps );
+	
+	// copy properties
+	propertiesMutex.lock(); // this will wait until backend enters wait state
+	
+	pFigure->copyProperties( pProps );
+	
+	propertiesMutex.unlock(); // this allow backend to wake up, and/or to post another event.
+	propertiesCopied.wakeAll();
+		
+	pFigure->show(); // show, if closed or hidden
 }
 
 // ============================================================================

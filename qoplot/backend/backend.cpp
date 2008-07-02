@@ -16,6 +16,7 @@
 //
 
 #include <QApplication>
+#include <QDesktopWidget>
 
 #include "backend.h"
 #include "figuremanager.h"
@@ -46,16 +47,32 @@ Backend::~Backend()
 /// children were changedm and figure and it's children needs to be redrawn.
 void Backend::redraw_figure (const graphics_handle& fh) const
 {
-	// send message
-	PlotEvent* pEvent = new PlotEvent;
-	
-	pEvent->action = PlotEvent::Redraw;
-	pEvent->figure = fh.value();
-	
-	QApplication::postEvent( _pManager, pEvent );
-	
-	
-	// TODO copy data somehow, synchronize
+	graphics_object fobj = gh_manager::get_object (fh);
+	if (fobj &&  fobj.isa ("figure") )
+	{
+		// get properties
+		figure::properties& fp = dynamic_cast<figure::properties&>( fobj.get_properties() );
+			
+		// send message
+		PlotEvent* pEvent = new PlotEvent;
+		
+		pEvent->action = PlotEvent::Redraw;
+		pEvent->figure = fh.value();
+		pEvent->pProperties = &fp;
+		
+		_pManager->propertiesMutex.lock(); // this will wait until GUI thread finish previous copying
+		QApplication::postEvent( _pManager, pEvent );
+		
+		// now wait for properties to be copied. Mutex is unlocked during waiting.
+		_pManager->propertiesCopied.wait( & _pManager->propertiesMutex );
+		
+		// happy end, ready to handle next message
+		_pManager->propertiesMutex.unlock();
+	}
+	else
+	{
+		qDebug("Backend::redraw_figure: not a figure handle.");
+	}
 }
 
 // ============================================================================
@@ -81,7 +98,19 @@ void Backend::close_figure (const octave_value& ov) const
 	{
 		qDebug("is matrix");
 	}
-//      figure_manager::Instance ().delete_window (ov.string_value ());
+	
+	// TODO close
+}
+
+// ============================================================================
+/// Returns two-element vector with screen size.
+Matrix Backend::get_screen_size(void) const
+{
+	QSize size = QApplication::desktop()->size();
+	Matrix sz (1, 2, 0.0);
+	sz(0) = size.width();
+	sz(1) = size.height();
+	return sz;
 }
 
 }

@@ -11,12 +11,16 @@ SOURCES = main.cpp\
 	figurewindow.cpp \
  backend.cpp \
  plotevent.cpp \
- figuremanager.cpp
+ figuremanager.cpp \
+ converters.cpp \
+ uiitem.cpp
 
 HEADERS = figurewindow.h \
  backend.h \
  plotevent.h \
  eventtypes.h \
- figuremanager.h
+ figuremanager.h \
+ converters.h \
+ uiitem.h
 
 FORMS = figurewindow.ui

@@ -19,6 +19,12 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMutex>
+#include <QWaitCondition>
+
+#include <octave/oct.h>
+#include <octave/graphics.h>
+
 
 namespace QOGraphics
 {
@@ -28,6 +34,9 @@ class FigureWindow;
 /**
 Figure manager. Lives in GUI thread, receives plot events from backend (in octave thread).
 Manages figure creation, destruction and redrawing.
+
+This object is also enpoint in inter-thread communication with main octave thread.
+It receives events from backend, and sycnhronizes property copying.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
@@ -43,10 +52,15 @@ public:
 	/// Handles incoming events
 	virtual bool event ( QEvent* pEvent );
 	
+	// synchronization facilities
+	QMutex propertiesMutex;            ///< Mutex used to guard figure properties while they are being copied
+	QWaitCondition propertiesCopied;   ///< Signalizes end of copy operation
+	
 private:
 
-	void redrawFigure( double h );			///< Redraws or creates figure
-	void closeFigure( double h );			///< Closes figure
+	///< Redraws or creates figure, applies new properties.
+	void redrawFigure( double h, const figure::properties* pProps );
+	void closeFigure( double h );      ///< Closes figure
 	
 	// data
 	

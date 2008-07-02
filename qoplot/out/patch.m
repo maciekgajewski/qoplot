@@ -46,7 +46,7 @@ function ret = patch (x, y, c, varargin)
   endif
 
   handle = qoplot_command('patch', x, y ){1};
-  if (length(c) == 1)
+  if (length(c) == 1 || length(c) == 3)
       # have color string
       set(handle, "FaceColor", c);
   endif
