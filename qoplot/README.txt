@@ -1,3 +1,13 @@
+What it really is
+=================
+
+Next chapter is all lies. Currently qoplot is being developed as backend to
+octave, using new octave graphics layer.
+
+You can find the backen in form of separate .oct file in backend directory.
+All other code is dead.
+
+
 What's this
 ===========
 
@@ -24,7 +34,13 @@ Planned features for upcoming 0.1 release
 What's here
 ============
 
+Real stuff:
+
+- backend - off-tree Qt-based octave backend using octave's graphics
+  subsystem.
+
 Stuff inherited after octplot:
+
 - demos/
 - high_level/
 - tests/

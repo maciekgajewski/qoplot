@@ -1,5 +1,5 @@
 TEMPLATE =subdirs
 
 SUBDIRS =qoplot qoplot_command \
-qographics contourc
+qographics contourc backend
 
