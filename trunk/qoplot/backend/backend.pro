@@ -1,14 +1,22 @@
+include( octave.pri )
 
-# Check octave presence
-message("Checking octave version")
-system( octave-config -v ) {
-} else {
-	error("No octave found")
-}
+TEMPLATE = lib
+TARGET =qobackend
+system( ln -sf libqobackend.so qobackend.oct )
 
-# Get octave params
-OCTINCLUDEDIR = $$system( octave-config -p OCTINCLUDEDIR )
-OCTLIBDIR = $$system( octave-config -p OCTLIBDIR )
+CONFIG += dll
+QT += svg
 
-INCLUDEPATH += $$OCTINCLUDEDIR
-LIBS += -L$${OCTLIBDIR} -loctave
+SOURCES = main.cpp\
+	figurewindow.cpp \
+ backend.cpp \
+ plotevent.cpp \
+ figuremanager.cpp
+
+HEADERS = figurewindow.h \
+ backend.h \
+ plotevent.h \
+ eventtypes.h \
+ figuremanager.h
+
+FORMS = figurewindow.ui

@@ -148,7 +148,7 @@
   </kdevfilecreate>
   <kdevtrollproject>
     <general>
-      <activedir>contourc</activedir>
+      <activedir>backend</activedir>
     </general>
     <run>
       <directoryradio>executable</directoryradio>
