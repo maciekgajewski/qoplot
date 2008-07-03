@@ -11,6 +11,7 @@
 
 #include "backend.h"
 #include "figuremanager.h"
+#include "systeminfo.h"
 
 // Statics
 static bool backend_registered = false;
@@ -23,14 +24,18 @@ static QOGraphics::FigureManager* pFigureManager = NULL;
 /// Creates Qt application object and starts it's event loop.
 static void* threadRoutine( void* )
 {
-	// emulate main
+	// emulate main, create application
 	int argc = 1;
 	char* argv[] = { "octave" };
 	QApplication app( argc, argv );
 	app.setQuitOnLastWindowClosed( false );
 	
+	// Create figure manager
 	QOGraphics::FigureManager manager;
 	pFigureManager = &manager;
+	
+	// no need to hurry, we are in synchornized thread, so let's acquire some system info
+	QOGraphics::SystemInfo::acquireInfo();
 	
 	// announce that thread was completely created.
 	guiThreadCreated.wakeAll();

@@ -58,11 +58,7 @@ public:
 		return Matrix();
 	}
 	
-	double get_screen_resolution (void) const
-	{
-		printf("qoplot: get screen resolution\n");
-		return 72.0;
-	}
+	double get_screen_resolution (void) const;
 	
 	Matrix get_screen_size(void) const;
 	

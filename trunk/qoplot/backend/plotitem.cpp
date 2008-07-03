@@ -24,7 +24,9 @@ namespace QOGraphics
 // Constructor
 PlotItem::PlotItem( AxesItem* parent ): UIItem( parent )
 {
+	Q_ASSERT( parent );
 	_pAxes = parent;
+	// NOTE this scheme will collapse once group is implemented.
 }
 
 // ============================================================================
@@ -37,27 +39,17 @@ PlotItem::~PlotItem()
 // ============================================================================
 /// Draws icon used to represent icon in legend. 
 /// Icon is painted using provided painter, and fills provided rectangle.
-// TODO remove if not needed
+// TODO remove
 // void PlotItem::drawIcon( QPainter* /*painter*/, const QRectF& /*rect*/ )
 // {
 // 	// default implementation does nothing
 // }
 
 // ============================================================================
-// Handles property change
-void PlotItem::propertiesChanged()
+/// Returns axes plot box, in this item's coordinates.
+const QRectF& PlotItem::plotBox() const
 {
-	UIItem::propertiesChanged();
-	
-	updatePosition();
-	update();
-}
-
-// ============================================================================
-// Updtes position
-void PlotItem::updatePosition()
-{
-	// TODO
+	mapFromParent( _pAxes->plotBox() ).boundingRect();
 }
 
 }

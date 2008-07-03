@@ -1,4 +1,4 @@
-// plotitem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// textitem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,53 +14,56 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef QOGRAPHICSPLOTITEM_H
-#define QOGRAPHICSPLOTITEM_H
+#ifndef QOGRAPHICSTEXTITEM_H
+#define QOGRAPHICSTEXTITEM_H
 
-#include "uiitem.h"
-#include "enum.h"
-#include "figure.h"
+#include "plotitem.h"
 
-namespace QOGraphics
+namespace QOGraphics 
 {
 
-class AxesItem;
-
 /**
-Item comon for all plot objects - objects placen on axes.
+Graphics item associated with Text object.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-
-class PlotItem : public UIItem
+class TextItem : public PlotItem
 {
-
 public:
-	PlotItem( QGraphicsItem* parent = NULL );
-	virtual ~PlotItem();
+	TextItem();
+	virtual ~TextItem();
+
+	/// Copies properties
+	virtual void copyProperties( const base_properties* pProps );
 	
-	virtual void setPlotBox( const QRectF& r ) { _plotBox = r; }
-	const QRectF& plotBox() const { return _plotBox; }
-	AxesItem* axesItem() const; ///< Returns parent axes item
-	Figure* figure() const;
+	/// Returns current properties.
+	virtual base_properties* properties() const { return _pProperties; }
 	
-	/// Draws icon used to represent object in legend
-	virtual void drawIcon( QPainter* painter, const QRectF& rect );
+	/// Paints item
+	virtual void paint
+		( QPainter *painter
+		, const QStyleOptionGraphicsItem* option
+		, QWidget * widget = NULL );
+		
+	/// Returns item bounding rectangle
+	virtual QRectF boundingRect() const;
 	
 protected:
 
 	virtual void propertiesChanged();		///< Updates item after properties change
-	void updatePosition();					///< Updates position
 	
 private:
 
-	QRectF _plotBox;			///< Axes plot box, in this item coordinates
-
+	QRectF textExtent() const;			///< Calculates text extent rectange
+	QPointF alignTranlsation() const;	///< Fids translation caused by alignment
+	
+	
+	text::properties* _pProperties;
 };
 
 }
 
-#endif // QOGRAPHICSPLOTITEM_H
+#endif // QOGRAPHICSTEXTITEM_H
 
 // EOF
 

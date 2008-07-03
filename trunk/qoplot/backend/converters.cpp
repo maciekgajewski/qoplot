@@ -52,16 +52,43 @@ QColor colorFromOctave( const octave_value& value )
 /// Converts style name into pen style.
 Qt::PenStyle styleFromOctave( const std::string& name )
 {
-	if ( name == "none" )		return Qt::NoPen;
-	else if ( name == "-" )		return Qt::SolidLine;
-	else if ( name == ":" )		return Qt::DotLine;
-	else if ( name == "--" )	return Qt::DashLine;
-	else if ( name == "-." )	return Qt::DashDotLine;
+	if ( name == "none" )	return Qt::NoPen;
+	if ( name == "-" )		return Qt::SolidLine;
+	if ( name == ":" )		return Qt::DotLine;
+	if ( name == "--" )		return Qt::DashLine;
+	if ( name == "-." )		return Qt::DashDotLine;
 	
 	qWarning("Unknwon pen specification: %s", name.c_str() );
 	
 	return Qt::SolidLine;
 	
+}
+
+// ============================================================================
+/// Converts font weight name to QFont::Weight
+QFont::Weight weightFromOctave( const std::string& name )
+{
+	if( name == "light" )	return QFont::Light;
+	if( name == "normal" )	return QFont::Normal;
+	if( name == "demi" )	return QFont::DemiBold;
+	if( name == "bold" )	return QFont::Bold;
+	
+	qWarning("Unknwon font weight: %s", name.c_str() );
+	
+	return QFont::Normal;
+}
+
+// ============================================================================
+/// Converts font style name to QFont::Style
+QFont::Style fontStyleFromOctave( const std::string& name )
+{
+	if ( name == "normal" )		return QFont::StyleNormal;
+	if ( name == "italic" )		return QFont::StyleItalic; 
+	if ( name == "oblique" )	return QFont::StyleOblique;
+	
+	qWarning("Unknwon font style: %s", name.c_str() );
+	
+	return QFont::StyleNormal;
 }
 
 } // namespace

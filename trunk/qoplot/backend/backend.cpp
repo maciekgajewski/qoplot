@@ -14,13 +14,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-
 #include <QApplication>
-#include <QDesktopWidget>
 
 #include "backend.h"
 #include "figuremanager.h"
 #include "plotevent.h"
+#include "systeminfo.h"
 
 
 
@@ -106,11 +105,19 @@ void Backend::close_figure (const octave_value& ov) const
 /// Returns two-element vector with screen size.
 Matrix Backend::get_screen_size(void) const
 {
-	QSize size = QApplication::desktop()->size();
+	QSize size = SystemInfo::screenSize();
 	Matrix sz (1, 2, 0.0);
 	sz(0) = size.width();
 	sz(1) = size.height();
 	return sz;
 }
+
+// ============================================================================
+/// Returns screen DPI.
+double Backend::get_screen_resolution (void) const
+{
+	return SystemInfo::screenDpi();
+}
+
 
 }
