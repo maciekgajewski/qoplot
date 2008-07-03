@@ -79,27 +79,27 @@ void Backend::redraw_figure (const graphics_handle& fh) const
 /// Info form octave: figre should be closed.
 void Backend::close_figure (const octave_value& ov) const
 {
-	qDebug("close figure");
-	// TODO
-	if (ov.is_string ())
-	{
-		std::string v = ov.string_value();
-		qDebug("Backend::close_figure, ov=%s", v.c_str() );
-	}
-	else if ( ov.is_scalar_type() )
-	{
-		qDebug("is scalar");
-	}
-	if ( ov.is_real_type() )
-	{
-		qDebug("is real");
-	}
 	if ( ov.is_matrix_type() )
 	{
-		qDebug("is matrix");
+		Matrix figs = ov.matrix_value();
+		
+		for( int i = 0; i< figs.nelem(); i++ )
+		{
+			double fh = figs.elem( i );
+			// send message
+			PlotEvent* pEvent = new PlotEvent;
+			
+			pEvent->action = PlotEvent::Close;
+			pEvent->figure = fh;
+			pEvent->pProperties = NULL;
+			
+			QApplication::postEvent( _pManager, pEvent );
+		}
 	}
-	
-	// TODO close
+	else
+	{
+		qDebug("Backend::close_figure: unsupported param type");
+	}
 }
 
 // ============================================================================

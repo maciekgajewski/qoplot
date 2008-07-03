@@ -18,6 +18,7 @@
 #include <QBrush>
 
 #include "uiitem.h"
+#include "converters.h"
 
 namespace QOGraphics
 {
@@ -26,7 +27,7 @@ namespace QOGraphics
 // Constructor
 UIItem::UIItem( QGraphicsItem* parent ): QGraphicsItem( parent )
 {
-	_pProperties = NULL;
+	// nothing
 }
 
 // ============================================================================
@@ -38,13 +39,27 @@ UIItem::~UIItem()
 
 // ============================================================================
 /// Returns pen created form provided color and LineWidth and LineStyle properties.
+/// If nay of these proeprties is missing, uses defaults: 0.p pt and solid line.
 QPen UIItem::pen( const QColor& color, const QPaintDevice* pDevice  ) const
 {
-	/* TODO
-	double width = qRound( qMin( 1.0, ptToPixel( lineWidth, pDevice ) ) );
-	return QPen( QBrush(color), int(width), Qt::PenStyle( int(lineStyle) ) );
-	*/
-	return QPen();
+	base_properties* pProps = properties();
+	
+	double pointWidth = 0.5;
+	Qt::PenStyle style = Qt::SolidLine;
+	
+	// check if required properties are present
+	if ( pProps->has_property("LineWidth") )
+	{
+		octave_value v = pProps->get_property("LineWidth").get();
+		pointWidth	= v.double_value();
+	}
+	if( pProps->has_property("LineStyle") )
+	{
+		style	= styleFromOctave( pProps->get_property("LineStyle").get().string_value() );
+	}
+	
+	double width = qRound( qMin( 1.0, ptToPixel( pointWidth, pDevice ) ) );
+	return QPen( QBrush(color), int(width), style );
 }
 
 // ============================================================================
@@ -61,7 +76,7 @@ QFont UIItem::font() const
 /// Updates item state to changed properties.
 void UIItem::propertiesChanged()
 {
-	update();
+	// TODO or mark as empty
 }
 
 // ============================================================================

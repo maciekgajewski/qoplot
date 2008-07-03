@@ -4,7 +4,8 @@ TEMPLATE = lib
 TARGET =qobackend
 system( ln -sf libqobackend.so qobackend.oct )
 
-CONFIG += dll
+CONFIG += dll \
+ debug
 QT += svg
 
 SOURCES = main.cpp\
@@ -13,7 +14,8 @@ SOURCES = main.cpp\
  plotevent.cpp \
  figuremanager.cpp \
  converters.cpp \
- uiitem.cpp
+ uiitem.cpp \
+ axesitem.cpp
 
 HEADERS = figurewindow.h \
  backend.h \
@@ -21,6 +23,9 @@ HEADERS = figurewindow.h \
  eventtypes.h \
  figuremanager.h \
  converters.h \
- uiitem.h
+ uiitem.h \
+ axesitem.h
 
 FORMS = figurewindow.ui
+CONFIG -= release
+
