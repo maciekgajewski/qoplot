@@ -37,7 +37,6 @@ public:
 	virtual ~AxesItem();
 	
 	// Item proeprties
-	void updateSize();
 	
 	/// Paints item
 	virtual void paint
@@ -63,6 +62,8 @@ public:
 protected:
 
 	virtual void propertiesChanged();				///< Updates item after properties change
+	/// Creates item with provided property set.
+	virtual UIItem* createItem( base_properties* pProps );
 	
 private:
 	
@@ -72,7 +73,7 @@ private:
 	void drawXAxis( QPainter *painter );	///< Draws axis
 	void drawYAxis( QPainter *painter );	///< Draws axis
 	
-	void updatePosition();					///< UPdates position
+	void updatePosition();					///< Updates position
 	
 	double tickLength();					///< Tick length, in pixels
 	

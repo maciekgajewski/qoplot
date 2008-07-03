@@ -63,10 +63,17 @@ protected:
 	double ptToPixel( double pt, const QPaintDevice* device ) const;
 	
 	virtual void propertiesChanged();		///< Updates item after properties change
+	void updateChildren();					///< Updates children items
+	
+	/// Creates item with provided property set.
+	virtual UIItem* createItem( base_properties* pProps );
+	
+	QList<UIItem*> children() const { return _children.values(); }
 	
 private:
 	
 	QRect _figureRect;						///< Parent figure rectangle to paint on (in pixels)
+	QMap< double, UIItem* > _children;		///< Child elements
 };
 
 }

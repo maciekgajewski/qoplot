@@ -136,7 +136,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 		
 		// draw text
 		QString label;
-		label.sprintf("%.2g", tickPos );
+		label.sprintf("%g", tickPos );
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -155,23 +155,26 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 /// Draws Y axis, with ticks and label
 void AxesItem::drawYAxis( QPainter *pPainter )
 {
-	/*
+	axes::properties* pProps = properties(); // in preparation for thread safe props :)
+	
 	QRectF box = plotBox();
 	
-	QColor c = ycolor;
+	QColor c = colorFromOctave( pProps->get_ycolor() );
 	QPen linePen = pen( c, pPainter->device() );
 	pPainter->setPen( linePen );
 	QPen gridPen = linePen;
-	gridPen.setStyle( Qt::PenStyle( int( gridLineStyle ) ) );
+	gridPen.setStyle( styleFromOctave( pProps->get_gridlinestyle() ) );
+	
+	Matrix ytick = pProps->get_ytick().matrix_value();
 	
 	// draw at the bottom of the box TODO add top|bottom property
 	
 	// line
 	pPainter->drawLine( QLineF( box.left(), box.bottom(), box.left(), box.top() ) );
 		
-	for ( int i = 0; i < ytick.vectorSize(); i++ )
+	for ( int i = 0; i < ytick.nelem(); i++ )
 	{
-		double tickPos = ytick.vectorValue( i + 1 );
+		double tickPos = ytick.elem( i );
 		
 		QPointF pixelPos(  box.left(), plotToPixel( QPointF( 0, tickPos ) ).y() );
 		
@@ -181,7 +184,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 		
 		// draw text
 		QString label;
-		label.sprintf("%.2g", tickPos);
+		label.sprintf("%g", tickPos);
 		double maxTextWidth = 100;
 		double maxTextHeight = 50;
 		
@@ -194,7 +197,6 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 		pPainter->setPen( gridPen );
 		pPainter->drawLine( pixelPos, pixelPos + QPointF( box.width(), 0 ) );
 	}
-	*/
 }
 
 // ============================================================================
@@ -234,11 +236,15 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 /// Converts pixel pos to plot position coordinates.
 QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 {
-	/*
-	double xmin = xlim.vectorValue( 1 );
-	double xmax = xlim.vectorValue( 2 );
-	double ymin = ylim.vectorValue( 1 );
-	double ymax = ylim.vectorValue( 2 );
+	axes::properties* pProps = properties();
+	
+	Matrix xlim = pProps->get_xlim().matrix_value();
+	Matrix ylim = pProps->get_ylim().matrix_value();
+	
+	double xmin = xlim.elem(0);
+	double xmax = xlim.elem(1);
+	double ymin = ylim.elem(0);
+	double ymax = ylim.elem(1);
 	
 	// get coordinates relative to plot box
 	QRectF box = plotBox();
@@ -246,86 +252,24 @@ QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 	double xPixelsPerUnit = box.width() / ( xmax - xmin );
 	double yPixelsPerUnit = box.height() / ( ymax - ymin );
 	
-	double x = xdir == Normal
+	double x = pProps->get_xdir() == "normal"
 		? xmin + p.x() / xPixelsPerUnit
 		: xmax - p.x() / xPixelsPerUnit;
 	
-	double y = ydir == Normal
+	double pProps->get_ydir() == "normal"
 		? ymax - p.y() / yPixelsPerUnit
 		: ymin + p.y() / yPixelsPerUnit;
 	
 	return QPointF( x, y );
-	*/
-	return QPointF( 0, 0 );
 }
 
-// ============================================================================
-/// Updates size to fiogure size and positioin/units properties
-void AxesItem::updateSize()
-{
-	/*
-	Q_ASSERT( position.vectorSize() >= 4 );
-	
-	double left, bottom, width, height;
-	
-	if ( units == Normalized )
-	{
-		left	= _figureRect.left() + _figureRect.width() * position.vectorValue( 1 );
-		bottom	= _figureRect.bottom() - _figureRect.height() * position.vectorValue( 2 );
-		width	= _figureRect.width() * position.vectorValue( 3 );
-		height	= _figureRect.height() * position.vectorValue( 4 );
-		
-	}
-	else if ( units == Pixels )
-	{
-		left	= _figureRect.left() + position.vectorValue( 1 );
-		bottom	= _figureRect.bottom() - position.vectorValue( 2 );
-		width	= position.vectorValue( 3 );
-		height	= position.vectorValue( 4 );
-		
-	}
-	else
-	{
-		qWarning("Units other than normalized and pixel not supported currently");
-		return;
-	}
-	
-	setPos( left, bottom - height );
-	_size = QSizeF( width, height );
-	recalculateTicks();
-	prepareGeometryChange();
-	updateChildPositions();
-
-	update();
-	*/
-}
 
 // ============================================================================
 /// Axes bounding rectangle. Adds margins to plot box
 QRectF AxesItem::boundingRect() const
 {
-	/*
-	// Top - title and X labels when X axis on top
-	double topMargin = X_LABELS_MARGIN + pTitle->item()->boundingRect().height();
-	
-	// Bottom - X labels
-	double bottomMargin = X_LABELS_MARGIN + pLabelX->item()->boundingRect().height();
-	
-	
-	// Left - y labels
-	double leftMargin = Y_LABELS_MARGIN + pLabelY->item()->boundingRect().width();
-	
-	// Right - y labels
-	double rightMargin = Y_LABELS_MARGIN;
-	
-	
-	// create rectangle
-	
-	return QRectF( -leftMargin, -topMargin, 
-		_size.width() + leftMargin + rightMargin, _size.height() + bottomMargin + topMargin );
-	
-	*/
-	return  QRectF( -100, -100, 800, 800 ); // TODO temp
+	double  m = 30.0 ; // TODO some random margin, com our with reasonable value.
+	return  QRectF( -m, -m, _size.width() + 2*m, _size.height() + 2*m );
 }
 
 // ============================================================================
@@ -345,8 +289,6 @@ void AxesItem::copyProperties( const base_properties* pProps )
 /// Called when properties has changed. Updates axes state to properties.
 void AxesItem::propertiesChanged()
 {
-	Q_ASSERT( _pProperties );
-	
 	UIItem::propertiesChanged();
 	
 	updatePosition();
@@ -408,6 +350,10 @@ void AxesItem::updatePosition()
 void AxesItem::updateGeometry()
 {
 	updatePosition();
+	
+	// Update child elements here
+	
+	update();
 }
 
 // ============================================================================
@@ -416,6 +362,14 @@ double AxesItem::tickLength()
 {
 	// TODO
 	return 5.0;
+}
+
+// ============================================================================
+/// Creates item with provided property set. Item type is deduced from "type" property.
+UIItem* AxesItem::createItem( base_properties* pProps )
+{
+	// TODO
+	return NULL;
 }
 
 } // namespace

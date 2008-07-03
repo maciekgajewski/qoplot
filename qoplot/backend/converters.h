@@ -18,6 +18,7 @@
 #define CONVERTERS_H
 
 #include <QColor>
+#include <QFont>
 
 #include <octave/oct.h>
 
@@ -32,6 +33,12 @@ QColor colorFromOctave( const octave_value& value );
 
 /// Convers style name into Qt pen style
 Qt::PenStyle styleFromOctave( const std::string& name );
+
+/// Converts font weight name to QFont::Weight
+QFont::Weight weightFromOctave( const std::string& name );
+
+/// Converts font style name to QFont::Style
+QFont::Style fontStyleFromOctave( const std::string& name );
 
 } // namespace
 

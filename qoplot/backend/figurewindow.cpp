@@ -63,9 +63,22 @@ void FigureWindow::closeEvent( QCloseEvent* pEvent )
 void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
 	view->setSceneRect( view->rect() );
-	QPointF sz = view->mapToScene( QPoint(0, 0 ));
 
 	// udpate child's scene rect
+	updateChildrenSizes();
+}
+
+// ============================================================================
+/// Show event handler. Updates children sizes befor showing window.
+void FigureWindow::showEvent( QShowEvent* /*event*/ )
+{
+	updateChildrenSizes();
+}
+
+// ============================================================================
+/// Updates children elements sizes.
+void FigureWindow::updateChildrenSizes()
+{
 	foreach( UIItem* pChild, _children.values() )
 	{
 		pChild->setFigureRect( view->rect() );

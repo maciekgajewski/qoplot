@@ -15,7 +15,10 @@ SOURCES = main.cpp\
  figuremanager.cpp \
  converters.cpp \
  uiitem.cpp \
- axesitem.cpp
+ axesitem.cpp \
+ systeminfo.cpp \
+ textitem.cpp \
+ plotitem.cpp
 
 HEADERS = figurewindow.h \
  backend.h \
@@ -24,7 +27,10 @@ HEADERS = figurewindow.h \
  figuremanager.h \
  converters.h \
  uiitem.h \
- axesitem.h
+ axesitem.h \
+ systeminfo.h \
+ textitem.h \
+ plotitem.h
 
 FORMS = figurewindow.ui
 CONFIG -= release

@@ -18,7 +18,6 @@
 #define QOGRAPHICSPLOTITEM_H
 
 #include "uiitem.h"
-#include "enum.h"
 #include "figure.h"
 
 namespace QOGraphics
@@ -27,7 +26,7 @@ namespace QOGraphics
 class AxesItem;
 
 /**
-Item comon for all plot objects - objects placen on axes.
+Item comon for all plot objects - objects placed on axes.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
@@ -36,25 +35,22 @@ class PlotItem : public UIItem
 {
 
 public:
-	PlotItem( QGraphicsItem* parent = NULL );
+	PlotItem( AxesItem* parent );
 	virtual ~PlotItem();
 	
-	virtual void setPlotBox( const QRectF& r ) { _plotBox = r; }
-	const QRectF& plotBox() const { return _plotBox; }
-	AxesItem* axesItem() const; ///< Returns parent axes item
-	Figure* figure() const;
+	const QRectF& plotBox() const;
+	AxesItem* axesItem() const { return _pAxes; }
+	// TODO rtemove if not needed
+	//Figure* figure() const;
 	
 	/// Draws icon used to represent object in legend
-	virtual void drawIcon( QPainter* painter, const QRectF& rect );
-	
-protected:
-
-	virtual void propertiesChanged();		///< Updates item after properties change
-	void updatePosition();					///< Updates position
+	// TODO remove if not needed
+	//virtual void drawIcon( QPainter* painter, const QRectF& rect );
 	
 private:
 
-	QRectF _plotBox;			///< Axes plot box, in this item coordinates
+	QRectF 		_plotBox;			///< Axes plot box, in this item coordinates
+	AxesItem*	_pAxes;
 
 };
 

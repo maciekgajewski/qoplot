@@ -59,6 +59,7 @@ protected:
 	// event handlers
 	
 	virtual void closeEvent( QCloseEvent* event );
+	virtual void showEvent( QShowEvent* event );
 	virtual void resizeEvent( QResizeEvent* event );
 	
 private:
@@ -68,6 +69,8 @@ private:
 	
 	void updatePosition();	///< Updates geometry to 'position' and 'units' property
 	void updateChildren();	///< Updates child elements
+	
+	void updateChildrenSizes();	///< Updates sizes of child elements
 	
 	UIItem* createItem( base_properties* pProps );
 	
