@@ -20,6 +20,7 @@
 
 #include "figurewindow.h"
 #include "converters.h"
+#include "axesitem.h"
 
 namespace QOGraphics
 {
@@ -63,8 +64,13 @@ void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
 	view->setSceneRect( view->rect() );
 	QPointF sz = view->mapToScene( QPoint(0, 0 ));
-	//qDebug("scene at 0,0: %f,%f", sz.x(), sz.y() );
-	emit resized();
+
+	// udpate child's scene rect
+	foreach( UIItem* pChild, _children.values() )
+	{
+		pChild->setFigureRect( view->rect() );
+		pChild->updateGeometry();
+	}
 }
 
 // ============================================================================
@@ -116,8 +122,6 @@ void FigureWindow::updatePosition()
 		
 		g.setWidth( int( pos.elem(2) ) );
 		g.setHeight( int( pos.elem(3) ) );
-		
-		qDebug("setting geometry: %d,%d %dx%d", g.x(), g.y(), g.width(), g.height() );
 		
 		setGeometry( g );
 	}
@@ -195,8 +199,11 @@ UIItem* FigureWindow::createItem( base_properties* pProps )
 	// axes
 	if ( pProps->get_type() == "axes" )
 	{
-		// TODO create axes
-		qDebug("should create axes now");
+		AxesItem* pAxes = new AxesItem();
+		pAxes->setFigureRect( view->rect() );
+		pAxes->copyProperties( pProps );
+		_scene.addItem( pAxes );
+		return pAxes;
 	}
 	else
 	{

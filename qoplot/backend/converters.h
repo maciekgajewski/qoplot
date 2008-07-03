@@ -30,6 +30,8 @@ namespace QOGraphics
 /// Converts octave value into QColor.
 QColor colorFromOctave( const octave_value& value );
 
+/// Convers style name into Qt pen style
+Qt::PenStyle styleFromOctave( const std::string& name );
 
 } // namespace
 

@@ -48,6 +48,22 @@ QColor colorFromOctave( const octave_value& value )
 	return QColor( Qt::green );
 }
 
+// ============================================================================
+/// Converts style name into pen style.
+Qt::PenStyle styleFromOctave( const std::string& name )
+{
+	if ( name == "none" )		return Qt::NoPen;
+	else if ( name == "-" )		return Qt::SolidLine;
+	else if ( name == ":" )		return Qt::DotLine;
+	else if ( name == "--" )	return Qt::DashLine;
+	else if ( name == "-." )	return Qt::DashDotLine;
+	
+	qWarning("Unknwon pen specification: %s", name.c_str() );
+	
+	return Qt::SolidLine;
+	
+}
+
 } // namespace
 
 // EOF

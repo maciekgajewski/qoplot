@@ -45,19 +45,13 @@ public:
 	/// Should call propertiesChanged() before returning.
 	virtual void copyProperties( const base_properties* pProps ) = 0;
 	
-	/// Returns current properties
-	virtual const base_properties* properties() const { return _pProperties; }
+	/// Returns current properties.
+	virtual base_properties* properties() const = 0;
 	
-	/* TODO relic from previous life, replaced with octave's  base_properties
-	Color	color;			///< Color used
-	Enum	clipping;		///< CLipping to parent On|Off
-	Enum	lineStyle;		///< Line style (uses Qt:PenStyle)
-	double	lineWidth;		///< Line width
-	double	fontSize;		///< Font size [pt] TODO add other units support
-	QString fontName;		///< Font name
-	Enum	fontWeight;		///< Font weight
-	Enum	fontAngle;		///< Font angle
-	*/
+	void setFigureRect( const QRect& r ) { _figureRect = r; }
+	QRect figureRect() const { return _figureRect; }
+	
+	virtual void updateGeometry() {};	///< Message from parent: parent's geometry has changed
 	
 protected:
 
@@ -70,7 +64,9 @@ protected:
 	
 	virtual void propertiesChanged();		///< Updates item after properties change
 	
-	base_properties* _pProperties;
+private:
+	
+	QRect _figureRect;						///< Parent figure rectangle to paint on (in pixels)
 };
 
 }
