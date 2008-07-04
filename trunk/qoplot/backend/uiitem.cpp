@@ -120,13 +120,8 @@ double UIItem::ptToPixel( double pt, const QPaintDevice* pDevice ) const
 void UIItem::updateChildren()
 {
 	base_properties* pProps = properties();
-	if ( ! pProps->has_property( "Children" ) )
-	{
-		// element w/o children, bail out
-		return;
-	}
 	
-	Matrix cm = pProps->get_property("Children").get.matrix_value();
+	Matrix cm = pProps->get_children();
 	
 	int count = cm.nelem();
 	QMap<double, UIItem*> newMap;
@@ -151,7 +146,7 @@ void UIItem::updateChildren()
 			UIItem* pNewChild = createItem( pProps );
 			if ( pNewChild )
 			{
-				newMap.insert( h, createItem( pProps ) );
+				newMap.insert( h, pNewChild );
 			}
 			else
 			{

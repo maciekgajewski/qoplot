@@ -19,6 +19,8 @@
 #include <QPainter>
 #include "axesitem.h"
 #include "converters.h"
+#include "textitem.h"
+#include "lineitem.h"
 
 namespace QOGraphics
 {
@@ -47,17 +49,6 @@ AxesItem::~AxesItem()
 {
 	// nope
 }
-
-// ============================================================================
-/// Sets axes size
-/*
-void AxesItem::setSize( const QSizeF& size )
-{
-	_size = size;
-	recalculateTicks();
-	prepareGeometryChange();
-}
-*/
 
 // ============================================================================
 /// Paints item on scene
@@ -229,7 +220,6 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 
 	// return plot box coorindates trnalsated to axes coordinates
 	return QPointF( x, y ) + box.topLeft();
-	return QPointF( 0, 0);
 }
 
 // ============================================================================
@@ -256,7 +246,7 @@ QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 		? xmin + p.x() / xPixelsPerUnit
 		: xmax - p.x() / xPixelsPerUnit;
 	
-	double pProps->get_ydir() == "normal"
+	double y =  pProps->get_ydir() == "normal"
 		? ymax - p.y() / yPixelsPerUnit
 		: ymin + p.y() / yPixelsPerUnit;
 	
@@ -289,9 +279,9 @@ void AxesItem::copyProperties( const base_properties* pProps )
 /// Called when properties has changed. Updates axes state to properties.
 void AxesItem::propertiesChanged()
 {
+	updatePosition(); // update position before childs are updates, so then can see new position
 	UIItem::propertiesChanged();
 	
-	updatePosition();
 	update();
 }
 
@@ -340,7 +330,7 @@ void AxesItem::updatePosition()
 	_size = QSizeF( width, height );
 	
 	prepareGeometryChange();
-	//updateChildPositions(); // TODO is this needed?
+	updateChildPositions();
 
 	update();
 }
@@ -351,7 +341,7 @@ void AxesItem::updateGeometry()
 {
 	updatePosition();
 	
-	// Update child elements here
+	// Update child elements here (probably not)
 	
 	update();
 }
@@ -368,8 +358,38 @@ double AxesItem::tickLength()
 /// Creates item with provided property set. Item type is deduced from "type" property.
 UIItem* AxesItem::createItem( base_properties* pProps )
 {
-	// TODO
+	Q_ASSERT( pProps );
+	
+	
+	std::string type = pProps->get_type();
+	
+	// Text
+	if ( type == "text" )
+	{
+		TextItem* pText = new TextItem( this );
+		pText->copyProperties( pProps );
+		return pText;
+	}
+	// Line
+	if ( type == "line" )
+	{
+		LineItem* pLine = new LineItem( this );
+		pLine->copyProperties( pProps );
+		return pLine;
+	}
+	
 	return NULL;
+}
+
+// ============================================================================
+/// Updates child psoition to axes posotion.
+void AxesItem::updateChildPositions()
+{
+	// TODO this shouldn't be needed
+	foreach( UIItem* pItem, children() )
+	{
+		dynamic_cast<PlotItem*>( pItem )->updatePositionToAxes();
+	}
 }
 
 } // namespace

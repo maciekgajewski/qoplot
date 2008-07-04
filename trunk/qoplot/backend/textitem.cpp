@@ -16,15 +16,18 @@
 //
 #include <QFontMetricsF>
 #include <QPainter>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "textitem.h"
+#include "converters.h"
 
 namespace QOGraphics 
 {
 
 // ============================================================================
 // Constructor
-TextItem::TextItem() : PlotItem()
+TextItem::TextItem( AxesItem* parent ) : PlotItem(parent)
 {
 	_pProperties = NULL;
 	setZValue( 0.5 ); // Above lines, below legend. TODO do some infrastructure for this
@@ -44,16 +47,28 @@ void TextItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
+	text::properties* pProps = properties();
+	// this can be caled befor proerties are here
+	if ( ! pProps ) return;
+	
 	pPainter->save();
 	
+	// get neccesary properties
+	
+	double rotation = pProps->get_rotation();
+	double margin = pProps->get_margin();
+	QColor edgeColor = colorFromOctave( pProps->get_edgecolor_rgb() );
+	QColor backgroundColor = colorFromOctave( pProps->get_backgroundcolor_rgb() );
+	QString string = pProps->get_string().c_str();
+	QColor color = colorFromOctave( pProps->get_color_rgb() );
+	
 		// set clipping
-		if ( clipping == On )
+		if ( pProps->get_clipping() == "on" )
 		{
 			pPainter->setClipRect( plotBox(), Qt::IntersectClip );
 		}
 	
 		// transform
-		QMatrix matrix;
 		pPainter->rotate( -rotation );
 		pPainter->translate( alignTranlsation() );
 		
@@ -61,8 +76,8 @@ void TextItem::paint
 		QRectF extent = textExtent();
 		QRectF frame = QRectF( -margin, -margin, extent.width() + 2*margin, extent.height() + 2*margin );
 		
-		pPainter->setPen( pen( QColor(edgeColor), pPainter->device() ) );
-		pPainter->setBrush( QColor( backgroundColor ) );
+		pPainter->setPen( pen( edgeColor, pPainter->device() ) );
+		pPainter->setBrush( backgroundColor );
 		pPainter->drawRect( frame );
 	
 		// draw text
@@ -76,11 +91,19 @@ void TextItem::paint
 /// Returns item's bounding rectangle
 QRectF TextItem::boundingRect() const
 {
+	text::properties* pProps = properties();
+	// this can be caled befor proerties are here
+	if ( ! pProps ) return QRectF();
+	
+	double margin		= pProps->get_margin();
+	double lineWidth	= pProps->get_linewidth();
+	double rotation		= pProps->get_rotation();
+	
 	// get extent
 	QRectF extent = textExtent();
 	
 	// get margin
-	double m = margin + lineWidth;
+	double m = margin + ptToPixel( lineWidth, QApplication::desktop() ); // TODO fing another source of DPI
 	
 	// create bounding rect by adding margin to extent
 	QRectF br = QRectF( -m, -m, extent.width() + 2*m, extent.height() + 2*m );
@@ -98,6 +121,9 @@ QRectF TextItem::boundingRect() const
 /// Fints text extent, from text's top-left corner.
 QRectF TextItem::textExtent() const
 {
+	text::properties* pProps = properties();
+	QString string = pProps->get_string().c_str();
+	
 	// get text extent
 	QFontMetricsF metrics( font() );
 	
@@ -110,47 +136,34 @@ QRectF TextItem::textExtent() const
 /// It is assumed that without translation text will be paited aligned left-cap
 QPointF TextItem::alignTranlsation() const
 {
+	text::properties* pProps = properties();
+	double margin		= pProps->get_margin();
+	double lineWidth	= pProps->get_linewidth();
+	
+	QString horizontalAlignment	= pProps->get_horizontalalignment().c_str();
+	QString verticalAlignment	= pProps->get_verticalalignment().c_str();
+	
 	QRectF extent = textExtent();
 	
 	double w = extent.width();
 	double h = extent.height();
 	
 	// get margin
-	double m = margin + lineWidth;
+	double m = margin + ptToPixel( lineWidth, QApplication::desktop() ); // TODO fing another source of DPI;
 	
 	// find x and y
 	double x = 0.0, y = 0.0;
 		
-	switch( int(horizontalAlignment) )
-	{
-		case Left:
-			x = 0.0;
-			break;
-		case Center:
-			x = -w / 2;
-			break;
-		case Right:
-			x = -w;
-	}
+	if ( horizontalAlignment == "left" ) x = 0.0;
+	else if ( horizontalAlignment == "center" ) x = -w / 2;
+	else if ( horizontalAlignment == "right" ) x = -w;
 	
-	switch( int ( verticalAlignment ) )
-	{
-		case Top:
-			y = m;
-			break;
-		case Cap:
-			y = 0;
-			break;
-		case Middle:
-			y = -h/2;
-			break;
-		case Baseline:
-			y = -h;
-			break;
-		case Bottom:
-			y = -h-m;
-	}
-
+	if ( verticalAlignment == "top" )	y = m;
+	else if ( verticalAlignment == "cap" )	y = 0;
+	else if ( verticalAlignment == "middle" )	y = -h/2;
+	else if ( verticalAlignment == "baseline" )	y = -h;
+	else if ( verticalAlignment == "bottom" )	y = -h-m;
+	
 	return QPointF( x, y );
 }
 
@@ -173,7 +186,6 @@ void TextItem::propertiesChanged()
 {
 	PlotItem::propertiesChanged();
 	update();
-
 }
 
 }

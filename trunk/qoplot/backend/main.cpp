@@ -70,6 +70,10 @@ DEFUN_DLD (qobackend, , , "")
 	{
 		startGuiThread();
 		graphics_backend::register_backend (new QOGraphics::Backend( pFigureManager ) );
+		// set this backend as default
+		graphics_object root = gh_manager::get_object( 0 );
+		root.set( "DefaultFigure__backend__", "qoplot" );
+		
 		backend_registered = true;
 	}
 	

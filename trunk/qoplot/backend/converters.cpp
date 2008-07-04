@@ -25,15 +25,14 @@ QColor colorFromOctave( const octave_value& value )
 {
 	if ( value.is_string() )
 	{
-		qDebug("color is string");
+		return Qt::transparent;
 	}
-	else if ( value.is_real_matrix() )
+	if ( value.is_real_matrix() )
 	{
 		Matrix m = value.matrix_value();
 		if ( m.nelem() < 3 )
 		{
-			qDebug("Color matrix too small" );
-			return QColor( Qt::white );
+			return QColor( Qt::transparent ); // null color
 		}
 		
 		QColor color;
@@ -42,10 +41,8 @@ QColor colorFromOctave( const octave_value& value )
 	}
 	else
 	{
-		qDebug("unknown color definition");
+		return Qt::transparent; 
 	}
-	
-	return QColor( Qt::green );
 }
 
 // ============================================================================

@@ -37,19 +37,40 @@ PlotItem::~PlotItem()
 }
 
 // ============================================================================
-/// Draws icon used to represent icon in legend. 
-/// Icon is painted using provided painter, and fills provided rectangle.
-// TODO remove
-// void PlotItem::drawIcon( QPainter* /*painter*/, const QRectF& /*rect*/ )
-// {
-// 	// default implementation does nothing
-// }
+/// Returns axes plot box, in this item's coordinates.
+QRectF PlotItem::plotBox() const
+{
+	return mapFromParent( _pAxes->plotBox() ).boundingRect();
+}
 
 // ============================================================================
-/// Returns axes plot box, in this item's coordinates.
-const QRectF& PlotItem::plotBox() const
+// Handles property change
+void PlotItem::propertiesChanged()
 {
-	mapFromParent( _pAxes->plotBox() ).boundingRect();
+	UIItem::propertiesChanged();
+	
+	updatePositionToAxes();
+	update();
+}
+
+// ============================================================================
+// Updtes position
+void PlotItem::updatePositionToAxes()
+{
+	base_properties* pProps = properties();
+	
+	if ( pProps->has_property("Position") )
+	{
+		Matrix pos = pProps->get_property("Position").get().matrix_value();
+		
+		double plotX = pos.elem(0);
+		double plotY = pos.elem(1);
+		
+		QPointF p = axesItem()->plotToPixel( QPointF( plotX, plotY ) );
+		//qDebug("plot: %g,%g, pixel: %g,%g", plotX, plotY, p.x(), p.y() );
+		prepareGeometryChange();
+		setPos( p );
+	}
 }
 
 }

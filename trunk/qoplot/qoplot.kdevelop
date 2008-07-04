@@ -136,7 +136,7 @@
     </splitheadersource>
     <references>
       <pcs>Qt4</pcs>
-      <pcs>Octave%203.0.0%2B</pcs>
+      <pcs>Octave</pcs>
     </references>
   </kdevcppsupport>
   <kdevfilecreate>
@@ -162,10 +162,10 @@
       <debugarguments>
         <qoplot/>
       </debugarguments>
-      <mainprogram/>
+      <mainprogram>/home/gajewskim/src/qoplot</mainprogram>
       <programargs/>
       <globaldebugarguments/>
-      <globalcwd/>
+      <globalcwd>/home/gajewskim/src/qoplot</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>false</autocompile>
