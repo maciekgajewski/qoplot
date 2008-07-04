@@ -74,6 +74,7 @@ private:
 	void drawYAxis( QPainter *painter );	///< Draws axis
 	
 	void updatePosition();					///< Updates position
+ 	void updateChildPositions();			///< Asks children to update position
 	
 	double tickLength();					///< Tick length, in pixels
 	

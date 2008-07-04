@@ -18,7 +18,6 @@
 #define QOGRAPHICSPLOTITEM_H
 
 #include "uiitem.h"
-#include "figure.h"
 
 namespace QOGraphics
 {
@@ -38,14 +37,15 @@ public:
 	PlotItem( AxesItem* parent );
 	virtual ~PlotItem();
 	
-	const QRectF& plotBox() const;
+	QRectF plotBox() const;
 	AxesItem* axesItem() const { return _pAxes; }
-	// TODO rtemove if not needed
-	//Figure* figure() const;
 	
-	/// Draws icon used to represent object in legend
-	// TODO remove if not needed
-	//virtual void drawIcon( QPainter* painter, const QRectF& rect );
+	void updatePositionToAxes(); // updates position from "postion" property
+
+protected:
+
+	virtual void propertiesChanged();
+	
 	
 private:
 

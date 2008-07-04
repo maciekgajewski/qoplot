@@ -1,4 +1,4 @@
-// textitem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
+// lineitem.h, Copyright (C) 2008 Maciek Gajewski <maciej.gajewski0@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,30 +14,32 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
-#ifndef QOGRAPHICSTEXTITEM_H
-#define QOGRAPHICSTEXTITEM_H
+#ifndef QOGRAPHICSLINEITEM_H
+#define QOGRAPHICSLINEITEM_H
 
 #include "plotitem.h"
 
-namespace QOGraphics 
+namespace QOGraphics
 {
 
 /**
-Graphics item associated with Text object.
+Graphics item associated with Line object.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class TextItem : public PlotItem
-{
-public:
-	TextItem( AxesItem* parent );
-	virtual ~TextItem();
 
+class LineItem : public PlotItem
+{
+
+public:
+	LineItem( AxesItem* parent );
+	virtual ~LineItem();
+	
 	/// Copies properties
 	virtual void copyProperties( const base_properties* pProps );
 	
 	/// Returns current properties.
-	virtual text::properties* properties() const { return _pProperties; }
+	virtual line::properties* properties() const { return _pProperties; }
 	
 	/// Paints item
 	virtual void paint
@@ -48,22 +50,16 @@ public:
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
 	
-protected:
-
-	virtual void propertiesChanged();		///< Updates item after properties change
-	
 private:
 
-	QRectF textExtent() const;			///< Calculates text extent rectange
-	QPointF alignTranlsation() const;	///< Fids translation caused by alignment
+	void drawMarker( QPainter* painter, const QPointF& pos ); ///< Draws marker
 	
-	
-	text::properties* _pProperties;
+	line::properties* _pProperties;
 };
 
 }
 
-#endif // QOGRAPHICSTEXTITEM_H
+#endif // QOGRAPHICSLINEITEM_H
 
 // EOF
 
