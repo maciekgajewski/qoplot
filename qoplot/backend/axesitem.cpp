@@ -21,6 +21,7 @@
 #include "converters.h"
 #include "textitem.h"
 #include "lineitem.h"
+#include "imageitem.h"
 
 namespace QOGraphics
 {
@@ -34,8 +35,8 @@ static const double Y_LABELS_MARGIN		= 50;	///< Margin reserved for y axis label
 
 // ============================================================================
 /// Constructor
-AxesItem::AxesItem( QGraphicsItem * parent /*= NULL*/ )
-	: UIItem(parent)
+AxesItem::AxesItem( FigureWindow* figure, QGraphicsItem * parent /*= NULL*/ )
+	: UIItem(figure, parent)
 {
 	_size = QSize( 100, 100 ); //dumb guess
 	
@@ -378,6 +379,13 @@ UIItem* AxesItem::createItem( base_properties* pProps )
 		return pLine;
 	}
 	
+	// Image
+	if ( type == "image" )
+	{
+		ImageItem* pImage = new ImageItem( this );
+		pImage->copyProperties( pProps );
+		return pImage;
+	}
 	return NULL;
 }
 

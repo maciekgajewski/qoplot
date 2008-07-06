@@ -41,6 +41,15 @@ Backend::~Backend()
 	// nope
 }
 
+double getms()
+{
+	struct timeval tv;
+	gettimeofday( &tv, NULL );
+	
+	return tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0;
+	
+}
+
 // ============================================================================
 /// Info from Octave - some property of figure or one of it's
 /// children were changedm and figure and it's children needs to be redrawn.
@@ -78,6 +87,7 @@ void Backend::redraw_figure (const graphics_handle& fh) const
 /// Info form octave: figre should be closed.
 void Backend::close_figure (const octave_value& ov) const
 {
+	qDebug("Close figure");
 	if ( ov.is_matrix_type() )
 	{
 		Matrix figs = ov.matrix_value();
@@ -89,6 +99,7 @@ void Backend::close_figure (const octave_value& ov) const
 			PlotEvent* pEvent = new PlotEvent;
 			
 			pEvent->action = PlotEvent::Close;
+			qDebug("close figure %f", fh );
 			pEvent->figure = fh;
 			pEvent->pProperties = NULL;
 			

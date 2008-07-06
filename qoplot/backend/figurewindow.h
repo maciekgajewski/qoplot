@@ -46,8 +46,7 @@ public:
 	/// Creates local copy of provided properties
 	void copyProperties( const figure::properties* pProperties );
 	
-	// public attributes
-	
+	figure::properties* properties() const { return _pProperties; }
 
 signals:
 

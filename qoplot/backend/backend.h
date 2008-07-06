@@ -40,8 +40,10 @@ public:
 
 	bool is_valid (void) const { return true; }
 	
+	/// Closes figures.
 	void close_figure (const octave_value& ov) const;
 	
+	/// Redraws figure.
 	void redraw_figure (const graphics_handle& fh) const;
 	
 	void print_figure (const graphics_handle& /*fh*/,

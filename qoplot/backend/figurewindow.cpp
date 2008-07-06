@@ -212,7 +212,7 @@ UIItem* FigureWindow::createItem( base_properties* pProps )
 	// axes
 	if ( pProps->get_type() == "axes" )
 	{
-		AxesItem* pAxes = new AxesItem();
+		AxesItem* pAxes = new AxesItem( this );
 		pAxes->setFigureRect( view->rect() );
 		pAxes->copyProperties( pProps );
 		_scene.addItem( pAxes );

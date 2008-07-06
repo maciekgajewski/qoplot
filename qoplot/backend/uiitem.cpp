@@ -25,9 +25,9 @@ namespace QOGraphics
 
 // ============================================================================
 // Constructor
-UIItem::UIItem( QGraphicsItem* parent ): QGraphicsItem( parent )
+UIItem::UIItem( FigureWindow* figure, QGraphicsItem* parent ): QGraphicsItem( parent )
 {
-	// nothing
+	_pFigure = figure;
 }
 
 // ============================================================================

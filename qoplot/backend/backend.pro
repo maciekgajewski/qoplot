@@ -19,7 +19,8 @@ SOURCES = main.cpp\
  systeminfo.cpp \
  textitem.cpp \
  plotitem.cpp \
- lineitem.cpp
+ lineitem.cpp \
+ imageitem.cpp
 
 HEADERS = figurewindow.h \
  backend.h \
@@ -32,7 +33,8 @@ HEADERS = figurewindow.h \
  systeminfo.h \
  textitem.h \
  plotitem.h \
- lineitem.h
+ lineitem.h \
+ imageitem.h
 
 FORMS = figurewindow.ui
 CONFIG -= release
