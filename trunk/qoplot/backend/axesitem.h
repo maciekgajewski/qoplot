@@ -22,7 +22,6 @@
 namespace QOGraphics
 {
 
-
 /**
 Gpahics item representingm and associated with Axes object.
 
@@ -33,7 +32,7 @@ class AxesItem : public UIItem
 {
 
 public:
-	AxesItem( QGraphicsItem * parent = NULL );
+	AxesItem( FigureWindow* figure, QGraphicsItem * parent = NULL );
 	virtual ~AxesItem();
 	
 	// Item proeprties
