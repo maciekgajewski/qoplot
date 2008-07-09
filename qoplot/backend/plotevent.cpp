@@ -24,8 +24,8 @@ namespace QOGraphics
 // Constructor
 PlotEvent::PlotEvent(): QEvent( EventTypePlot )
 {
-	figure = -1;
-	action = Redraw;
+	handle = -1;
+	action = 0;
 }
 
 // ============================================================================

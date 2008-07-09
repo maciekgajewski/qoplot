@@ -32,7 +32,7 @@ class AxesItem : public UIItem
 {
 
 public:
-	AxesItem( FigureWindow* figure, QGraphicsItem * parent = NULL );
+	AxesItem( double h, FigureWindow* figure, QGraphicsItem * parent = NULL );
 	virtual ~AxesItem();
 	
 	// Item proeprties
@@ -46,11 +46,7 @@ public:
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
 	
-	/// Copies proeprties.
-	virtual void copyProperties( const base_properties* pProps );
-	
-	/// Returns current properties.
-	virtual axes::properties* properties() const { return _pProperties; }
+	virtual axes::properties* properties() const { return dynamic_cast<axes::properties*>(UIItem::properties()); }
 	
 	virtual void updateGeometry();					///< Message from parent: parent's geometry has changed
 		
@@ -62,7 +58,7 @@ protected:
 
 	virtual void propertiesChanged();				///< Updates item after properties change
 	/// Creates item with provided property set.
-	virtual UIItem* createItem( base_properties* pProps );
+	virtual UIItem* createItem( double h, base_properties* pProps );
 	
 private:
 	
@@ -80,7 +76,6 @@ private:
 	// data
 	
 	QSizeF _size;							///< Current pixel size
-	axes::properties*	_pProperties;		///< Object properties.
 };
 
 }

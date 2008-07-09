@@ -30,14 +30,11 @@ Graphics item associated with Text object.
 class TextItem : public PlotItem
 {
 public:
-	TextItem( AxesItem* parent );
+	TextItem( double h, AxesItem* parent );
 	virtual ~TextItem();
 
-	/// Copies properties
-	virtual void copyProperties( const base_properties* pProps );
-	
 	/// Returns current properties.
-	virtual text::properties* properties() const { return _pProperties; }
+	virtual text::properties* properties() const { return dynamic_cast<text::properties*>( PlotItem::properties()); }
 	
 	/// Paints item
 	virtual void paint
@@ -57,8 +54,6 @@ private:
 	QRectF textExtent() const;			///< Calculates text extent rectange
 	QPointF alignTranlsation() const;	///< Fids translation caused by alignment
 	
-	
-	text::properties* _pProperties;
 };
 
 }

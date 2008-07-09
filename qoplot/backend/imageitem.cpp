@@ -28,10 +28,11 @@ namespace QOGraphics
 
 // ============================================================================
 // Constructor
-ImageItem::ImageItem( AxesItem* parent): PlotItem(parent)
+ImageItem::ImageItem( double h, AxesItem* parent): PlotItem(h,parent)
 {
-	_pProperties = NULL;
 	setZValue( 0.4 ); // bit below other objects
+
+	propertiesChanged();
 }
 
 // ============================================================================
@@ -48,6 +49,8 @@ void ImageItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
+	gh_manager::lock_guard guard;
+	
 	image::properties* pProps = properties();
 	// do nathing if called before properties provided
 	if ( ! pProps ) return;
@@ -89,6 +92,7 @@ QRectF ImageItem::boundingRect() const
 /// Creates image from data, according to current mode.
 void ImageItem::createImage()
 {
+	gh_manager::lock_guard guard;
 	image::properties* pProps = properties();
 	
 	if ( pProps->get_cdata().ndims() == 3 )
@@ -106,19 +110,6 @@ void ImageItem::createImage()
 	{
 		createColormapImage( pProps->get_cdata().matrix_value() );
 	}
-}
-
-// ============================================================================
-// Copies properties.
-void ImageItem::copyProperties( const base_properties* pProps )
-{
-	if ( _pProperties )
-	{
-		delete _pProperties;
-	}
-	
-	_pProperties = new image::properties( *dynamic_cast<const image::properties*>( pProps ) );
-	propertiesChanged();
 }
 
 // ============================================================================

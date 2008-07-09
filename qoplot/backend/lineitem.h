@@ -32,14 +32,11 @@ class LineItem : public PlotItem
 {
 
 public:
-	LineItem( AxesItem* parent );
+	LineItem( double h, AxesItem* parent );
 	virtual ~LineItem();
 	
-	/// Copies properties
-	virtual void copyProperties( const base_properties* pProps );
-	
 	/// Returns current properties.
-	virtual line::properties* properties() const { return _pProperties; }
+	virtual line::properties* properties() const { return dynamic_cast<line::properties*>(PlotItem::properties()); }
 	
 	/// Paints item
 	virtual void paint
@@ -54,7 +51,6 @@ private:
 
 	void drawMarker( QPainter* painter, const QPointF& pos ); ///< Draws marker
 	
-	line::properties* _pProperties;
 };
 
 }

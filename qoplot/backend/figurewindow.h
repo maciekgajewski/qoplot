@@ -40,13 +40,19 @@ class FigureWindow : public QMainWindow, public Ui::FigureWindow
 	Q_OBJECT
 public:
 
-	FigureWindow( QWidget* parent = 0, Qt::WindowFlags flags = 0 );
+	FigureWindow( double handle );
 	virtual ~FigureWindow();
 	
-	/// Creates local copy of provided properties
-	void copyProperties( const figure::properties* pProperties );
+	/// Returns object's properties
+	figure::properties* properties() const;
 	
-	figure::properties* properties() const { return _pProperties; }
+	double handle() const { return _handle; }
+
+	/// Message from outer world - child added
+	virtual UIItem* addChild( double h );
+	
+	/// Message from outer world - property changed
+	virtual void propertyChanged( const QString& name );
 
 signals:
 
@@ -60,26 +66,27 @@ protected:
 	virtual void closeEvent( QCloseEvent* event );
 	virtual void showEvent( QShowEvent* event );
 	virtual void resizeEvent( QResizeEvent* event );
-	
+	virtual void moveEvent( QMoveEvent * event );
+
 private:
 
 	/// Master method called when properties has changed
 	void propertiesChanged();
 	
-	void updatePosition();	///< Updates geometry to 'position' and 'units' property
+	void updateActualToPosition();	///< Updates geometry to 'position' and 'units' property
+	void updatePositionToActual();	///< Udates 'position' property to geometry
 	void updateChildren();	///< Updates child elements
 	
 	void updateChildrenSizes();	///< Updates sizes of child elements
 	
-	UIItem* createItem( base_properties* pProps );
+	UIItem* createItem( double h, base_properties* pProps );
 	
 	// data
 	
-	figure::properties*	_pProperties;		///< Properties used to setup figure
 	QGraphicsScene		_scene;				///< Scene on which child elemens are painted
 	
 	QMap<double, UIItem*> _children;		///< Map faciliting updating children
-
+	double _handle;							///< Handle
 };
 
 }; // namespace

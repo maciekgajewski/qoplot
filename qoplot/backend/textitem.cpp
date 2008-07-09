@@ -27,10 +27,11 @@ namespace QOGraphics
 
 // ============================================================================
 // Constructor
-TextItem::TextItem( AxesItem* parent ) : PlotItem(parent)
+TextItem::TextItem( double h, AxesItem* parent ) : PlotItem( h, parent)
 {
-	_pProperties = NULL;
 	setZValue( 0.5 ); // Above lines, below legend. TODO do some infrastructure for this
+
+	propertiesChanged();
 }
 
 // ============================================================================
@@ -47,6 +48,8 @@ void TextItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
+	gh_manager::lock_guard guard;
+	
 	text::properties* pProps = properties();
 	// this can be caled befor proerties are here
 	if ( ! pProps ) return;
@@ -91,6 +94,8 @@ void TextItem::paint
 /// Returns item's bounding rectangle
 QRectF TextItem::boundingRect() const
 {
+	gh_manager::lock_guard guard;
+	
 	text::properties* pProps = properties();
 	// this can be caled befor proerties are here
 	if ( ! pProps ) return QRectF();
@@ -165,19 +170,6 @@ QPointF TextItem::alignTranlsation() const
 	else if ( verticalAlignment == "bottom" )	y = -h-m;
 	
 	return QPointF( x, y );
-}
-
-// ============================================================================
-// Copies porperties
-void TextItem::copyProperties( const base_properties* pProps )
-{
-	if ( _pProperties )
-	{
-		delete _pProperties;
-	}
-	
-	_pProperties = new text::properties( *dynamic_cast<const text::properties*>( pProps ) );
-	propertiesChanged();
 }
 
 // ============================================================================

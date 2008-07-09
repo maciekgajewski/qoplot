@@ -29,7 +29,7 @@ Image item. Represents image objec.
 class ImageItem : public PlotItem
 {
 public:
-	ImageItem( AxesItem* parent );
+	ImageItem( double h, AxesItem* parent );
 	virtual ~ImageItem();
 
 	/// Paints item
@@ -41,11 +41,8 @@ public:
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
 	
-	/// Copies properties
-	virtual void copyProperties( const base_properties* pProps );
-	
 	/// Returns current properties.
-	virtual image::properties* properties() const { return _pProperties; }
+	virtual image::properties* properties() const { return dynamic_cast<image::properties*>(PlotItem::properties()); }
 	
 protected:
 
@@ -61,8 +58,6 @@ private:
 	QImage _image;	///< Actual image used in rendering
 	
 	QRectF imageRect() const; ///< Image rectangle on plot's XY plane
-	
-	image::properties* _pProperties;
 };
 
 }

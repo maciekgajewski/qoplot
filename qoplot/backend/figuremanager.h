@@ -30,6 +30,7 @@ namespace QOGraphics
 {
 
 class FigureWindow;
+class UIItem;
 
 /**
 Figure manager. Lives in GUI thread, receives plot events from backend (in octave thread).
@@ -58,13 +59,16 @@ public:
 	
 private:
 
-	///< Redraws or creates figure, applies new properties.
-	void redrawFigure( double h, const figure::properties* pProps );
-	void closeFigure( double h );      ///< Closes figure
+	void propertyChanged( double h, const QString& name );
+	void objectCreated( double h );
+	void objectDestroyed( double h );
 	
 	// data
-	
+	// TODO o hsave this gut feeleing that having common base class for figures and items
+	// would be a good thing. But I have also a second gut feeling that using multiple ingeritance
+	// would be paint in the ass.
 	QMap< double, FigureWindow* > _figures;	///< Figures database
+	QMap< double, UIItem* > _items;			///< Items database
 };
 
 }

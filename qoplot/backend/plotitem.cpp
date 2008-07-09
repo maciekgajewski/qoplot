@@ -22,7 +22,7 @@ namespace QOGraphics
 
 // ============================================================================
 // Constructor
-PlotItem::PlotItem( AxesItem* parent ): UIItem( parent->figure(), parent )
+PlotItem::PlotItem( double h, AxesItem* parent ): UIItem( h, parent->figure(), parent )
 {
 	Q_ASSERT( parent );
 	_pAxes = parent;
