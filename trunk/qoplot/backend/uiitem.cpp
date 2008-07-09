@@ -19,14 +19,16 @@
 
 #include "uiitem.h"
 #include "converters.h"
+#include "figurewindow.h"
 
 namespace QOGraphics
 {
 
 // ============================================================================
 // Constructor
-UIItem::UIItem( FigureWindow* figure, QGraphicsItem* parent ): QGraphicsItem( parent )
+UIItem::UIItem( double handle, FigureWindow* figure, QGraphicsItem* parent ): QGraphicsItem( parent )
 {
+	_handle = handle;
 	_pFigure = figure;
 }
 
@@ -100,7 +102,7 @@ QFont UIItem::font() const
 /// Updates item state to changed properties.
 void UIItem::propertiesChanged()
 {
-	updateChildren();
+	//
 }
 
 // ============================================================================
@@ -116,79 +118,51 @@ double UIItem::ptToPixel( double pt, const QPaintDevice* pDevice ) const
 }
 
 // ============================================================================
-/// UPdates children elements to new properties.
-void UIItem::updateChildren()
+/// Creates item with provided property set. Item type is deduced from "type" property.
+UIItem* UIItem::createItem( double, base_properties* )
 {
-	base_properties* pProps = properties();
-	
-	Matrix cm = pProps->get_children();
-	
-	int count = cm.nelem();
-	QMap<double, UIItem*> newMap;
-	
-	for( int i = 0; i < count; i++ )
-	{
-		double h = cm.elem(i);
-		base_properties* pProps = NULL;
-		
-		graphics_object obj = gh_manager::get_object (h);
-		if ( obj )
-		{
-			// get properties
-			pProps = &obj.get_properties();
-		}
-		
-		// 1 - do we have this child already?
-		if ( ! _children.contains( h ) )
-		{
-			// no, we don't
-			// create object
-			UIItem* pNewChild = createItem( pProps );
-			if ( pNewChild )
-			{
-				newMap.insert( h, pNewChild );
-			}
-			else
-			{
-				qWarning("Didn't know how to create object of type %s",
-					pProps->get_type().c_str() );
-			}
-		}
-		else
-		{
-			// yes, we have it
-			// 2. is it the same type?
-			if ( _children[h]->properties()->get_type() == pProps->get_type() )
-			{
-				// just update
-				_children[h]->copyProperties( pProps );
-				newMap.insert( h, _children[h] );
-				_children.remove( h ); // remove from old map
-			}
-			else
-			{
-				// type changed - re-create
-				// TODO
-				qDebug("re-creation not implemented");
-			}
-		}
-	}
-	
-	// now items that left on old map should be removed
-	foreach( double h, _children.keys() )
-	{
-		delete  _children[h];
-	}
-	
-	// flip tables
-	_children = newMap;
+	return NULL;
 }
 
 // ============================================================================
-/// Creates item with provided property set. Item type is deduced from "type" property.
-UIItem* UIItem::createItem( base_properties* pProps )
+/// Returns object properties, extracted from associated grpahics_object.
+///\warning Always call this with gh_manager locked!
+base_properties* UIItem::properties() const
 {
-	return NULL;
+	graphics_object go = gh_manager::get_object( _handle );
+	if ( go )
+	{
+		return &go.get_properties();
+	}
+	else
+	{
+		// TODO throwe exception here
+		qWarning("Object with handle %g is invalid!", _handle);
+		return NULL;
+	}
+}
+
+// ============================================================================
+/// Message from octave: child object was created.
+/// Visual object will be created using createItem().
+UIItem* UIItem::addChild( double h )
+{
+	gh_manager::lock_guard guard;
+	
+	graphics_object go = gh_manager::get_object( h );
+	base_properties& props = go.get_properties();
+	
+	// show your figure
+	figure()->show();
+	
+	return createItem( h, &props );
+}
+
+// ============================================================================
+/// Message from octave: property has changed.
+void UIItem::propertyChanged( const QString& /*name*/ )
+{
+	propertiesChanged(); // simplest implementation
 }
 
 }

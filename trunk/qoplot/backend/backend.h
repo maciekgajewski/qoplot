@@ -18,6 +18,7 @@
 #define QOGRAPHICSBACKEND_H
 
 #include <stdio.h>
+#include <pthread.h>
 
 #include <octave/oct.h>
 #include <octave/graphics.h>
@@ -63,10 +64,19 @@ public:
 	double get_screen_resolution (void) const;
 	
 	Matrix get_screen_size(void) const;
+	/// Called when graphics object using this backend changes it's property.
+	virtual void property_changed (const graphics_handle&, const std::string&);
+	
+	/// Caled when new object using this backend is created.
+	virtual void object_created (const graphics_handle&);
+	
+	/// Caled when object using this backend is destroyed.
+	virtual void object_destroyed (const graphics_handle&);
 	
 private:
 
-	FigureManager* _pManager;
+	FigureManager*	_pManager;
+	pthread_t		_motherThread;	///< tjhread that created the backend
 };
 
 }

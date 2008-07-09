@@ -32,6 +32,7 @@ Backend::Backend( FigureManager* pManager ) : base_graphics_backend("qoplot")
 {
 	Q_ASSERT( pManager );
 	_pManager = pManager;
+	_motherThread = pthread_self();
 }
 
 // ============================================================================
@@ -53,63 +54,16 @@ double getms()
 // ============================================================================
 /// Info from Octave - some property of figure or one of it's
 /// children were changedm and figure and it's children needs to be redrawn.
-void Backend::redraw_figure (const graphics_handle& fh) const
+void Backend::redraw_figure (const graphics_handle& ) const
 {
-	graphics_object fobj = gh_manager::get_object (fh);
-	if (fobj &&  fobj.isa ("figure") )
-	{
-		// get properties
-		figure::properties& fp = dynamic_cast<figure::properties&>( fobj.get_properties() );
-			
-		// send message
-		PlotEvent* pEvent = new PlotEvent;
-		
-		pEvent->action = PlotEvent::Redraw;
-		pEvent->figure = fh.value();
-		pEvent->pProperties = &fp;
-		
-		_pManager->propertiesMutex.lock(); // this will wait until GUI thread finish previous copying
-		QApplication::postEvent( _pManager, pEvent );
-		
-		// now wait for properties to be copied. Mutex is unlocked during waiting.
-		_pManager->propertiesCopied.wait( & _pManager->propertiesMutex );
-		
-		// happy end, ready to handle next message
-		_pManager->propertiesMutex.unlock();
-	}
-	else
-	{
-		qDebug("Backend::redraw_figure: not a figure handle.");
-	}
+	// ignore this hapilly
 }
 
 // ============================================================================
 /// Info form octave: figre should be closed.
 void Backend::close_figure (const octave_value& ov) const
 {
-	qDebug("Close figure");
-	if ( ov.is_matrix_type() )
-	{
-		Matrix figs = ov.matrix_value();
-		
-		for( int i = 0; i< figs.nelem(); i++ )
-		{
-			double fh = figs.elem( i );
-			// send message
-			PlotEvent* pEvent = new PlotEvent;
-			
-			pEvent->action = PlotEvent::Close;
-			qDebug("close figure %f", fh );
-			pEvent->figure = fh;
-			pEvent->pProperties = NULL;
-			
-			QApplication::postEvent( _pManager, pEvent );
-		}
-	}
-	else
-	{
-		qDebug("Backend::close_figure: unsupported param type");
-	}
+	// nope :)
 }
 
 // ============================================================================
@@ -130,5 +84,65 @@ double Backend::get_screen_resolution (void) const
 	return SystemInfo::screenDpi();
 }
 
+// ============================================================================
+// Property changed.
+void Backend::property_changed (const graphics_handle& h, const std::string& name )
+{
+	//qDebug("Backend::property_changed: h=%g, prop=%s", h.value(), name.c_str() );
+	
+	// ignore "__modified__"
+	if ( name == "__modified__" )
+	{
+		// do nothing
+		return;
+	}
+	
+	// ignore messages from other thread, as they may come from GUI thread.
+	if ( ! pthread_equal( _motherThread, pthread_self() ) )
+	{
+		return;
+	}
+	
+	// TODO check thread
+	
+	// send message
+	PlotEvent* pEvent = new PlotEvent;
+	
+	pEvent->action = PlotEvent::PropertyChanged;
+	pEvent->handle = h.value();
+	pEvent->name = name.c_str();
+	
+	QApplication::postEvent( _pManager, pEvent );
+}
+
+// ============================================================================
+// Object created.
+void Backend::object_created (const graphics_handle& h)
+{
+	qDebug("Backend::object_created: h=%g", h.value() );
+	
+	// send message
+	PlotEvent* pEvent = new PlotEvent;
+	
+	pEvent->action = PlotEvent::Created;
+	pEvent->handle = h.value();
+	
+	QApplication::postEvent( _pManager, pEvent );
+}
+
+// ============================================================================
+// Object destrioyed
+void Backend::object_destroyed (const graphics_handle& h)
+{
+	qDebug("Backend::object_destroyed: h=%g", h.value() );
+	
+	// send message
+	PlotEvent* pEvent = new PlotEvent;
+	
+	pEvent->action = PlotEvent::Destroyed;
+	pEvent->handle = h.value();
+	
+	QApplication::postEvent( _pManager, pEvent );
+}
 
 }

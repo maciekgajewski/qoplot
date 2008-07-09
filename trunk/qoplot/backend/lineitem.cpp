@@ -27,10 +27,11 @@ namespace QOGraphics
 
 // ============================================================================
 /// Constructor
-LineItem::LineItem( AxesItem* parent ): PlotItem( parent )
+LineItem::LineItem( double h, AxesItem* parent ): PlotItem( h, parent )
 {
-	_pProperties = NULL;
 	setZValue( 0.5 ); // above axes
+	
+	propertiesChanged();
 }
 
 // ============================================================================
@@ -48,14 +49,20 @@ void LineItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
+	gh_manager::lock_guard guard;
+	
 	line::properties* pProps = properties();
 	// do nathing if called before properties provided
-	if ( ! pProps ) return;
+	if ( ! pProps )
+	{
+		return;
+	}
 	
 	Matrix xdata = pProps->get_xdata().matrix_value();
 	Matrix ydata = pProps->get_ydata().matrix_value();
 	QColor color = colorFromOctave( pProps->get_color_rgb() );
 	std::string clipping = pProps->get_clipping();
+	
 
 	AxesItem* pAxesItem = axesItem();
 	Q_ASSERT( pAxesItem );
@@ -276,19 +283,6 @@ void LineItem::drawMarker( QPainter* pPainter, const QPointF& pos )
 	pPainter->translate( pos );
 	pPainter->drawPath( path );
 	pPainter->restore();
-}
-
-// ============================================================================
-// Copies porperties.
-void LineItem::copyProperties( const base_properties* pProps )
-{
-	if ( _pProperties )
-	{
-		delete _pProperties;
-	}
-	
-	_pProperties = new line::properties( *dynamic_cast<const line::properties*>( pProps ) );
-	propertiesChanged();
 }
 
 }

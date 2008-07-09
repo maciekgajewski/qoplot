@@ -46,15 +46,23 @@ bool FigureManager::event ( QEvent* pEvent )
 		PlotEvent* pPlotEvent = dynamic_cast<PlotEvent*>( pEvent );
 		if ( pPlotEvent )
 		{
-			if ( pPlotEvent->action == PlotEvent::Redraw )
+			switch( pPlotEvent->action )
 			{
-				redrawFigure( pPlotEvent->figure, pPlotEvent->pProperties );
+				case PlotEvent::PropertyChanged:
+					propertyChanged( pPlotEvent->handle, pPlotEvent->name );
+					break;
+					
+				case PlotEvent::Created:
+					objectCreated( pPlotEvent->handle );
+					break;
+					
+				case PlotEvent::Destroyed:
+					objectDestroyed( pPlotEvent->handle );
+					break;
+					
+				default:
+					qWarning("FigureManager::event: unknown action requested");
 			}
-			else if ( pPlotEvent->action == PlotEvent::Close )
-			{
-				closeFigure( pPlotEvent->figure );
-			}
-			else qDebug("FigureManager::even: unknown action requested");
 		}
 	}
 	// TODO
@@ -62,47 +70,87 @@ bool FigureManager::event ( QEvent* pEvent )
 }
 
 // ============================================================================
-/// Redraws figure, if exists, or creates new one with specified handle.
-/// The figure is provided with new set of properies, and asked to copy and apply them.
-/// Properties copying is synchronized with main octave thread.
-void FigureManager::redrawFigure( double h, const figure::properties* pProps )
+/// Handles message from main thread: property has changed.
+void FigureManager::propertyChanged( double h, const QString& name )
 {
-	FigureWindow* pFigure = NULL;
-	if ( _figures.contains( h ) )
+	gh_manager::lock_guard guard;
+	
+	// check object validity (object could be deleted by now)
+	if ( ! gh_manager::get_object( h ) )
 	{
-		pFigure = _figures[ h ];
-		// TODO redraw here
+		return;
+	}
+	
+	if ( _items.contains( h ) )
+	{
+		_items[h]->propertyChanged( name );
+	}
+	else if ( _figures.contains( h ) )
+	{
+		_figures[h]->propertyChanged( name );
 	}
 	else
 	{
-		// create
-		pFigure = new FigureWindow();
-		_figures[ h ] = pFigure;
+		qWarning("property changed: unknown object %g", h );
 	}
-	
-	Q_ASSERT( pFigure );
-	Q_ASSERT( pProps );
-	
-	// copy properties
-	propertiesMutex.lock(); // this will wait until backend enters wait state
-	
-	pFigure->copyProperties( pProps );
-	
-	propertiesMutex.unlock(); // this allow backend to wake up, and/or to post another event.
-	propertiesCopied.wakeAll();
-		
-	pFigure->show(); // show, if closed or hidden
 }
 
 // ============================================================================
-/// Destroys figure with specified handle.
-void FigureManager::closeFigure( double h )
+/// Handles message from main thread: object was created.
+void FigureManager::objectCreated( double h )
 {
-	if ( _figures.contains( h ) )
+	gh_manager::lock_guard guard;
+	
+	graphics_object go = gh_manager::get_object( h );
+	base_properties& props = go.get_properties();
+	
+	std::string type = props.get_type();
+	
+	if ( type == "figure" )
 	{
-		FigureWindow* pFigure = _figures[ h ];
- 		_figures.remove( h );
- 		delete pFigure;
+		// create new figure
+		FigureWindow* pFig = new FigureWindow( h );
+		_figures[h] = pFig;
+		pFig->show();
+	}
+	else
+	{
+		double parent = props.get_parent().value();
+		if ( _items.contains( parent ) )
+		{
+			_items[h] = _items[parent]->addChild( h );
+		}
+		else if ( _figures.contains( parent ) )
+		{
+			_items[ h ] = _figures[parent]->addChild( h );
+		}
+		else
+		{
+			qWarning("Object %g (%s) created with unknonw parent %g",
+				h, type.c_str(), parent );
+		}
+	}
+}
+
+// ============================================================================
+/// Handles message from main thread: object was destroyed.
+void FigureManager::objectDestroyed( double h )
+{
+	gh_manager::lock_guard guard;
+	
+	if ( _items.contains( h ) )
+	{
+		delete _items[h];
+		_items.remove( h );
+	}
+	else if ( _figures.contains( h ) )
+	{
+		delete _figures[h];
+		_figures.remove( h );
+	}
+	else
+	{
+		qWarning("object destroyed: unknown object %g", h );
 	}
 }
 

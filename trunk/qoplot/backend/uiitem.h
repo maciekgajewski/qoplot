@@ -38,19 +38,23 @@ Common QGraphicsItem for all UI items.
 class UIItem : public QGraphicsItem
 {
 public:
-	UIItem( FigureWindow* figure, QGraphicsItem* parent = NULL );
+	UIItem( double handle, FigureWindow* figure, QGraphicsItem* parent = NULL );
 	virtual ~UIItem();
-	
-	/// Copies supplied properties to internal storage.
-	/// Is pure virtual, becouse it need to know the exact type of properties.
-	/// Should call propertiesChanged() before returning.
-	virtual void copyProperties( const base_properties* pProps ) = 0;
 	
 	/// Returns pointer to figure
 	FigureWindow* figure() const { return _pFigure; }
 	
 	/// Returns current properties.
-	virtual base_properties* properties() const = 0;
+	virtual base_properties* properties() const;
+	
+	/// Message from outer world - child added
+	virtual UIItem* addChild( double h );
+	
+	/// Message from outer world - property changed
+	virtual void propertyChanged( const QString& name );
+	
+	/// Returns handle
+	double handle() const { return _handle; }
 	
 	void setFigureRect( const QRect& r ) { _figureRect = r; }
 	QRect figureRect() const { return _figureRect; }
@@ -67,10 +71,9 @@ protected:
 	double ptToPixel( double pt, const QPaintDevice* device ) const;
 	
 	virtual void propertiesChanged();		///< Updates item after properties change
-	void updateChildren();					///< Updates children items
 	
 	/// Creates item with provided property set.
-	virtual UIItem* createItem( base_properties* pProps );
+	virtual UIItem* createItem( double h, base_properties* pProps );
 	
 	QList<UIItem*> children() const { return _children.values(); }
 	
@@ -79,6 +82,7 @@ private:
 	QRect _figureRect;						///< Parent figure rectangle to paint on (in pixels)
 	QMap< double, UIItem* > _children;		///< Child elements
 	FigureWindow*		_pFigure;			///< Pointer to figure
+	double				_handle;			///< Item's handle
 };
 
 }

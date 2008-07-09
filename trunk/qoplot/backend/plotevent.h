@@ -18,6 +18,7 @@
 #define QOGRAPHICSPLOTEVENT_H
 
 #include <QEvent>
+#include <QString>
 
 #include <octave/oct.h>
 #include <octave/graphics.h>
@@ -26,7 +27,7 @@ namespace QOGraphics {
 
 /**
 Event used to communicate between octave's main thread and Qt GUI thread.
-This event is send when backend's 'redraw figure' or 'close figure' methods
+This event is send when backend's 'object_created', 'object_destroyed'or 'property_changed' methods
 are called. It holds figures handle and requested action type.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
@@ -35,17 +36,16 @@ class PlotEvent : public QEvent
 {
 public:
 	
-	enum ActionType { Redraw, Close };
+	enum ActionType { Created, Destroyed, PropertyChanged };
 	
 	PlotEvent();
 	virtual ~PlotEvent();
 	
 	
 	ActionType	action;		///< Requested action
-	double		figure;		///< Figure in question
+	double		handle;		///< Object in question
+	QString		name;		///< Property name
 	
-	/// Pointer to figure properties object.
-	figure::properties* pProperties;
 };
 
 }

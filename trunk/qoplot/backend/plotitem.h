@@ -34,7 +34,7 @@ class PlotItem : public UIItem
 {
 
 public:
-	PlotItem( AxesItem* parent );
+	PlotItem( double h, AxesItem* parent );
 	virtual ~PlotItem();
 	
 	QRectF plotBox() const;

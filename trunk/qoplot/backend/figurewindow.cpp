@@ -16,6 +16,8 @@
 //
 
 #include <QCloseEvent>
+#include <QResizeEvent>
+#include <QMoveEvent>
 #include <QDesktopWidget>
 
 #include "figurewindow.h"
@@ -27,10 +29,10 @@ namespace QOGraphics
 
 // ============================================================================
 /// Constructor
-FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
-	: QMainWindow( parent, flags )
+FigureWindow::FigureWindow( double handle )
+	: QMainWindow( NULL )
 {
-	_pProperties = NULL;
+	_handle = handle;
 	setupUi( this );
 	
 	view->setScene( & _scene );
@@ -41,11 +43,7 @@ FigureWindow::FigureWindow( QWidget* parent, Qt::WindowFlags flags )
 /// Destructor
 FigureWindow::~FigureWindow()
 {
-	if ( _pProperties )
-	{
-		delete _pProperties;
-		_pProperties = NULL;
-	}
+	//
 }
 
 // ============================================================================
@@ -60,10 +58,15 @@ void FigureWindow::closeEvent( QCloseEvent* pEvent )
 
 // ============================================================================
 /// Emits 'resized()' ingla when window is resized.
-void FigureWindow::resizeEvent( QResizeEvent* /*event*/ )
+void FigureWindow::resizeEvent( QResizeEvent* pEvent )
 {
 	view->setSceneRect( view->rect() );
 
+	// update position
+	if ( pEvent->spontaneous() )
+	{
+		updatePositionToActual();
+	}
 	// udpate child's scene rect
 	updateChildrenSizes();
 }
@@ -87,44 +90,30 @@ void FigureWindow::updateChildrenSizes()
 }
 
 // ============================================================================
-/// Makes copy of provided property set.
-void FigureWindow::copyProperties( const figure::properties* pProperties )
-{
-	if ( _pProperties )
-	{
-		delete _pProperties;
-	}
-	
-	_pProperties = new figure::properties( *pProperties );
-	propertiesChanged();
-}
-
-// ============================================================================
 /// Called when properties are changed. Updates figure state to it's properties.
 void FigureWindow::propertiesChanged()
 {
-	Q_ASSERT( _pProperties );
+	gh_manager::lock_guard guard;
+	
+	figure::properties* pProps = properties();
+	Q_ASSERT( pProps );
 	
 	// color 
-	_scene.setBackgroundBrush( colorFromOctave( _pProperties->get_color() ) );
-	
-	// position
-	updatePosition();
-	
+	_scene.setBackgroundBrush( colorFromOctave( pProps->get_color() ) );
 	// resize
-	statusBar()->setSizeGripEnabled( _pProperties->get_resize() == "on" );
+	statusBar()->setSizeGripEnabled( pProps->get_resize() == "on" );
 	// TODO really block resising here
-	
-	// update children
-	updateChildren();
 }
 
 // ============================================================================
 /// Updates window position to position property.
-void FigureWindow::updatePosition()
+void FigureWindow::updateActualToPosition()
 {
-	std::string units = _pProperties->get_units();
-	Matrix pos = _pProperties->get_position().matrix_value();
+	gh_manager::lock_guard guard;
+	
+	figure::properties* pProps = properties();
+	std::string units = pProps->get_units();
+	Matrix pos = pProps->get_position().matrix_value();
 	int screenHeight = QApplication::desktop()->height();
 	
 	if ( units == "pixels" )
@@ -145,76 +134,45 @@ void FigureWindow::updatePosition()
 }
 
 // ============================================================================
-/// Updates childre. Adds and removes children as they are appearing on/disappearing from
-/// children list, and propagates properties to them
-void FigureWindow::updateChildren()
+/// Updates position property to actual window position.
+void FigureWindow::updatePositionToActual()
 {
-	Matrix cm = _pProperties->get_children();
+	gh_manager::lock_guard guard;
 	
-	int count = cm.nelem();
-	QMap<double, UIItem*> newMap;
+	figure::properties* pProps = properties();
+	std::string units = pProps->get_units();
 	
-	for( int i = 0; i < count; i++ )
+	Matrix pos( 1, 4 ); // left, bottom, width, height
+	int screenHeight = QApplication::desktop()->height();
+	
+	if ( units == "pixels" )
 	{
-		double h = cm.elem(i);
-		base_properties* pProps = NULL;
+		QRect g = geometry();
 		
-		graphics_object obj = gh_manager::get_object (h);
-		if ( obj )
-		{
-			// get properties
-			pProps = &obj.get_properties();
-		}
+		pos.elem( 0 ) = g.left();
+		pos.elem( 1 ) = screenHeight - g.bottom();
+		pos.elem( 2 ) = g.width();
+		pos.elem( 3 ) = g.height();
 		
-		// 1 - do we have this child already?
-		if ( ! _children.contains( h ) )
-		{
-			// no, we don't
-			// create object
-			newMap.insert( h, createItem( pProps ) );
-		}
-		else
-		{
-			// yes, we have it
-			// 2. is it the same type?
-			if ( _children[h]->properties()->get_type() == pProps->get_type() )
-			{
-				// just update
-				_children[h]->copyProperties( pProps );
-				newMap.insert( h, _children[h] );
-				_children.remove( h ); // remove from old map
-			}
-			else
-			{
-				// type changed - re-create
-				// TODO
-				qDebug("re-creation not implemented");
-			}
-		}
+		pProps->set_position( pos );
 	}
-	
-	// now items that left on old map should be removed
-	foreach( double h, _children.keys() )
+	else
 	{
-		delete  _children[h];
+		qDebug("Position units other than pixels not supported currently");
 	}
-	
-	// flip tables
-	_children = newMap;
 }
 
 // ============================================================================
 /// Creates item, basing on value returned by proeprties get_type(). Initialies item with new properties.
-UIItem* FigureWindow::createItem( base_properties* pProps )
+UIItem* FigureWindow::createItem( double h, base_properties* pProps )
 {
 	Q_ASSERT( pProps );
 	
 	// axes
 	if ( pProps->get_type() == "axes" )
 	{
-		AxesItem* pAxes = new AxesItem( this );
+		AxesItem* pAxes = new AxesItem( h, this );
 		pAxes->setFigureRect( view->rect() );
-		pAxes->copyProperties( pProps );
 		_scene.addItem( pAxes );
 		return pAxes;
 	}
@@ -224,6 +182,70 @@ UIItem* FigureWindow::createItem( base_properties* pProps )
 	}
 		
 	return NULL;
+}
+// ============================================================================
+/// Returns object properties, extracted from associated grpahics_object.
+///\warning Always call this with gh_manager locked!
+figure::properties* FigureWindow::properties() const
+{
+	graphics_object go = gh_manager::get_object( _handle );
+	if ( go )
+	{
+		return (figure::properties*) &go.get_properties();
+	}
+	else
+	{
+		// TODO throwe exception here
+		qWarning("Figure with handle %g is invalid!", _handle);
+		return NULL;
+	}
+}
+
+// ============================================================================
+/// Message from octave: child object was created.
+/// Visual object will be created using createItem().
+UIItem* FigureWindow::addChild( double h )
+{
+	gh_manager::lock_guard guard;
+	
+	graphics_object go = gh_manager::get_object( h );
+	base_properties& props = go.get_properties();
+	
+	UIItem* pChild = createItem( h, &props );
+	_children.insert( h, pChild );
+	pChild->updateGeometry();
+	
+	
+	show(); // show if hidden
+	return pChild;
+}
+
+// ============================================================================
+/// Message from octave: property has changed.
+void FigureWindow::propertyChanged( const QString& name )
+{
+	
+	// position
+	if ( name == "position" )
+	{
+		updateActualToPosition();
+	}
+	else
+	{
+		// all others
+		propertiesChanged();
+	}
+}
+
+// ============================================================================
+/// Handles fingure move. Updates octave's 'position' property.
+void FigureWindow::moveEvent( QMoveEvent * pEvent )
+{
+	// update position
+	if ( pEvent->spontaneous() )
+	{
+		updatePositionToActual();
+	}
 }
 
 }; // namespace

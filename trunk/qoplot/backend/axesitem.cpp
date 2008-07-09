@@ -35,13 +35,12 @@ static const double Y_LABELS_MARGIN		= 50;	///< Margin reserved for y axis label
 
 // ============================================================================
 /// Constructor
-AxesItem::AxesItem( FigureWindow* figure, QGraphicsItem * parent /*= NULL*/ )
-	: UIItem(figure, parent)
+AxesItem::AxesItem( double h, FigureWindow* figure, QGraphicsItem * parent /*= NULL*/ )
+	: UIItem( h, figure, parent)
 {
 	_size = QSize( 100, 100 ); //dumb guess
 	
-	_pProperties = NULL;
-	
+	propertiesChanged();
 }
 
 // ============================================================================
@@ -58,6 +57,8 @@ void AxesItem::paint
 	, const QStyleOptionGraphicsItem* /*pOption*/
 	, QWidget * /*pWidget*/ /*= NULL*/ )
 {
+	gh_manager::lock_guard guard;
+	
 	drawBox( pPainter );
 	drawXAxis( pPainter );
 	drawYAxis( pPainter );
@@ -75,9 +76,9 @@ QRectF AxesItem::plotBox() const
 /// Draws axes background box.
 void AxesItem::drawBox( QPainter *pPainter )
 {
-	Q_ASSERT( _pProperties );
+	axes::properties* pProps = properties();
 	
-	if ( _pProperties->get_box() == "on" )
+	if ( pProps->get_box() == "on" )
 	{
 		pPainter->setPen( QPen( Qt::black, 1 ) );
 	}
@@ -85,7 +86,7 @@ void AxesItem::drawBox( QPainter *pPainter )
 	{
 		pPainter->setPen( Qt::NoPen );
 	}
-	pPainter->setBrush( colorFromOctave( _pProperties->get_color() ) );
+	pPainter->setBrush( colorFromOctave( pProps->get_color() ) );
 	
 	pPainter->drawRect( plotBox() );
 }
@@ -195,6 +196,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 /// Converts plot point to pixel.
 QPointF AxesItem::plotToPixel( const QPointF& p ) const
 {
+	gh_manager::lock_guard guard;
 	axes::properties* pProps = properties();
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
@@ -227,6 +229,7 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 /// Converts pixel pos to plot position coordinates.
 QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 {
+	gh_manager::lock_guard guard;
 	axes::properties* pProps = properties();
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
@@ -264,19 +267,6 @@ QRectF AxesItem::boundingRect() const
 }
 
 // ============================================================================
-/// Copies provided properties into local storage. This call is always guarded by mutex.
-void AxesItem::copyProperties( const base_properties* pProps )
-{
-	if ( _pProperties )
-	{
-		delete _pProperties;
-	}
-	
-	_pProperties = new axes::properties( *dynamic_cast<const axes::properties*>( pProps ) );
-	propertiesChanged();
-}
-
-// ============================================================================
 /// Called when properties has changed. Updates axes state to properties.
 void AxesItem::propertiesChanged()
 {
@@ -290,7 +280,9 @@ void AxesItem::propertiesChanged()
 /// Updates item postion and size basing on 'position' and 'units' properties.
 void AxesItem::updatePosition()
 {
-	Matrix pos = _pProperties->get_position().matrix_value();
+	gh_manager::lock_guard guard;
+	axes::properties* pProps = properties();
+	Matrix pos = pProps->get_position().matrix_value();
 	
 	// octave position, in variant units
 	double posLeft		= pos.elem( 0 );
@@ -303,7 +295,7 @@ void AxesItem::updatePosition()
 	// pixel positions
 	double left, bottom, width, height;
 	
-	if ( _pProperties->get_units() == "normalized" )
+	if ( pProps->get_units() == "normalized" )
 	{
 		left	= figure.left() + figure.width() * posLeft;
 		bottom	= figure.bottom() - figure.height() * posBottom;
@@ -311,7 +303,7 @@ void AxesItem::updatePosition()
 		height	= figure.height() * posHeight;
 		
 	}
-	else if ( _pProperties->get_units() == "pixels" )
+	else if ( pProps->get_units() == "pixels" )
 	{
 		qWarning("As for now, octave does not supprot pixel units");
 		return; // TODO ublock when fixed
@@ -357,7 +349,7 @@ double AxesItem::tickLength()
 
 // ============================================================================
 /// Creates item with provided property set. Item type is deduced from "type" property.
-UIItem* AxesItem::createItem( base_properties* pProps )
+UIItem* AxesItem::createItem( double h, base_properties* pProps )
 {
 	Q_ASSERT( pProps );
 	
@@ -367,23 +359,20 @@ UIItem* AxesItem::createItem( base_properties* pProps )
 	// Text
 	if ( type == "text" )
 	{
-		TextItem* pText = new TextItem( this );
-		pText->copyProperties( pProps );
+		TextItem* pText = new TextItem( h, this );
 		return pText;
 	}
 	// Line
 	if ( type == "line" )
 	{
-		LineItem* pLine = new LineItem( this );
-		pLine->copyProperties( pProps );
+		LineItem* pLine = new LineItem( h, this );
 		return pLine;
 	}
 	
 	// Image
 	if ( type == "image" )
 	{
-		ImageItem* pImage = new ImageItem( this );
-		pImage->copyProperties( pProps );
+		ImageItem* pImage = new ImageItem( h, this );
 		return pImage;
 	}
 	return NULL;
