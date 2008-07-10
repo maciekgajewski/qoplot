@@ -22,6 +22,7 @@
 #include "textitem.h"
 #include "lineitem.h"
 #include "imageitem.h"
+#include "patchitem.h"
 
 namespace QOGraphics
 {
@@ -374,6 +375,13 @@ UIItem* AxesItem::createItem( double h, base_properties* pProps )
 	{
 		ImageItem* pImage = new ImageItem( h, this );
 		return pImage;
+	}
+	
+	// Patch
+	if ( type == "patch" )
+	{
+		PatchItem* pPatch = new PatchItem( h, this );
+		return pPatch;
 	}
 	return NULL;
 }

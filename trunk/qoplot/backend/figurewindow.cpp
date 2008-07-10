@@ -27,6 +27,9 @@
 namespace QOGraphics
 {
 
+static int POSITION_PROTECTION_PERIOD	= 2000;	// Protection perios for position set by octave. [ms]
+
+
 // ============================================================================
 /// Constructor
 FigureWindow::FigureWindow( double handle )
@@ -103,6 +106,7 @@ void FigureWindow::propertiesChanged()
 	// resize
 	statusBar()->setSizeGripEnabled( pProps->get_resize() == "on" );
 	// TODO really block resising here
+	
 }
 
 // ============================================================================
@@ -131,12 +135,20 @@ void FigureWindow::updateActualToPosition()
 	{
 		qDebug("Position units other than pixels not supported currently");
 	}
+	_lastPositionPropertyChange = QDateTime::currentDateTime(); // we did it now
 }
 
 // ============================================================================
 /// Updates position property to actual window position.
 void FigureWindow::updatePositionToActual()
 {
+	// cance laction if position was just changed as reaction to property change
+	if ( _lastPositionPropertyChange.addMSecs( POSITION_PROTECTION_PERIOD )
+		> QDateTime::currentDateTime() )
+	{
+		return;
+	}
+	
 	gh_manager::lock_guard guard;
 	
 	figure::properties* pProps = properties();
@@ -160,6 +172,7 @@ void FigureWindow::updatePositionToActual()
 	{
 		qDebug("Position units other than pixels not supported currently");
 	}
+	
 }
 
 // ============================================================================

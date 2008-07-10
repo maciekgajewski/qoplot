@@ -19,6 +19,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QDateTime>
 
 #include "octave/oct.h"
 #include "octave/graphics.h"
@@ -87,6 +88,11 @@ private:
 	
 	QMap<double, UIItem*> _children;		///< Map faciliting updating children
 	double _handle;							///< Handle
+	
+	/// Stores time of last position property change.
+	/// Used to prevent reverse setting for some time.
+	///\todo this is hack. Not so ugly, bu still a hack.
+	QDateTime	_lastPositionPropertyChange;
 };
 
 }; // namespace

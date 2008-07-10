@@ -52,7 +52,7 @@ void LineItem::paint
 	gh_manager::lock_guard guard;
 	
 	line::properties* pProps = properties();
-	// do nathing if called before properties provided
+	// do nothing if called before properties provided
 	if ( ! pProps )
 	{
 		return;
