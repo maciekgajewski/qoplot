@@ -36,7 +36,7 @@ public:
 	virtual ~PatchItem();
 	
 	/// Returns current properties.
-	virtual patch::properties* properties() const { return dynamic_cast<patch::properties*>(PlotItem::properties()); }
+	virtual patch::properties* properties() const;
 	
 	/// Paints item
 	virtual void paint
@@ -46,7 +46,11 @@ public:
 		
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
-	
+
+private:
+
+	/// Gets face color from CData property.
+	QColor colorFromCData( const octave_value& cdata, int face );
 
 };
 

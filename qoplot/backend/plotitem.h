@@ -46,6 +46,9 @@ protected:
 
 	virtual void propertiesChanged();
 	
+	/// Returns color from axes colormap approppriate for the value.
+	QColor colormapColor( double v );
+	
 	
 private:
 

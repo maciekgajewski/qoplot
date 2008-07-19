@@ -19,6 +19,7 @@
 #include "patchitem.h"
 #include "axesitem.h"
 #include "converters.h"
+#include "exceptions.h"
 
 namespace QOGraphics
 {
@@ -46,7 +47,7 @@ void PatchItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	patch::properties* pProps = properties();
 	// do nothing if called before properties provided
@@ -55,12 +56,26 @@ void PatchItem::paint
 		return;
 	}
 	
-	Matrix xdata = pProps->get_xdata().matrix_value();
-	Matrix ydata = pProps->get_ydata().matrix_value();
-	std::string clipping = pProps->get_clipping();
-	QColor edgeColor = colorFromOctave( pProps->get_edgecolor() );
+	Matrix xdata				= pProps->get_xdata().matrix_value();
+	Matrix ydata				= pProps->get_ydata().matrix_value();
+	std::string clipping		= pProps->get_clipping();
+	octave_value cdata			= pProps->get_cdata();
 	
-	QColor faceColor = colorFromOctave( pProps->get_facecolor() ); // TODO what abot 'cdata'?
+	// face color mode
+	std::string faceColorMode	= pProps->get_facecolor().string_value();
+	bool transparentFaces = faceColorMode == "none";
+	if ( transparentFaces )
+	{
+		pPainter->setBrush( Qt::NoBrush );
+	}
+	
+	// edge color mode
+	bool edgesUsesFaceColor = false;
+	QColor edgeColor = colorFromOctave( pProps->get_edgecolor() );
+	if ( pProps->get_edgecolor().is_string() )
+	{
+		edgesUsesFaceColor = pProps->get_edgecolor().string_value() == "flat";
+	}
 	
 	int faces = qMin( xdata.dim2(), ydata.dim2() );
 	int vertices = qMin( xdata.dim1(), ydata.dim1() );
@@ -78,22 +93,39 @@ void PatchItem::paint
 			pPainter->setClipRect( plotBox(), Qt::IntersectClip );
 		}
 		
-		pPainter->setPen( pen( edgeColor, pPainter->device() ) );
-		pPainter->setBrush( faceColor );
-		
 		for( int f = 0; f< faces; f++ )
 		{
-			QPolygonF polygon;
+			// get shape
+			QPolygonF polygon;			
 			for( int v = 0; v < vertices; v++ )
 			{
-				QPointF pixel = mapFromParent(
-					axesItem()->plotToPixel( 
-						QPointF( xdata.elem( v, f ), ydata.elem( v, f ) )
-							)
-						);
-				polygon.append( pixel );
+				double x = xdata.elem( v, f );
+				double y = ydata.elem( v, f );
+				if ( ! isnan(x) && ! isnan(y) ) //TODO  NaM aare relevant information here, don't ignore it
+				{
+					QPointF pixel = mapFromParent( axesItem()->plotToPixel( QPointF( x, y ) ) );
+					polygon.append( pixel );
+				}
 			}
 			
+			// get color
+			QColor faceColor = colorFromCData( cdata, f );
+			if ( ! transparentFaces )
+			{
+				pPainter->setBrush( faceColor );
+			}
+			if ( edgesUsesFaceColor )
+			{
+				pPainter->setPen( pen( faceColor, pPainter->device() ) );
+			}
+			else
+			{
+				pPainter->setPen( pen( edgeColor, pPainter->device() ) );
+			}
+			
+		
+			
+			// draw
 			pPainter->drawPolygon( polygon );
 		}
 		
@@ -112,5 +144,49 @@ QRectF PatchItem::boundingRect() const
 	return mapFromParent( axesRect ).boundingRect();
 }
 
+// ============================================================================
+/// Gets face color from CData property.
+///\par cdata - value of CData property
+///\par face - face index 
+QColor PatchItem::colorFromCData( const octave_value& cdata, int face )
+{
+	// is cdata scalar?
+	if ( cdata.is_scalar_type() )
+	{
+		return colormapColor( cdata.scalar_value() );
+	}
+	
+	Matrix cdataMatrix = cdata.matrix_value();
+	
+	if ( cdataMatrix.dim3() == 1 )
+	{
+		// TODO use per-vertex color here
+		return colormapColor( cdataMatrix.elem( 0, face ) );
+	}
+	else
+	{
+		int r = int( 255 * cdataMatrix( 0, face, 0 ) );
+		int g = int( 255 * cdataMatrix( 0, face, 1 ) );
+		int b = int( 255 * cdataMatrix( 0, face, 2 ) );
+		
+		return QColor( r, g, b );
+	}
+}
+
+// ============================================================================
+/// Returns properties converted to appropriate type.
+patch::properties* PatchItem::properties() const
+{
+	base_properties* pProps = PlotItem::properties();
+	patch::properties* pPatchProps = dynamic_cast<patch::properties*>( pProps );
+	if ( pPatchProps )
+	{
+		return pPatchProps;
+	}
+	else
+	{
+		throw Exception( QString("Patch has invalid properties type :%1").arg( pProps->get_type().c_str() ) );
+	}
+}
 
 }

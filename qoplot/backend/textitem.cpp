@@ -21,6 +21,7 @@
 
 #include "textitem.h"
 #include "converters.h"
+#include "exceptions.h"
 
 namespace QOGraphics 
 {
@@ -48,7 +49,7 @@ void TextItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	text::properties* pProps = properties();
 	// this can be caled befor proerties are here
@@ -94,7 +95,7 @@ void TextItem::paint
 /// Returns item's bounding rectangle
 QRectF TextItem::boundingRect() const
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	text::properties* pProps = properties();
 	// this can be caled befor proerties are here
@@ -178,6 +179,22 @@ void TextItem::propertiesChanged()
 {
 	PlotItem::propertiesChanged();
 	update();
+}
+
+// ============================================================================
+/// Returns properties converted to appropriate type.
+text::properties* TextItem::properties() const
+{
+	base_properties* pProps = PlotItem::properties();
+	text::properties* pTextProps = dynamic_cast<text::properties*>( pProps );
+	if ( pTextProps )
+	{
+		return pTextProps;
+	}
+	else
+	{
+		throw Exception( QString("Text has invalid properties type :%1").arg( pProps->get_type().c_str() ) );
+	}
 }
 
 }

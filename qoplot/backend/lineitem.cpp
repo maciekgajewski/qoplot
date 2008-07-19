@@ -21,6 +21,7 @@
 #include "lineitem.h"
 #include "axesitem.h"
 #include "converters.h"
+#include "exceptions.h"
 
 namespace QOGraphics
 {
@@ -49,19 +50,32 @@ void LineItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
-	line::properties* pProps = properties();
-	// do nothing if called before properties provided
-	if ( ! pProps )
+	Matrix xdata, ydata;
+	QColor color;
+	std::string clipping;
+	
+	try
 	{
-		return;
+		line::properties* pProps = properties();
+		// do nothing if called before properties provided
+		if ( ! pProps )
+		{
+			return;
+		}
+		
+		xdata = pProps->get_xdata().matrix_value();
+		ydata = pProps->get_ydata().matrix_value();
+		color = colorFromOctave( pProps->get_color_rgb() );
+		clipping = pProps->get_clipping();
 	}
-	
-	Matrix xdata = pProps->get_xdata().matrix_value();
-	Matrix ydata = pProps->get_ydata().matrix_value();
-	QColor color = colorFromOctave( pProps->get_color_rgb() );
-	std::string clipping = pProps->get_clipping();
+	catch ( const Exception& e ) 
+	{
+		// object could be invalid
+		qWarning("LineItem::paint: exception cougth: %s", qPrintable( e.msg() ) );
+		return; 
+	}
 	
 
 	AxesItem* pAxesItem = axesItem();

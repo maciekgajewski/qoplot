@@ -96,7 +96,7 @@ void FigureWindow::updateChildrenSizes()
 /// Called when properties are changed. Updates figure state to it's properties.
 void FigureWindow::propertiesChanged()
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	figure::properties* pProps = properties();
 	Q_ASSERT( pProps );
@@ -113,7 +113,7 @@ void FigureWindow::propertiesChanged()
 /// Updates window position to position property.
 void FigureWindow::updateActualToPosition()
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	figure::properties* pProps = properties();
 	std::string units = pProps->get_units();
@@ -149,7 +149,7 @@ void FigureWindow::updatePositionToActual()
 		return;
 	}
 	
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	figure::properties* pProps = properties();
 	std::string units = pProps->get_units();
@@ -219,7 +219,7 @@ figure::properties* FigureWindow::properties() const
 /// Visual object will be created using createItem().
 UIItem* FigureWindow::addChild( double h )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	graphics_object go = gh_manager::get_object( h );
 	base_properties& props = go.get_properties();
@@ -260,6 +260,44 @@ void FigureWindow::moveEvent( QMoveEvent * pEvent )
 		updatePositionToActual();
 	}
 }
+
+// ============================================================================
+/// Returns colormap color identified by index.
+QRgb FigureWindow::getDirectColor( int index )
+{
+	// TODO optimize
+	
+	figure::properties* pProp = properties();
+	Matrix colormap = pProp->get_colormap().matrix_value();
+	
+	return qRgb
+		( int( 255*colormap.elem( index, 0 ) )
+		, int( 255*colormap.elem( index, 1 ) )
+		, int( 255*colormap.elem( index, 2 ) )
+		);
+}
+
+// ============================================================================
+/// Returns colormap color scaling value to provided min and max values.
+QRgb FigureWindow::getScaledColor( double min, double max, double value )
+{
+	// TODO optimize
+	
+	figure::properties* pProp = properties();
+	Matrix colormap = pProp->get_colormap().matrix_value();
+	
+	int index = (int)round( (value-min) / (max-min)*colormap.dim1() );
+	
+	if ( index < 0 ) index = 0;
+	if ( index >= colormap.dim1() ) index = colormap.dim1() - 1;
+	
+	return qRgb
+		( int( 255*colormap.elem( index, 0 ) )
+		, int( 255*colormap.elem( index, 1 ) )
+		, int( 255*colormap.elem( index, 2 ) )
+		);
+}
+
 
 }; // namespace
 // EOF

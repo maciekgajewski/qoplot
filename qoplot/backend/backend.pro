@@ -5,7 +5,9 @@ TARGET =qobackend
 system( ln -sf libqobackend.so qobackend.oct )
 
 CONFIG += dll \
- debug
+ debug \
+ exceptions \
+ rtti
 QT += svg
 
 SOURCES = main.cpp\
@@ -36,7 +38,8 @@ HEADERS = figurewindow.h \
  plotitem.h \
  lineitem.h \
  imageitem.h \
- patchitem.h
+ patchitem.h \
+ exceptions.h
 
 FORMS = figurewindow.ui
 CONFIG -= release
