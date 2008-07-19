@@ -18,6 +18,7 @@
 #include "plotevent.h"
 #include "eventtypes.h"
 #include "figurewindow.h"
+#include "exceptions.h"
 
 namespace QOGraphics
 {
@@ -73,25 +74,35 @@ bool FigureManager::event ( QEvent* pEvent )
 /// Handles message from main thread: property has changed.
 void FigureManager::propertyChanged( double h, const QString& name )
 {
-	gh_manager::lock_guard guard;
-	
-	// check object validity (object could be deleted by now)
-	if ( ! gh_manager::get_object( h ) )
+	try
 	{
-		return;
+		gh_manager::autolock guard;
+		
+		
+		// check object validity (object could be deleted by now)
+		graphics_object go = gh_manager::get_object( h );
+		if ( ! go )
+		{
+			qDebug("FigureManager::propertyChanged: object already deleted");
+			return;
+		}
+		
+		if ( _items.contains( h ) )
+		{
+			_items[h]->propertyChanged( name );
+		}
+		else if ( _figures.contains( h ) )
+		{
+			_figures[h]->propertyChanged( name );
+		}
+		else
+		{
+			qWarning("property changed: unknown object %g", h );
+		}
 	}
-	
-	if ( _items.contains( h ) )
+	catch( const Exception& e )
 	{
-		_items[h]->propertyChanged( name );
-	}
-	else if ( _figures.contains( h ) )
-	{
-		_figures[h]->propertyChanged( name );
-	}
-	else
-	{
-		qWarning("property changed: unknown object %g", h );
+		qWarning("FigureManager::propertyChanged: h=%g, exception: %s", h, qPrintable( e.msg() ) );
 	}
 }
 
@@ -99,36 +110,49 @@ void FigureManager::propertyChanged( double h, const QString& name )
 /// Handles message from main thread: object was created.
 void FigureManager::objectCreated( double h )
 {
-	gh_manager::lock_guard guard;
-	
-	graphics_object go = gh_manager::get_object( h );
-	base_properties& props = go.get_properties();
-	
-	std::string type = props.get_type();
-	
-	if ( type == "figure" )
+	qDebug("GUI object created: %g", h );
+	try
 	{
-		// create new figure
-		FigureWindow* pFig = new FigureWindow( h );
-		_figures[h] = pFig;
-		pFig->show();
-	}
-	else
-	{
-		double parent = props.get_parent().value();
-		if ( _items.contains( parent ) )
+		gh_manager::autolock guard;
+		
+		graphics_object go = gh_manager::get_object( h );
+		if ( ! go )
 		{
-			_items[h] = _items[parent]->addChild( h );
+			qDebug("FigureManager::objectCreated: object %g already deleted", h );
+			return;
 		}
-		else if ( _figures.contains( parent ) )
+		base_properties& props = go.get_properties();
+		
+		std::string type = props.get_type();
+		
+		if ( type == "figure" )
 		{
-			_items[ h ] = _figures[parent]->addChild( h );
+			// create new figure
+			FigureWindow* pFig = new FigureWindow( h );
+			_figures[h] = pFig;
+			pFig->show();
 		}
 		else
 		{
-			qWarning("Object %g (%s) created with unknonw parent %g",
-				h, type.c_str(), parent );
+			double parent = props.get_parent().value();
+			if ( _items.contains( parent ) && !isnan(parent) )
+			{
+				_items[h] = _items[parent]->addChild( h );
+			}
+			else if ( _figures.contains( parent ) && !isnan(parent) )
+			{
+				_items[ h ] = _figures[parent]->addChild( h );
+			}
+			else
+			{
+				qWarning("Object %g (%s) created with unknonw parent %g",
+					h, type.c_str(), parent );
+			}
 		}
+	}
+	catch ( const Exception& e )
+	{
+		qWarning("Excepton in FigureManager::objectCreated:  h=%g, %s", h, qPrintable( e.msg() ) );
 	}
 }
 
@@ -136,21 +160,31 @@ void FigureManager::objectCreated( double h )
 /// Handles message from main thread: object was destroyed.
 void FigureManager::objectDestroyed( double h )
 {
-	gh_manager::lock_guard guard;
+	qDebug("GUI object destroyed: %g", h );
+	gh_manager::autolock guard;
 	
-	if ( _items.contains( h ) )
+	try
 	{
-		delete _items[h];
-		_items.remove( h );
+		
+		if ( _items.contains( h ) && !isnan(h) )
+		{
+			delete _items[h];
+			_items.remove( h );
+		}
+		else if ( _figures.contains( h ) & !isnan(h) )
+		{
+			delete _figures[h];
+			_figures.remove( h );
+		}
+		else
+		{
+			qDebug("GUI object destroyed:  unknown object %g", h );
+			// this is the case when object was destroyed before create event reached UI thread.
+		}
 	}
-	else if ( _figures.contains( h ) )
+	catch ( const Exception& e )
 	{
-		delete _figures[h];
-		_figures.remove( h );
-	}
-	else
-	{
-		qWarning("object destroyed: unknown object %g", h );
+		qWarning("Excepton in FigureManager::objectDestroyed:  h=%g, %s", h, qPrintable( e.msg() ) );
 	}
 }
 

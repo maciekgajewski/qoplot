@@ -55,6 +55,14 @@ public:
 	/// Message from outer world - property changed
 	virtual void propertyChanged( const QString& name );
 
+	// colormap access
+	
+	/// Returns direct colro from colormap, identified by index.
+	QRgb getDirectColor( int index );	
+	
+	/// Returns scaled color, using min and max limits.
+	QRgb getScaledColor( double min, double max, double value );
+	
 signals:
 
 	void closed();			///< Signals window closing

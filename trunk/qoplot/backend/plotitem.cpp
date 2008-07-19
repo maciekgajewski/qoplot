@@ -16,6 +16,7 @@
 //
 #include "plotitem.h"
 #include "axesitem.h"
+#include "figurewindow.h"
 
 namespace QOGraphics
 {
@@ -70,6 +71,29 @@ void PlotItem::updatePositionToAxes()
 		//qDebug("plot: %g,%g, pixel: %g,%g", plotX, plotY, p.x(), p.y() );
 		prepareGeometryChange();
 		setPos( p );
+	}
+}
+
+// ============================================================================
+/// Returns colro from parent figure's colormap representig given value.
+/// Uses 'CDataMapping' property to decide if value is direct colormap index
+/// or if should be sclaed according to axes CLim property.
+QColor PlotItem::colormapColor( double v )
+{
+	FigureWindow* pFig = figure();
+
+	base_properties* pProps = properties();
+	axes::properties* pAxesProps = axesItem()->properties();
+	std::string cdataMapping = pProps->get_property( "CDataMapping" ).get().string_value();
+	
+	if ( cdataMapping == "direct" )
+	{
+		return pFig->getDirectColor( int( v ) );
+	}
+	else
+	{
+		Matrix clim = pAxesProps->get_clim().matrix_value();
+		return pFig->getScaledColor( clim.elem(0), clim.elem(1), v );
 	}
 }
 

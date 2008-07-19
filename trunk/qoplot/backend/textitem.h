@@ -34,7 +34,7 @@ public:
 	virtual ~TextItem();
 
 	/// Returns current properties.
-	virtual text::properties* properties() const { return dynamic_cast<text::properties*>( PlotItem::properties()); }
+	virtual text::properties* properties() const;
 	
 	/// Paints item
 	virtual void paint

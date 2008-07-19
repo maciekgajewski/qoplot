@@ -20,6 +20,7 @@
 #include "uiitem.h"
 #include "converters.h"
 #include "figurewindow.h"
+#include "exceptions.h"
 
 namespace QOGraphics
 {
@@ -136,9 +137,7 @@ base_properties* UIItem::properties() const
 	}
 	else
 	{
-		// TODO throwe exception here
-		qWarning("Object with handle %g is invalid!", _handle);
-		return NULL;
+		throw Exception( QString("Object with handle %1 is invalid!").arg(_handle) );
 	}
 }
 
@@ -147,7 +146,7 @@ base_properties* UIItem::properties() const
 /// Visual object will be created using createItem().
 UIItem* UIItem::addChild( double h )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	graphics_object go = gh_manager::get_object( h );
 	base_properties& props = go.get_properties();

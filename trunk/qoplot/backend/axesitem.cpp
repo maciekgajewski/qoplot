@@ -58,7 +58,7 @@ void AxesItem::paint
 	, const QStyleOptionGraphicsItem* /*pOption*/
 	, QWidget * /*pWidget*/ /*= NULL*/ )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	drawBox( pPainter );
 	drawXAxis( pPainter );
@@ -197,7 +197,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 /// Converts plot point to pixel.
 QPointF AxesItem::plotToPixel( const QPointF& p ) const
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	axes::properties* pProps = properties();
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
@@ -230,7 +230,7 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 /// Converts pixel pos to plot position coordinates.
 QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	axes::properties* pProps = properties();
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
@@ -281,7 +281,7 @@ void AxesItem::propertiesChanged()
 /// Updates item postion and size basing on 'position' and 'units' properties.
 void AxesItem::updatePosition()
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	axes::properties* pProps = properties();
 	Matrix pos = pProps->get_position().matrix_value();
 	

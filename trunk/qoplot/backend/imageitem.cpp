@@ -49,7 +49,7 @@ void ImageItem::paint
 	, const QStyleOptionGraphicsItem* /*option*/
 	, QWidget * /*widget*/ /*= NULL*/ )
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	
 	image::properties* pProps = properties();
 	// do nathing if called before properties provided
@@ -92,7 +92,7 @@ QRectF ImageItem::boundingRect() const
 /// Creates image from data, according to current mode.
 void ImageItem::createImage()
 {
-	gh_manager::lock_guard guard;
+	gh_manager::autolock guard;
 	image::properties* pProps = properties();
 	
 	if ( pProps->get_cdata().ndims() == 3 )
@@ -192,11 +192,8 @@ void ImageItem::createColormapImage( const Matrix& cdata )
 	
 	image::properties* pProps = properties();
 	
-	// get colormap
-	figure::properties* pFigProp = figure()->properties();
-	
-	Matrix colormap = pFigProp->get_colormap().matrix_value();
-	int cmlength = colormap.dim1();
+	// get figure
+	FigureWindow* pFig = figure();
 	
 	// get axes's CLim
 	axes::properties* pAxesProps = axesItem()->properties();
@@ -211,28 +208,20 @@ void ImageItem::createColormapImage( const Matrix& cdata )
 	{
 		for( int x = 0; x< w; x++ )
 		{
+			QRgb color;
 			int colorIndex = 0;
 			if ( scaled )
 			{
 				// mapping scaled to clim
-				colorIndex = (int)round(( cdata.elem(y, x)-cmin) / (cmax-cmin)*cmlength);
+				color =  pFig->getScaledColor( cmin, cmax, cdata.elem(y, x) );
 			}
 			else
 			{
 				// direct index in colormap
-				colorIndex = cdata.elem(y, x);
+				color =  pFig->getDirectColor( cdata.elem(y, x) );
 			}
 			
-			
-			if ( colorIndex < 0 ) colorIndex = 0;
-			if ( colorIndex >= cmlength ) colorIndex = cmlength-1;
-			
-			_image.setPixel( x, y, qRgb
-					( int( 255*colormap.elem( colorIndex, 0 ) )
-					, int( 255*colormap.elem( colorIndex, 1 ) )
-					, int( 255*colormap.elem( colorIndex, 2 ) )
-					)
-				);
+			_image.setPixel( x, y, color );
 		}
 	}
 	
