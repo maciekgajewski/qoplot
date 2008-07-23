@@ -25,7 +25,7 @@ namespace QOGraphics
 PlotEvent::PlotEvent(): QEvent( EventTypePlot )
 {
 	handle = -1;
-	action = 0;
+	action = Invalid;
 }
 
 // ============================================================================

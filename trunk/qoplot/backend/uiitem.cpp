@@ -18,18 +18,16 @@
 #include <QBrush>
 
 #include "uiitem.h"
-#include "converters.h"
 #include "figurewindow.h"
-#include "exceptions.h"
 
 namespace QOGraphics
 {
 
 // ============================================================================
 // Constructor
-UIItem::UIItem( double handle, FigureWindow* figure, QGraphicsItem* parent ): QGraphicsItem( parent )
+UIItem::UIItem	(double h, FigureWindow* figure, QGraphicsItem* parent )
+	: QGraphicsItem( parent ), GraphicsObject( h )
 {
-	_handle = handle;
 	_pFigure = figure;
 }
 
@@ -41,127 +39,15 @@ UIItem::~UIItem()
 }
 
 // ============================================================================
-/// Returns pen created form provided color and LineWidth and LineStyle properties.
-/// If nay of these proeprties is missing, uses defaults: 0.p pt and solid line.
-QPen UIItem::pen( const QColor& color, const QPaintDevice* pDevice  ) const
+/// Handles property change. Extends base method by showing parent figure.
+void UIItem::propertyChanged( const QString& name )
 {
-	base_properties* pProps = properties();
+	GraphicsObject::propertyChanged( name );
 	
-	double pointWidth = 0.5;
-	Qt::PenStyle style = Qt::SolidLine;
-	
-	// check if required properties are present
-	if ( pProps->has_property("LineWidth") )
+	if ( _pFigure )
 	{
-		octave_value v = pProps->get_property("LineWidth").get();
-		pointWidth	= v.double_value();
+		_pFigure->show();
 	}
-	if( pProps->has_property("LineStyle") )
-	{
-		style	= styleFromOctave( pProps->get_property("LineStyle").get().string_value() );
-	}
-	
-	double width = qRound( qMin( 1.0, ptToPixel( pointWidth, pDevice ) ) );
-	return QPen( QBrush(color), int(width), style );
-}
-
-// ============================================================================
-/// Returns font created from FontName, FontAngle, FontSize and FontWeight properties.
-QFont UIItem::font() const
-{
-	base_properties* pProps = properties();
-	QFont font;
-	
-	// name
-	if ( pProps->has_property("FontName") )
-	{
-		font.setFamily( pProps->get_property("FontName").get().string_value().c_str() );
-	}
-	
-	// size
-	if ( pProps->has_property("FontSize") )
-	{
-		font.setPointSize( int( pProps->get_property("FontSize").get().double_value() ) );
-	}
-	
-	// weight
-	if ( pProps->has_property("FontWeight") )
-	{
-		font.setWeight( weightFromOctave( pProps->get_property("FontWeight").get().string_value() ) );
-	}
-	
-	// style
-	if ( pProps->has_property("FontAngle") )
-	{
-		font.setWeight( fontStyleFromOctave( pProps->get_property("FontAngle").get().string_value() ) );
-	}
-	
-	return font;
-}
-
-// ============================================================================
-/// Updates item state to changed properties.
-void UIItem::propertiesChanged()
-{
-	//
-}
-
-// ============================================================================
-/// Converts points to pixels. Uses mean of logical device's X/Y dpi.
-double UIItem::ptToPixel( double pt, const QPaintDevice* pDevice ) const
-{
-	Q_ASSERT( pDevice );
-	
-	// use mean of X/Y logical dpis
-	double dpi = ( pDevice->logicalDpiX() + pDevice->logicalDpiY() ) / 2.0;
-	
-	return pt*dpi/72.0; // 'dpi' pixels in inch, 72 points in inch.
-}
-
-// ============================================================================
-/// Creates item with provided property set. Item type is deduced from "type" property.
-UIItem* UIItem::createItem( double, base_properties* )
-{
-	return NULL;
-}
-
-// ============================================================================
-/// Returns object properties, extracted from associated grpahics_object.
-///\warning Always call this with gh_manager locked!
-base_properties* UIItem::properties() const
-{
-	graphics_object go = gh_manager::get_object( _handle );
-	if ( go )
-	{
-		return &go.get_properties();
-	}
-	else
-	{
-		throw Exception( QString("Object with handle %1 is invalid!").arg(_handle) );
-	}
-}
-
-// ============================================================================
-/// Message from octave: child object was created.
-/// Visual object will be created using createItem().
-UIItem* UIItem::addChild( double h )
-{
-	gh_manager::autolock guard;
-	
-	graphics_object go = gh_manager::get_object( h );
-	base_properties& props = go.get_properties();
-	
-	// show your figure
-	figure()->show();
-	
-	return createItem( h, &props );
-}
-
-// ============================================================================
-/// Message from octave: property has changed.
-void UIItem::propertyChanged( const QString& /*name*/ )
-{
-	propertiesChanged(); // simplest implementation
 }
 
 }

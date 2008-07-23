@@ -33,9 +33,6 @@ public:
 	TextItem( double h, AxesItem* parent );
 	virtual ~TextItem();
 
-	/// Returns current properties.
-	virtual text::properties* properties() const;
-	
 	/// Paints item
 	virtual void paint
 		( QPainter *painter

@@ -18,11 +18,8 @@
 #define QOGRAPHICSUIITEM_H
 
 #include <QGraphicsItem>
-#include <QPen>
-#include <QFont>
 
-#include <octave/oct.h>
-#include <octave/graphics.h>
+#include "graphicsobject.h"
 
 namespace QOGraphics
 {
@@ -34,54 +31,32 @@ Common QGraphicsItem for all UI items.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-
-class UIItem : public QGraphicsItem
+class UIItem : public QGraphicsItem, public GraphicsObject
 {
 public:
-	UIItem( double handle, FigureWindow* figure, QGraphicsItem* parent = NULL );
+	UIItem( double h, FigureWindow* figure, QGraphicsItem* parent = NULL );
 	virtual ~UIItem();
 	
 	/// Returns pointer to figure
 	FigureWindow* figure() const { return _pFigure; }
 	
-	/// Returns current properties.
-	virtual base_properties* properties() const;
-	
-	/// Message from outer world - child added
-	virtual UIItem* addChild( double h );
+	/// Sets figure rectangle.
+	void setFigureRect( const QRect& r ) { _figureRect = r; }
+	QRect figureRect() const { return _figureRect; }
 	
 	/// Message from outer world - property changed
 	virtual void propertyChanged( const QString& name );
 	
-	/// Returns handle
-	double handle() const { return _handle; }
-	
-	void setFigureRect( const QRect& r ) { _figureRect = r; }
-	QRect figureRect() const { return _figureRect; }
-	
 	virtual void updateGeometry() {};	///< Message from parent: parent's geometry has changed
 	
 protected:
-
-	/// Pen created from properties
-	QPen	pen( const QColor& color, const QPaintDevice* pDevice   ) const;
-	QFont	font() const;						///< Font created from properties
 	
-	/// Converts points to pixels
-	double ptToPixel( double pt, const QPaintDevice* device ) const;
-	
-	virtual void propertiesChanged();		///< Updates item after properties change
-	
-	/// Creates item with provided property set.
-	virtual UIItem* createItem( double h, base_properties* pProps );
-	
-	QList<UIItem*> children() const { return _children.values(); }
+	virtual void propertiesChanged() {};
 	
 private:
 	
 	QRect _figureRect;						///< Parent figure rectangle to paint on (in pixels)
-	QMap< double, UIItem* > _children;		///< Child elements
-	FigureWindow*		_pFigure;			///< Pointer to figure
+	FigureWindow*		_pFigure;			///< Parent figure
 	double				_handle;			///< Item's handle
 };
 

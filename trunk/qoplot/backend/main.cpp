@@ -26,8 +26,8 @@ static void* threadRoutine( void* )
 {
 	// emulate main, create application
 	int argc = 1;
-	char* argv[] = { "octave" };
-	QApplication app( argc, argv );
+	const char* argv[] = { "octave" };
+	QApplication app( argc, const_cast<char**>( argv ) );
 	app.setQuitOnLastWindowClosed( false );
 	
 	// Create figure manager

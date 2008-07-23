@@ -18,6 +18,7 @@
 #define QOGRAPHICSAXESITEM_H
 
 #include "uiitem.h"
+#include "graphicsobjectwithprops.h"
 
 namespace QOGraphics
 {
@@ -46,8 +47,6 @@ public:
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
 	
-	virtual axes::properties* properties() const { return dynamic_cast<axes::properties*>(UIItem::properties()); }
-	
 	virtual void updateGeometry();					///< Message from parent: parent's geometry has changed
 		
 	QPointF plotToPixel( const QPointF& p ) const;	///< converts between plot and pixel space
@@ -58,7 +57,7 @@ protected:
 
 	virtual void propertiesChanged();				///< Updates item after properties change
 	/// Creates item with provided property set.
-	virtual UIItem* createItem( double h, base_properties* pProps );
+	virtual GraphicsObject* createItem( double h, base_properties* pProps );
 	
 private:
 	

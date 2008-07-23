@@ -28,7 +28,8 @@ namespace QOGraphics
 
 // ============================================================================
 // Constructor
-TextItem::TextItem( double h, AxesItem* parent ) : PlotItem( h, parent)
+TextItem::TextItem( double h, AxesItem* parent )
+	: PlotItem( h, parent)
 {
 	setZValue( 0.5 ); // Above lines, below legend. TODO do some infrastructure for this
 
@@ -51,7 +52,7 @@ void TextItem::paint
 {
 	gh_manager::autolock guard;
 	
-	text::properties* pProps = properties();
+	text::properties* pProps = properties_cast<text::properties*>( properties() );
 	// this can be caled befor proerties are here
 	if ( ! pProps ) return;
 	
@@ -97,7 +98,7 @@ QRectF TextItem::boundingRect() const
 {
 	gh_manager::autolock guard;
 	
-	text::properties* pProps = properties();
+	text::properties* pProps = properties_cast<text::properties*>( properties() );
 	// this can be caled befor proerties are here
 	if ( ! pProps ) return QRectF();
 	
@@ -127,7 +128,7 @@ QRectF TextItem::boundingRect() const
 /// Fints text extent, from text's top-left corner.
 QRectF TextItem::textExtent() const
 {
-	text::properties* pProps = properties();
+	text::properties* pProps = properties_cast<text::properties*>( properties() );
 	QString string = pProps->get_string().c_str();
 	
 	// get text extent
@@ -142,7 +143,7 @@ QRectF TextItem::textExtent() const
 /// It is assumed that without translation text will be paited aligned left-cap
 QPointF TextItem::alignTranlsation() const
 {
-	text::properties* pProps = properties();
+	text::properties* pProps = properties_cast<text::properties*>( properties() );
 	double margin		= pProps->get_margin();
 	double lineWidth	= pProps->get_linewidth();
 	
@@ -179,22 +180,6 @@ void TextItem::propertiesChanged()
 {
 	PlotItem::propertiesChanged();
 	update();
-}
-
-// ============================================================================
-/// Returns properties converted to appropriate type.
-text::properties* TextItem::properties() const
-{
-	base_properties* pProps = PlotItem::properties();
-	text::properties* pTextProps = dynamic_cast<text::properties*>( pProps );
-	if ( pTextProps )
-	{
-		return pTextProps;
-	}
-	else
-	{
-		throw Exception( QString("Text has invalid properties type :%1").arg( pProps->get_type().c_str() ) );
-	}
 }
 
 }

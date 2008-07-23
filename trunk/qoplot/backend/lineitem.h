@@ -35,9 +35,6 @@ public:
 	LineItem( double h, AxesItem* parent );
 	virtual ~LineItem();
 	
-	/// Returns current properties.
-	virtual line::properties* properties() const { return dynamic_cast<line::properties*>(PlotItem::properties()); }
-	
 	/// Paints item
 	virtual void paint
 		( QPainter *painter
