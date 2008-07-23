@@ -15,12 +15,9 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //
 #include "plotitem.h"
-#include "axesitem.h"
-#include "figurewindow.h"
 
 namespace QOGraphics
 {
-
 // ============================================================================
 // Constructor
 PlotItem::PlotItem( double h, AxesItem* parent ): UIItem( h, parent->figure(), parent )
@@ -83,7 +80,7 @@ QColor PlotItem::colormapColor( double v )
 	FigureWindow* pFig = figure();
 
 	base_properties* pProps = properties();
-	axes::properties* pAxesProps = axesItem()->properties();
+	axes::properties* pAxesProps = properties_cast<axes::properties*>( axesItem()->properties() );
 	std::string cdataMapping = pProps->get_property( "CDataMapping" ).get().string_value();
 	
 	if ( cdataMapping == "direct" )
@@ -96,5 +93,6 @@ QColor PlotItem::colormapColor( double v )
 		return pFig->getScaledColor( clim.elem(0), clim.elem(1), v );
 	}
 }
+
 
 }

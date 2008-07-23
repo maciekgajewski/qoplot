@@ -36,7 +36,7 @@ class PlotEvent : public QEvent
 {
 public:
 	
-	enum ActionType { Created, Destroyed, PropertyChanged };
+	enum ActionType { Invalid, Created, Destroyed, PropertyChanged };
 	
 	PlotEvent();
 	virtual ~PlotEvent();

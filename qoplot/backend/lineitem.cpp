@@ -58,7 +58,7 @@ void LineItem::paint
 	
 	try
 	{
-		line::properties* pProps = properties();
+		line::properties* pProps = properties_cast< line::properties* >( properties() );
 		// do nothing if called before properties provided
 		if ( ! pProps )
 		{
@@ -143,7 +143,7 @@ QRectF LineItem::boundingRect() const
 /// Draws marker at specified location using item's marker settings
 void LineItem::drawMarker( QPainter* pPainter, const QPointF& pos )
 {
-	line::properties* pProps = properties();
+	line::properties* pProps = properties_cast< line::properties* >( properties() );
 	
 	std::string marker = pProps->get_marker();
 	double markerSize = pProps->get_markersize();

@@ -61,7 +61,7 @@ void Backend::redraw_figure (const graphics_handle& ) const
 
 // ============================================================================
 /// Info form octave: figre should be closed.
-void Backend::close_figure (const octave_value& ov) const
+void Backend::close_figure (const octave_value& ) const
 {
 	// nope :)
 }
@@ -119,7 +119,7 @@ void Backend::property_changed (const graphics_handle& h, const std::string& nam
 // Object created.
 void Backend::object_created (const graphics_handle& h)
 {
-	qDebug("Backend::object_created: h=%g", h.value() );
+	//qDebug("Backend::object_created: h=%g", h.value() );
 	
 	// send message
 	PlotEvent* pEvent = new PlotEvent;
@@ -134,7 +134,7 @@ void Backend::object_created (const graphics_handle& h)
 // Object destrioyed
 void Backend::object_destroyed (const graphics_handle& h)
 {
-	qDebug("Backend::object_destroyed: h=%g", h.value() );
+	//qDebug("Backend::object_destroyed: h=%g", h.value() );
 	
 	// send message
 	PlotEvent* pEvent = new PlotEvent;

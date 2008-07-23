@@ -37,7 +37,7 @@ static const double Y_LABELS_MARGIN		= 50;	///< Margin reserved for y axis label
 // ============================================================================
 /// Constructor
 AxesItem::AxesItem( double h, FigureWindow* figure, QGraphicsItem * parent /*= NULL*/ )
-	: UIItem( h, figure, parent)
+	: UIItem( h, figure, parent )
 {
 	_size = QSize( 100, 100 ); //dumb guess
 	
@@ -77,7 +77,7 @@ QRectF AxesItem::plotBox() const
 /// Draws axes background box.
 void AxesItem::drawBox( QPainter *pPainter )
 {
-	axes::properties* pProps = properties();
+	axes::properties* pProps = properties_cast<axes::properties*>(properties());
 	
 	if ( pProps->get_box() == "on" )
 	{
@@ -97,7 +97,7 @@ void AxesItem::drawBox( QPainter *pPainter )
 /// Draws X axis, with ticks and label
 void AxesItem::drawXAxis( QPainter *pPainter )
 {
-	axes::properties* pProps = properties(); // in preparation for thread safe props :)
+	axes::properties* pProps = properties_cast<axes::properties*>( properties() );
 	
 	QRectF box = plotBox();
 	
@@ -149,7 +149,7 @@ void AxesItem::drawXAxis( QPainter *pPainter )
 /// Draws Y axis, with ticks and label
 void AxesItem::drawYAxis( QPainter *pPainter )
 {
-	axes::properties* pProps = properties(); // in preparation for thread safe props :)
+	axes::properties* pProps = properties_cast<axes::properties*>( properties() );
 	
 	QRectF box = plotBox();
 	
@@ -198,7 +198,7 @@ void AxesItem::drawYAxis( QPainter *pPainter )
 QPointF AxesItem::plotToPixel( const QPointF& p ) const
 {
 	gh_manager::autolock guard;
-	axes::properties* pProps = properties();
+	axes::properties* pProps = properties_cast<axes::properties*>( properties() );
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
 	Matrix ylim = pProps->get_ylim().matrix_value();
@@ -231,7 +231,7 @@ QPointF AxesItem::plotToPixel( const QPointF& p ) const
 QPointF AxesItem::pixelToPlot( const QPointF& pixel ) const
 {
 	gh_manager::autolock guard;
-	axes::properties* pProps = properties();
+	axes::properties* pProps = properties_cast<axes::properties*>( properties() );
 	
 	Matrix xlim = pProps->get_xlim().matrix_value();
 	Matrix ylim = pProps->get_ylim().matrix_value();
@@ -272,7 +272,7 @@ QRectF AxesItem::boundingRect() const
 void AxesItem::propertiesChanged()
 {
 	updatePosition(); // update position before childs are updates, so then can see new position
-	UIItem::propertiesChanged();
+	GraphicsObject::propertiesChanged();
 	
 	update();
 }
@@ -282,7 +282,7 @@ void AxesItem::propertiesChanged()
 void AxesItem::updatePosition()
 {
 	gh_manager::autolock guard;
-	axes::properties* pProps = properties();
+	axes::properties* pProps = properties_cast<axes::properties*>( properties() );
 	Matrix pos = pProps->get_position().matrix_value();
 	
 	// octave position, in variant units
@@ -350,13 +350,12 @@ double AxesItem::tickLength()
 
 // ============================================================================
 /// Creates item with provided property set. Item type is deduced from "type" property.
-UIItem* AxesItem::createItem( double h, base_properties* pProps )
+GraphicsObject* AxesItem::createItem( double h, base_properties* pProps )
 {
 	Q_ASSERT( pProps );
 	
 	
 	std::string type = pProps->get_type();
-	
 	// Text
 	if ( type == "text" )
 	{
@@ -391,7 +390,7 @@ UIItem* AxesItem::createItem( double h, base_properties* pProps )
 void AxesItem::updateChildPositions()
 {
 	// TODO this shouldn't be needed
-	foreach( UIItem* pItem, children() )
+	foreach( GraphicsObject* pItem, GraphicsObject::children() )
 	{
 		dynamic_cast<PlotItem*>( pItem )->updatePositionToAxes();
 	}

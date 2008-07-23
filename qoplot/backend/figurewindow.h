@@ -36,7 +36,7 @@ FigureWindow is implementation of figure, using Qt's QMainWindow.
 
 @author Maciek Gajewski <maciej.gajewski0@gmail.com>
 */
-class FigureWindow : public QMainWindow, public Ui::FigureWindow
+class FigureWindow : public QMainWindow, public GraphicsObject, public Ui::FigureWindow
 {
 	Q_OBJECT
 public:
@@ -47,10 +47,8 @@ public:
 	/// Returns object's properties
 	figure::properties* properties() const;
 	
-	double handle() const { return _handle; }
-
 	/// Message from outer world - child added
-	virtual UIItem* addChild( double h );
+	virtual GraphicsObject* childAdded( double h );
 	
 	/// Message from outer world - property changed
 	virtual void propertyChanged( const QString& name );
@@ -88,14 +86,11 @@ private:
 	
 	void updateChildrenSizes();	///< Updates sizes of child elements
 	
-	UIItem* createItem( double h, base_properties* pProps );
+	virtual GraphicsObject* createItem( double h, base_properties* pProps );
 	
 	// data
 	
 	QGraphicsScene		_scene;				///< Scene on which child elemens are painted
-	
-	QMap<double, UIItem*> _children;		///< Map faciliting updating children
-	double _handle;							///< Handle
 	
 	/// Stores time of last position property change.
 	/// Used to prevent reverse setting for some time.

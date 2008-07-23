@@ -23,7 +23,8 @@ SOURCES = main.cpp\
  plotitem.cpp \
  lineitem.cpp \
  imageitem.cpp \
- patchitem.cpp
+ patchitem.cpp \
+ graphicsobject.cpp
 
 HEADERS = figurewindow.h \
  backend.h \
@@ -39,8 +40,13 @@ HEADERS = figurewindow.h \
  lineitem.h \
  imageitem.h \
  patchitem.h \
- exceptions.h
+ exceptions.h \
+ graphicsobject.h
 
 FORMS = figurewindow.ui
 CONFIG -= release
+
+SOURCES -= graphicsobjectwithprops.cpp
+
+HEADERS -= graphicsobjectwithprops.h
 

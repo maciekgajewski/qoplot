@@ -17,6 +17,9 @@
 #ifndef QOGRAPHICSPLOTITEM_H
 #define QOGRAPHICSPLOTITEM_H
 
+#include "axesitem.h"
+#include "figurewindow.h"
+
 #include "uiitem.h"
 
 namespace QOGraphics
@@ -56,7 +59,6 @@ private:
 	AxesItem*	_pAxes;
 
 };
-
 }
 
 #endif // QOGRAPHICSPLOTITEM_H

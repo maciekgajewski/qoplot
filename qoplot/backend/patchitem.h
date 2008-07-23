@@ -35,9 +35,6 @@ public:
 	PatchItem( double h, AxesItem* parent );
 	virtual ~PatchItem();
 	
-	/// Returns current properties.
-	virtual patch::properties* properties() const;
-	
 	/// Paints item
 	virtual void paint
 		( QPainter *painter

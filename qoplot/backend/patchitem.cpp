@@ -49,7 +49,7 @@ void PatchItem::paint
 {
 	gh_manager::autolock guard;
 	
-	patch::properties* pProps = properties();
+	patch::properties* pProps = properties_cast< patch::properties* >( properties() );
 	// do nothing if called before properties provided
 	if ( ! pProps )
 	{
@@ -170,22 +170,6 @@ QColor PatchItem::colorFromCData( const octave_value& cdata, int face )
 		int b = int( 255 * cdataMatrix( 0, face, 2 ) );
 		
 		return QColor( r, g, b );
-	}
-}
-
-// ============================================================================
-/// Returns properties converted to appropriate type.
-patch::properties* PatchItem::properties() const
-{
-	base_properties* pProps = PlotItem::properties();
-	patch::properties* pPatchProps = dynamic_cast<patch::properties*>( pProps );
-	if ( pPatchProps )
-	{
-		return pPatchProps;
-	}
-	else
-	{
-		throw Exception( QString("Patch has invalid properties type :%1").arg( pProps->get_type().c_str() ) );
 	}
 }
 

@@ -87,13 +87,9 @@ void FigureManager::propertyChanged( double h, const QString& name )
 			return;
 		}
 		
-		if ( _items.contains( h ) )
+		if ( _objects.contains( h ) )
 		{
-			_items[h]->propertyChanged( name );
-		}
-		else if ( _figures.contains( h ) )
-		{
-			_figures[h]->propertyChanged( name );
+			_objects[h]->propertyChanged( name );
 		}
 		else
 		{
@@ -110,7 +106,7 @@ void FigureManager::propertyChanged( double h, const QString& name )
 /// Handles message from main thread: object was created.
 void FigureManager::objectCreated( double h )
 {
-	qDebug("GUI object created: %g", h );
+	//qDebug("GUI object created: %g", h );
 	try
 	{
 		gh_manager::autolock guard;
@@ -129,19 +125,15 @@ void FigureManager::objectCreated( double h )
 		{
 			// create new figure
 			FigureWindow* pFig = new FigureWindow( h );
-			_figures[h] = pFig;
+			_objects[h] = pFig;
 			pFig->show();
 		}
 		else
 		{
 			double parent = props.get_parent().value();
-			if ( _items.contains( parent ) && !isnan(parent) )
+			if ( _objects.contains( parent ) && !isnan(parent) )
 			{
-				_items[h] = _items[parent]->addChild( h );
-			}
-			else if ( _figures.contains( parent ) && !isnan(parent) )
-			{
-				_items[ h ] = _figures[parent]->addChild( h );
+				_objects[h] = _objects[parent]->childAdded( h );
 			}
 			else
 			{
@@ -160,21 +152,23 @@ void FigureManager::objectCreated( double h )
 /// Handles message from main thread: object was destroyed.
 void FigureManager::objectDestroyed( double h )
 {
-	qDebug("GUI object destroyed: %g", h );
+	//qDebug("GUI object destroyed: %g", h );
 	gh_manager::autolock guard;
 	
 	try
 	{
+		if ( _objects.contains( h ) && !isnan(h) )
+		{
+			// notify parent
+			double ph = _objects[h]->properties()->get_parent().value();
+			
+			if( _objects.contains( ph ) && !isnan(h) )
+			{
+				_objects[ph]->childRemoved( h );
+			}
 		
-		if ( _items.contains( h ) && !isnan(h) )
-		{
-			delete _items[h];
-			_items.remove( h );
-		}
-		else if ( _figures.contains( h ) & !isnan(h) )
-		{
-			delete _figures[h];
-			_figures.remove( h );
+			delete _objects[h];
+			_objects.remove( h );
 		}
 		else
 		{

@@ -34,8 +34,8 @@ static int POSITION_PROTECTION_PERIOD	= 2000;	// Protection perios for position 
 /// Constructor
 FigureWindow::FigureWindow( double handle )
 	: QMainWindow( NULL )
+	, GraphicsObject( handle )
 {
-	_handle = handle;
 	setupUi( this );
 	
 	view->setScene( & _scene );
@@ -85,10 +85,14 @@ void FigureWindow::showEvent( QShowEvent* /*event*/ )
 /// Updates children elements sizes.
 void FigureWindow::updateChildrenSizes()
 {
-	foreach( UIItem* pChild, _children.values() )
+	foreach( GraphicsObject* pChild, GraphicsObject::children() )
 	{
-		pChild->setFigureRect( view->rect() );
-		pChild->updateGeometry();
+		UIItem* pItem = dynamic_cast< UIItem* >( pChild );
+		if ( pItem )
+		{
+			pItem->setFigureRect( view->rect() );
+			pItem->updateGeometry();
+		}
 	}
 }
 
@@ -177,7 +181,7 @@ void FigureWindow::updatePositionToActual()
 
 // ============================================================================
 /// Creates item, basing on value returned by proeprties get_type(). Initialies item with new properties.
-UIItem* FigureWindow::createItem( double h, base_properties* pProps )
+GraphicsObject* FigureWindow::createItem( double h, base_properties* pProps )
 {
 	Q_ASSERT( pProps );
 	
@@ -201,36 +205,7 @@ UIItem* FigureWindow::createItem( double h, base_properties* pProps )
 ///\warning Always call this with gh_manager locked!
 figure::properties* FigureWindow::properties() const
 {
-	graphics_object go = gh_manager::get_object( _handle );
-	if ( go )
-	{
-		return (figure::properties*) &go.get_properties();
-	}
-	else
-	{
-		// TODO throwe exception here
-		qWarning("Figure with handle %g is invalid!", _handle);
-		return NULL;
-	}
-}
-
-// ============================================================================
-/// Message from octave: child object was created.
-/// Visual object will be created using createItem().
-UIItem* FigureWindow::addChild( double h )
-{
-	gh_manager::autolock guard;
-	
-	graphics_object go = gh_manager::get_object( h );
-	base_properties& props = go.get_properties();
-	
-	UIItem* pChild = createItem( h, &props );
-	_children.insert( h, pChild );
-	pChild->updateGeometry();
-	
-	
-	show(); // show if hidden
-	return pChild;
+	return properties_cast<figure::properties*>( GraphicsObject::properties() );
 }
 
 // ============================================================================
@@ -298,6 +273,21 @@ QRgb FigureWindow::getScaledColor( double min, double max, double value )
 		);
 }
 
+// ============================================================================
+/// Handles 'child added' message.
+GraphicsObject* FigureWindow::childAdded( double h )
+{
+	GraphicsObject* pChild = GraphicsObject::childAdded( h );
+	
+	UIItem* pItem = dynamic_cast<UIItem*>( pChild );
+	if ( pItem )
+	{
+		pItem->setFigureRect( view->rect() );
+		pItem->updateGeometry();
+	}
+	
+	return pChild;
+}
 
 }; // namespace
 // EOF

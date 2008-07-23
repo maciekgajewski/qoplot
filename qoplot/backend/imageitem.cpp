@@ -51,7 +51,7 @@ void ImageItem::paint
 {
 	gh_manager::autolock guard;
 	
-	image::properties* pProps = properties();
+	image::properties* pProps = properties_cast< image::properties* >( properties() );
 	// do nathing if called before properties provided
 	if ( ! pProps ) return;
 	
@@ -93,7 +93,7 @@ QRectF ImageItem::boundingRect() const
 void ImageItem::createImage()
 {
 	gh_manager::autolock guard;
-	image::properties* pProps = properties();
+	image::properties* pProps = properties_cast< image::properties* >( properties() );
 	
 	if ( pProps->get_cdata().ndims() == 3 )
 	{
@@ -116,7 +116,7 @@ void ImageItem::createImage()
 /// Returns rectangle which image occupies on plot plane
 QRectF ImageItem::imageRect() const
 {
-	image::properties* pProps = properties();
+	image::properties* pProps = properties_cast< image::properties* >( properties() );
 	
 	// xdata/data
 	Matrix xdata = pProps->get_xdata().matrix_value();
@@ -190,13 +190,13 @@ void ImageItem::createColormapImage( const Matrix& cdata )
 	// init Qt image
 	_image = QImage( w, h, QImage::Format_RGB32 );
 	
-	image::properties* pProps = properties();
+	image::properties* pProps = properties_cast< image::properties* >( properties() );
 	
 	// get figure
 	FigureWindow* pFig = figure();
 	
 	// get axes's CLim
-	axes::properties* pAxesProps = axesItem()->properties();
+	axes::properties* pAxesProps = properties_cast< axes::properties* >( axesItem()->properties() );
 	double cmin = pAxesProps->get_clim().matrix_value().elem( 0 );
 	double cmax = pAxesProps->get_clim().matrix_value().elem( 1 );
 	
@@ -209,7 +209,6 @@ void ImageItem::createColormapImage( const Matrix& cdata )
 		for( int x = 0; x< w; x++ )
 		{
 			QRgb color;
-			int colorIndex = 0;
 			if ( scaled )
 			{
 				// mapping scaled to clim

@@ -19,7 +19,8 @@
 
 #include "plotitem.h"
 
-namespace QOGraphics {
+namespace QOGraphics
+{
 
 /**
 Image item. Represents image objec.
@@ -40,9 +41,6 @@ public:
 		
 	/// Returns item bounding rectangle
 	virtual QRectF boundingRect() const;
-	
-	/// Returns current properties.
-	virtual image::properties* properties() const { return dynamic_cast<image::properties*>(PlotItem::properties()); }
 	
 protected:
 

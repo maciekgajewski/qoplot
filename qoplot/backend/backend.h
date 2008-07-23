@@ -55,7 +55,7 @@ public:
 		printf("qoplot: print figure\n");
 	}
 	
-	Matrix get_canvas_size (const graphics_handle& fh) const
+	Matrix get_canvas_size (const graphics_handle& /*fh*/) const
 	{
 		printf("qoplot: get canvas size\n");
 		return Matrix();
